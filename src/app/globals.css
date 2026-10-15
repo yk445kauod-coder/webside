@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   WebSide Design System — canonical tokens
+   «Your web. Your side.»
+   Typography-first, editorial, calm, precise, premium.
+   ========================================================================= */
+
+:root {
+  /* Brand */
+  --ws-ink: #17212b;
+  --ws-cobalt: #4169e1;
+  --ws-apricot: #f3a879;
+  --ws-white: #ffffff;
+
+  /* Surfaces */
+  --ws-canvas: #f7f8fa;
+  --ws-surface: #ffffff;
+  --ws-border: #e5e8ef;
+  --ws-muted: #667085;
+
+  /* Semantic */
+  --ws-success: #16845b;
+  --ws-warning: #b7791f;
+  --ws-danger: #c0393b;
+  --ws-info: #4169e1;
+
+  /* Derived tints (kept as tokens so hex values are never scattered) */
+  --ws-cobalt-soft: #eef2ff;
+  --ws-apricot-soft: #fdf1e6;
+  --ws-success-soft: #e8f5ef;
+  --ws-warning-soft: #fbf3e3;
+  --ws-danger-soft: #fbeceb;
+  --ws-ink-soft: #eef0f3;
+
+  /* Radii + elevation (calm, not glassy) */
+  --ws-radius-sm: 6px;
+  --ws-radius: 10px;
+  --ws-radius-lg: 16px;
+  --ws-shadow-sm: 0 1px 2px rgba(23, 33, 43, 0.06);
+  --ws-shadow: 0 6px 24px -12px rgba(23, 33, 43, 0.18);
+  --ws-ring: 0 0 0 3px rgba(65, 105, 225, 0.28);
+}
+
+@theme inline {
+  --color-ink: var(--ws-ink);
+  --color-cobalt: var(--ws-cobalt);
+  --color-apricot: var(--ws-apricot);
+  --color-canvas: var(--ws-canvas);
+  --color-surface: var(--ws-surface);
+  --color-line: var(--ws-border);
+  --color-muted: var(--ws-muted);
+  --color-success: var(--ws-success);
+  --color-warning: var(--ws-warning);
+  --color-danger: var(--ws-danger);
+  --color-cobalt-soft: var(--ws-cobalt-soft);
+  --color-apricot-soft: var(--ws-apricot-soft);
+  --color-success-soft: var(--ws-success-soft);
+  --color-warning-soft: var(--ws-warning-soft);
+  --color-danger-soft: var(--ws-danger-soft);
+  --color-ink-soft: var(--ws-ink-soft);
+
+  --font-sans: var(--font-ws-sans);
+  --font-mono: var(--font-ws-mono);
+
+  --radius-ws: var(--ws-radius);
+  --radius-ws-lg: var(--ws-radius-lg);
+  --radius-ws-sm: var(--ws-radius-sm);
+
+  --shadow-ws: var(--ws-shadow);
+  --shadow-ws-sm: var(--ws-shadow-sm);
+}
+
+* {
+  border-color: var(--ws-border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--ws-canvas);
+  color: var(--ws-ink);
+  font-family: var(--font-ws-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv01";
+  text-rendering: optimizeLegibility;
+}
+
+/* Focus visibility — accessible, brand-tinted, never removed */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ws-ring);
+  border-radius: var(--ws-radius-sm);
+}
+
+::selection {
+  background: var(--ws-cobalt);
+  color: var(--ws-white);
+}
+
+/* Typography scale — editorial, calm */
+.ws-display {
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+
+.ws-h1 {
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+  font-weight: 600;
+}
+
+.ws-h2 {
+  font-size: 1.35rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.ws-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ws-muted);
+}
+
+.ws-lede {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ws-muted);
+}
+
+/* Wordmark — typography only. No monogram, no icon, no symbol. */
+.ws-wordmark {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-feature-settings: "ss01";
+  white-space: nowrap;
+}
+.ws-wordmark .ws-wordmark-web {
+  color: var(--ws-ink);
+}
+.ws-wordmark .ws-wordmark-side {
+  color: var(--ws-cobalt);
+}
+.ws-wordmark[data-variant="mono-ink"] .ws-wordmark-side {
+  color: var(--ws-ink);
+}
+.ws-wordmark[data-variant="mono-white"] .ws-wordmark-web,
+.ws-wordmark[data-variant="mono-white"] .ws-wordmark-side {
+  color: var(--ws-white);
+}
+
+/* Motion — restrained; respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.ws-rise {
+  animation: ws-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ws-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Thin, calm scrollbars inside editors */
+.ws-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ws-border) transparent;
+}
+.ws-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.ws-scroll::-webkit-scrollbar-thumb {
+  background: var(--ws-border);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
