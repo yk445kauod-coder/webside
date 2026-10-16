@@ -8,7 +8,7 @@ const tones: Record<Tone, string> = {
   success: "bg-success-soft text-success",
   warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
-  apricot: "bg-apricot-soft text-[#a05c2c]",
+  apricot: "bg-apricot-soft text-apricot-ink",
 };
 
 export function Badge({

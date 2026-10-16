@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { AuthForm } from "@/components/ui/auth-form";
+import { getSessionUser } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Create your account" };
+export const metadata: Metadata = { title: "Create account" };
 
-// Reads cookies to redirect signed-in users away; block static prerender.
+// Reads cookies to skip the form for signed-in users.
 export const instant = false;
 
-export default async function SignUpPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (user) redirect("/dashboard");
-
+export default async function SignupPage() {
+  if (await getSessionUser()) redirect("/dashboard");
   return <AuthForm mode="signup" />;
 }

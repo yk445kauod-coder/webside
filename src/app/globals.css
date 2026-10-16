@@ -33,6 +33,16 @@
   --ws-danger-soft: #fbeceb;
   --ws-ink-soft: #eef0f3;
 
+  /* Interaction shades (hover / active) — tokens so components never hardcode hex */
+  --ws-cobalt-strong: #3357c9;
+  --ws-cobalt-stronger: #2b4cb0;
+  --ws-ink-strong: #101820;
+  --ws-ink-stronger: #0a1016;
+  --ws-success-strong: #116c44;
+  --ws-success-stronger: #0e5a39;
+  --ws-danger-strong: #a73333;
+  --ws-apricot-ink: #a05c2c;
+
   /* Radii + elevation (calm, not glassy) */
   --ws-radius-sm: 6px;
   --ws-radius: 10px;
@@ -59,6 +69,14 @@
   --color-warning-soft: var(--ws-warning-soft);
   --color-danger-soft: var(--ws-danger-soft);
   --color-ink-soft: var(--ws-ink-soft);
+  --color-cobalt-strong: var(--ws-cobalt-strong);
+  --color-cobalt-stronger: var(--ws-cobalt-stronger);
+  --color-ink-strong: var(--ws-ink-strong);
+  --color-ink-stronger: var(--ws-ink-stronger);
+  --color-success-strong: var(--ws-success-strong);
+  --color-success-stronger: var(--ws-success-stronger);
+  --color-danger-strong: var(--ws-danger-strong);
+  --color-apricot-ink: var(--ws-apricot-ink);
 
   --font-sans: var(--font-ws-sans);
   --font-mono: var(--font-ws-mono);
@@ -178,6 +196,39 @@ body {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Skip link — first focusable element, visible only on keyboard focus */
+.ws-skip {
+  position: absolute;
+  left: 12px;
+  top: -64px;
+  z-index: 100;
+  padding: 10px 14px;
+  border-radius: var(--ws-radius);
+  background: var(--ws-ink);
+  color: var(--ws-white);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: top 0.15s ease;
+}
+.ws-skip:focus-visible {
+  top: 12px;
+}
+
+/* Bottom sheet entrance (mobile editor panels) */
+.ws-sheet {
+  animation: ws-sheet-up 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ws-sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
   }
 }
 

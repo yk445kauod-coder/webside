@@ -3,17 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/auth";
+import { uuidSchema } from "@/lib/schemas";
 import { getTemplate, blankPages } from "@/lib/templates";
 import { slugify } from "@/lib/utils";
 
 const createSiteSchema = z.object({
   name: z.string().trim().min(1, "Give your site a name.").max(80),
-  slug: z
-    .string()
-    .trim()
-    .min(2, "Slug must be at least 2 characters.")
-    .max(48)
-    .regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers and dashes."),
+  slug: z.string().trim().max(80).optional(),
   template: z.string().min(1),
 });
 
@@ -25,25 +22,27 @@ export async function createSite(
 ): Promise<CreateSiteState> {
   const parsed = createSiteSchema.safeParse({
     name: formData.get("name"),
-    slug: formData.get("slug") || (formData.get("name") as string),
+    slug: formData.get("slug") || undefined,
     template: formData.get("template"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
   if (!user) return { error: "You need to sign in." };
 
-  // Normalise slug (respect the allow-all pattern but slugify as fallback)
-  const slug = slugify(parsed.data.slug || parsed.data.name);
+  // Normalise the address. Names with no latin letters (e.g. Arabic) slugify
+  // to nothing, so fall back to a short random suffix instead of failing.
+  let slug = slugify(parsed.data.slug || parsed.data.name);
+  if (slug.length < 2) {
+    slug = `site-${slug || Math.random().toString(36).slice(2, 7)}`;
+  }
 
   const template = getTemplate(parsed.data.template);
   const pages = blankPages(template);
 
+  const supabase = await createClient();
   const { data: site, error: siteError } = await supabase
     .from("sites")
     .insert({
@@ -58,9 +57,7 @@ export async function createSite(
 
   if (siteError) {
     if (siteError.code === "23505") {
-      return {
-        error: "That slug is already taken — try a different one.",
-      };
+      return { error: "That address is already taken — try a different one." };
     }
     return { error: siteError.message };
   }
@@ -76,7 +73,9 @@ export async function createSite(
   );
 
   if (pagesError) {
-    return { error: pagesError.message };
+    // Don't leave a half-built, page-less site behind.
+    await supabase.from("sites").delete().eq("id", site.id);
+    return { error: "Couldn't set up the starting pages. Please try again." };
   }
 
   revalidatePath("/dashboard");
@@ -84,9 +83,15 @@ export async function createSite(
 }
 
 export async function deleteSite(siteId: string): Promise<{ error?: string }> {
+  if (!uuidSchema.safeParse(siteId).success) return { error: "Unknown site." };
   const supabase = await createClient();
-  const { error } = await supabase.from("sites").delete().eq("id", siteId);
+  const { data, error } = await supabase
+    .from("sites")
+    .delete()
+    .eq("id", siteId)
+    .select("id");
   if (error) return { error: error.message };
+  if (!data?.length) return { error: "Site not found, or you don't own it." };
   revalidatePath("/dashboard");
   return {};
 }

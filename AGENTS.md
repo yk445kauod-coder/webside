@@ -34,6 +34,9 @@ npm run typecheck  # tsc --noEmit
   the service-role key and is confined to SUDO server actions.
 - Row Level Security is the primary authorisation boundary. Never rely on the UI alone.
 - Keep server actions small and validated with zod before touching the database.
+- `"use server"` files may export only async functions (no constants/types-with-values).
+- Customer-authored URLs must pass through `src/lib/safe-url.ts`; content limits live in `src/lib/limits.ts`.
+- Run `npm run check` (typecheck + lint + tests) before finishing a change.
 
 ## Environment
 
@@ -41,8 +44,11 @@ npm run typecheck  # tsc --noEmit
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` (server only; SUDO operations)
-- `SUDO_ADMIN_EMAILS` (comma-separated allowlist for admin access)
+- `SUPABASE_SERVICE_ROLE_KEY` (server only; only needed if code uses `src/lib/supabase/admin.ts`)
+- `NEXT_PUBLIC_COOKIE_HOST` (optional; share the auth cookie across subdomains)
+
+The SUDO admin allowlist is **not** an env var: it is the `sudo_admin_emails` row in
+`public.settings`, read by the `is_sudo()` SQL function.
 
 ## Design system
 
