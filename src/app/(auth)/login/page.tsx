@@ -6,7 +6,6 @@ import { getSessionUser } from "@/lib/auth";
 export const metadata: Metadata = { title: "Sign in" };
 
 // Reads cookies to skip the form for signed-in users.
-export const instant = false;
 
 export default async function LoginPage() {
   if (await getSessionUser()) redirect("/dashboard");

@@ -12,7 +12,6 @@ import type {
 } from "@/lib/types/database";
 
 // Reads cookies for the signed-in user.
-export const instant = false;
 
 export const metadata: Metadata = { title: "Editor" };
 

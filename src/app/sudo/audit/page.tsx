@@ -6,7 +6,6 @@ import { formatDateTime } from "@/lib/utils";
 export const metadata: Metadata = { title: "Audit · SUDO" };
 
 // Reads cookies for the signed-in user.
-export const instant = false;
 
 export default async function SudoAuditPage() {
   const logs = await getAuditLogs(100);

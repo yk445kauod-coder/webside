@@ -74,6 +74,7 @@ Repository **secrets** the workflow needs (Settings → Secrets and variables �
 The app is served from `https://webside.<your-subdomain>.workers.dev` (change `name` in
 `wrangler.jsonc` to rename it). Add your Supabase redirect URL under **Auth → URL Configuration**.
 This is Workers, not the legacy Pages product: the OpenNext adapter only targets Workers.
+`cacheComponents` is deliberately off: on Workers it hangs every request (error 1101).
 
 Local: `npm run cf:preview` builds and runs the Worker locally; `npm run cf:deploy` deploys from your
 machine (needs `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` in the environment).

@@ -3,7 +3,6 @@ import { getSessionUser, isSudoUser } from "@/lib/auth";
 import { SudoNav } from "@/components/site/sudo-nav";
 
 // Reads cookies for the signed-in user.
-export const instant = false;
 
 export default async function SudoLayout({
   children,

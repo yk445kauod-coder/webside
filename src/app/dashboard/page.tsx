@@ -10,7 +10,6 @@ import { formatDate } from "@/lib/utils";
 export const metadata: Metadata = { title: "My sites" };
 
 // Reads cookies to identify the signed-in user.
-export const instant = false;
 
 export default async function DashboardPage({
   searchParams,
