@@ -61,7 +61,7 @@ where key = 'sudo_admin_emails';
 Pushes to `master` run `.github/workflows/deploy.yml`: typecheck → lint → tests → build with
 [OpenNext for Cloudflare](https://opennext.js.org/cloudflare) → bundle into a Pages
 *advanced-mode* `_worker.js` (`scripts/build-pages.mjs`) → `wrangler pages deploy`. Pull requests run
-the checks only. The site is served at `https://webside.pages.dev`.
+the checks only. The Pages project is `web-side` (set `PAGES_PROJECT` in the workflow); Cloudflare adds a suffix to `*.pages.dev` if the name is taken, so read the real URL from the deploy log.
 
 Repository **secrets** (Settings → Secrets and variables → Actions):
 
