@@ -12,7 +12,9 @@
     "check": "npm run typecheck && npm run lint && npm test",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:pages:build": "opennextjs-cloudflare build && node scripts/build-pages.mjs",
+    "cf:pages:preview": "npm run cf:pages:build && wrangler pages dev pages-out --compatibility-date=2026-10-01 --compatibility-flags=nodejs_compat"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
