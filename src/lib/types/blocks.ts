@@ -112,6 +112,8 @@ export const BLOCK_KINDS: BlockKind[] = [
 // ---------------------------------------------------------------------------
 
 export interface PageDraft {
+  /** Database id — absent only for template pages not yet persisted. */
+  id?: string;
   key: string;
   title: string;
   path: string;

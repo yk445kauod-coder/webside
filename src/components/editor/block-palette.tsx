@@ -4,7 +4,7 @@ import type { ReactElement } from "react";
 import type { AnyBlock, BlockStyle, BlockKind } from "@/lib/types/blocks";
 import { BLOCK_LABELS } from "@/lib/types/blocks";
 
-function uid() {
+export function uid() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2, 12);
@@ -115,18 +115,19 @@ export function createBlock(kind: BlockKind, style: BlockStyle = "light"): AnyBl
   }
 }
 
+const kinds: BlockKind[] = [
+  "hero",
+  "heading",
+  "paragraph",
+  "image",
+  "button",
+  "quote",
+  "columns",
+  "divider",
+  "footer",
+];
+
 export function BlockPalette({ onAdd }: { onAdd: (kind: BlockKind) => void }) {
-  const kinds: BlockKind[] = [
-    "hero",
-    "heading",
-    "paragraph",
-    "image",
-    "button",
-    "quote",
-    "columns",
-    "divider",
-    "footer",
-  ];
   return (
     <div className="grid grid-cols-2 gap-2">
       {kinds.map((kind) => (
@@ -138,6 +139,7 @@ export function BlockPalette({ onAdd }: { onAdd: (kind: BlockKind) => void }) {
         >
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-canvas text-ink">
             <svg
+              aria-hidden="true"
               className="h-4 w-4"
               viewBox="0 0 24 24"
               fill="none"

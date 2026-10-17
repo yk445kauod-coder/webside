@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { signIn, signUp, type AuthState } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
@@ -8,33 +9,29 @@ import { Wordmark } from "@/components/wordmark";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const action = mode === "login" ? signIn : signUp;
-  const [state, formAction, pending] = useActionState<AuthState, FormData>(
-    action,
-    {},
-  );
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 py-12">
-      <div className="mb-8">
-        <Wordmark className="text-[28px]" />
-      </div>
+  const [state, formAction, pending] = useActionState<AuthState, FormData>(action, {});
+  const isLogin = mode === "login";
 
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8 shadow-ws">
-        <h1 className="ws-h2 mb-1">
-          {mode === "login" ? "Welcome back" : "Create your account"}
-        </h1>
+  return (
+    <main id="main" className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-12 sm:px-6">
+      <Link href="/" aria-label="WebSide home" className="mb-8">
+        <Wordmark className="text-[28px]" />
+      </Link>
+
+      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 shadow-ws sm:p-8">
+        <h1 className="ws-h2 mb-1">{isLogin ? "Welcome back" : "Create your account"}</h1>
         <p className="mb-6 text-sm text-muted">
-          {mode === "login"
-            ? "Sign in to get back to your sites."
-            : "Start building your web, your side."}
+          {isLogin ? "Sign in to get back to your sites." : "Start building your web, your side."}
         </p>
 
         <form action={formAction} className="flex flex-col gap-4">
-          {mode === "signup" ? (
+          {!isLogin ? (
             <Field
               label="Display name"
               name="displayName"
               placeholder="You, your studio, your shop…"
               autoComplete="name"
+              maxLength={60}
             />
           ) : null}
           <Field
@@ -43,48 +40,54 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
+            required
+            autoFocus
           />
           <Field
             label="Password"
             name="password"
             type="password"
             placeholder="••••••••"
-            autoComplete={mode === "login" ? "current-password" : "new-password"}
-            hint={mode === "login" ? undefined : "At least 6 characters"}
+            autoComplete={isLogin ? "current-password" : "new-password"}
+            hint={isLogin ? undefined : "At least 8 characters"}
+            minLength={isLogin ? undefined : 8}
+            required
           />
 
           {state.error ? (
-            <p
-              role="alert"
-              className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger"
-            >
+            <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
               {state.error}
+            </p>
+          ) : null}
+          {state.notice ? (
+            <p role="status" className="rounded-lg bg-success-soft px-3 py-2 text-sm text-success">
+              {state.notice}
             </p>
           ) : null}
 
           <Button type="submit" size="lg" loading={pending} className="mt-1">
-            {mode === "login" ? "Sign in" : "Create account"}
+            {isLogin ? "Sign in" : "Create account"}
           </Button>
         </form>
       </div>
 
       <p className="mt-6 text-sm text-muted">
-        {mode === "login" ? (
+        {isLogin ? (
           <>
             New to WebSide?{" "}
-            <a href="/signup" className="font-medium text-cobalt hover:underline">
+            <Link href="/signup" className="font-medium text-cobalt hover:underline">
               Create an account
-            </a>
+            </Link>
           </>
         ) : (
           <>
             Already have an account?{" "}
-            <a href="/login" className="font-medium text-cobalt hover:underline">
+            <Link href="/login" className="font-medium text-cobalt hover:underline">
               Sign in
-            </a>
+            </Link>
           </>
         )}
       </p>
-    </div>
+    </main>
   );
 }

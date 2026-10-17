@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "success" | "outline";
@@ -7,13 +8,13 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-cobalt text-white hover:bg-[#3357c9] active:bg-[#2b4cb0] shadow-[0_1px_2px_rgba(23,33,43,0.25)]",
-  secondary: "bg-ink text-white hover:bg-[#101820] active:bg-[#0a1016]",
-  success: "bg-success text-white hover:bg-[#116c44] active:bg-[#0e5a39]",
+    "bg-cobalt text-white hover:bg-cobalt-strong active:bg-cobalt-stronger shadow-ws-sm",
+  secondary: "bg-ink text-white hover:bg-ink-strong active:bg-ink-stronger",
+  success: "bg-success text-white hover:bg-success-strong active:bg-success-stronger",
   outline:
     "border border-line bg-surface text-ink hover:border-ink/30 hover:bg-ink-soft/60",
   ghost: "text-ink hover:bg-ink-soft",
-  danger: "bg-danger text-white hover:bg-[#a73333]",
+  danger: "bg-danger text-white hover:bg-danger-strong",
 };
 
 const sizes: Record<Size, string> = {
@@ -21,6 +22,10 @@ const sizes: Record<Size, string> = {
   md: "h-10 px-4 text-sm gap-2",
   lg: "h-11 px-5 text-[15px] gap-2",
 };
+
+const base =
+  "inline-flex items-center justify-center rounded-ws font-medium transition-colors duration-150 " +
+  "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-cobalt/30";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -35,23 +40,28 @@ export function Button({
   className,
   children,
   disabled,
+  type = "button",
   ...rest
 }: ButtonProps) {
   return (
     <button
+      type={type}
       className={cn(
-        "inline-flex items-center justify-center rounded-[10px] font-medium transition-colors duration-150",
-        "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-cobalt/30",
+        base,
         variants[variant],
         sizes[size],
         (disabled || loading) && "pointer-events-none opacity-60",
         className,
       )}
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...rest}
     >
       {loading ? (
-        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        <span
+          aria-hidden="true"
+          className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"
+        />
       ) : null}
       {children}
     </button>
@@ -67,6 +77,7 @@ interface LinkButtonProps {
   external?: boolean;
 }
 
+/** A link that looks like a button. Internal links use client-side navigation. */
 export function LinkButton({
   variant = "primary",
   size = "md",
@@ -75,20 +86,17 @@ export function LinkButton({
   className,
   external,
 }: LinkButtonProps) {
+  const classes = cn(base, variants[variant], sizes[size], className);
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={classes}>
+        {children}
+      </a>
+    );
+  }
   return (
-    <a
-      href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noreferrer" : undefined}
-      className={cn(
-        "inline-flex items-center justify-center rounded-[10px] font-medium transition-colors duration-150",
-        "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-cobalt/30",
-        variants[variant],
-        sizes[size],
-        className,
-      )}
-    >
+    <Link href={href} className={classes}>
       {children}
-    </a>
+    </Link>
   );
 }

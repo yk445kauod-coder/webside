@@ -1,3 +1,6 @@
+"use client";
+
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 type CommonProps = {
@@ -7,6 +10,8 @@ type CommonProps = {
   placeholder?: string;
   disabled?: boolean;
   autoFocus?: boolean;
+  required?: boolean;
+  maxLength?: number;
   className?: string;
   textarea?: boolean;
   rows?: number;
@@ -18,6 +23,8 @@ type ControlledProps = CommonProps & {
   onChange: (v: string) => void;
   name?: never;
   autoComplete?: never;
+  type?: never;
+  minLength?: never;
 };
 
 type UncontrolledProps = CommonProps & {
@@ -27,6 +34,7 @@ type UncontrolledProps = CommonProps & {
   name: string;
   autoComplete?: string;
   type?: string;
+  minLength?: number;
 };
 
 export type FieldProps = ControlledProps | UncontrolledProps;
@@ -39,16 +47,40 @@ export function Field(props: FieldProps) {
     placeholder,
     disabled,
     autoFocus,
+    required,
+    maxLength,
     className,
     textarea,
     rows,
   } = props;
-  const base = cn(
-    "w-full rounded-[10px] border bg-surface px-3 py-2 text-[15px] text-ink",
-    "placeholder:text-muted/70 focus:outline-none focus:ring-[3px] focus:ring-cobalt/25",
-    error ? "border-danger" : "border-line",
-    disabled && "cursor-not-allowed opacity-60",
-  );
+  const errorId = useId();
+  const controlled = "onChange" in props && props.onChange !== undefined;
+
+  const shared = {
+    placeholder,
+    disabled,
+    autoFocus,
+    required,
+    maxLength,
+    "data-autofocus": autoFocus ? "" : undefined,
+    "aria-invalid": error ? true : undefined,
+    "aria-describedby": error ? errorId : undefined,
+    className: cn(
+      "w-full rounded-ws border bg-surface px-3 py-2 text-[15px] text-ink",
+      "placeholder:text-muted/70 focus:outline-none focus:ring-[3px] focus:ring-cobalt/25",
+      error ? "border-danger" : "border-line",
+      disabled && "cursor-not-allowed opacity-60",
+    ),
+  };
+  const controlProps = controlled
+    ? {
+        value: props.value as string,
+        onChange: (
+          e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        ) => props.onChange?.(e.target.value),
+      }
+    : { name: props.name };
+
   return (
     <label className={cn("block", className)}>
       {label ? (
@@ -61,38 +93,24 @@ export function Field(props: FieldProps) {
       ) : null}
       {textarea ? (
         <textarea
-          name={"name" in props ? props.name : undefined}
-          value={"value" in props ? props.value : undefined}
-          onChange={
-            "onChange" in props
-              ? (e) => props.onChange?.(e.target.value)
-              : undefined
-          }
-          placeholder={placeholder}
-          disabled={disabled}
-          autoFocus={autoFocus}
+          {...shared}
+          {...controlProps}
           rows={rows ?? 3}
-          className={cn(base, "resize-y leading-relaxed")}
+          className={cn(shared.className, "resize-y leading-relaxed")}
         />
       ) : (
         <input
-          name={"name" in props ? props.name : undefined}
-          type={"type" in props && props.type ? props.type : "text"}
-          value={"value" in props ? props.value : undefined}
-          onChange={
-            "onChange" in props
-              ? (e) => props.onChange?.(e.target.value)
-              : undefined
-          }
-          autoComplete={("autoComplete" in props && props.autoComplete) || undefined}
-          placeholder={placeholder}
-          disabled={disabled}
-          autoFocus={autoFocus}
-          className={base}
+          {...shared}
+          {...controlProps}
+          type={(!controlled && props.type) || "text"}
+          minLength={controlled ? undefined : props.minLength}
+          autoComplete={(!controlled && props.autoComplete) || undefined}
         />
       )}
       {error ? (
-        <span className="mt-1.5 block text-sm text-danger">{error}</span>
+        <span id={errorId} role="alert" className="mt-1.5 block text-sm text-danger">
+          {error}
+        </span>
       ) : null}
     </label>
   );

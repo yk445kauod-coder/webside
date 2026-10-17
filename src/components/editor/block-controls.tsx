@@ -1,3 +1,8 @@
+"use client";
+
+import { Field } from "@/components/ui/field";
+import { LIMITS } from "@/lib/limits";
+import { cn } from "@/lib/utils";
 import type { AnyBlock, BlockStyle, ButtonVariant } from "@/lib/types/blocks";
 
 const styleOptions: { value: BlockStyle; label: string }[] = [
@@ -16,115 +21,123 @@ interface Props {
   block: AnyBlock;
   onChange: (block: AnyBlock) => void;
   onDelete: () => void;
+  onDuplicate: () => void;
 }
 
-function TextInput({
-  label,
-  value,
-  onValue,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onValue: (v: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-medium text-ink">{label}</span>
-      <input
-        value={value}
-        onChange={(e) => onValue(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-lg border border-line bg-white px-2.5 py-1.5 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-cobalt/25"
-      />
-    </label>
-  );
-}
-
-export function BlockControls({ block, onChange, onDelete }: Props) {
+/** Inspector form for the selected block. */
+export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props) {
   return (
     <div className="flex flex-col gap-4">
-      <ControlRow>
-        <StylePicker
-          value={block.style}
-          onChange={(style) => onChange({ ...block, style })}
-        />
-      </ControlRow>
+      <SegField<BlockStyle>
+        label="Background"
+        options={styleOptions}
+        value={block.style}
+        onValue={(style) => onChange({ ...block, style })}
+      />
 
       {block.kind === "hero" ? (
         <>
-          <TextInput
+          <Field
             label="Title"
             value={block.title}
-            onValue={(v) => onChange({ ...block, title: v })}
+            maxLength={LIMITS.heroTitle}
+            onChange={(title) => onChange({ ...block, title })}
           />
-          <TextInput
+          <Field
+            textarea
+            rows={3}
             label="Subtitle"
             value={block.subtitle}
-            onValue={(v) => onChange({ ...block, subtitle: v })}
+            maxLength={LIMITS.heroSubtitle}
+            onChange={(subtitle) => onChange({ ...block, subtitle })}
           />
-          <SegField<string>
+          <SegField<"left" | "center">
             label="Alignment"
             options={[
               { value: "left", label: "Left" },
               { value: "center", label: "Center" },
             ]}
             value={block.align}
-            onValue={(align) =>
-              onChange({ ...block, align: align as "left" | "center" })
-            }
+            onValue={(align) => onChange({ ...block, align })}
           />
         </>
       ) : null}
 
       {block.kind === "heading" ? (
         <>
-          <TextInput
+          <Field
             label="Heading text"
             value={block.text}
-            onValue={(v) => onChange({ ...block, text: v })}
+            maxLength={LIMITS.heading}
+            onChange={(text) => onChange({ ...block, text })}
           />
-          <SegField<string>
-            label="Level"
+          <SegField<"2" | "3">
+            label="Size"
             options={[
-              { value: "2", label: "H2" },
-              { value: "3", label: "H3" },
+              { value: "2", label: "Large" },
+              { value: "3", label: "Small" },
             ]}
-            value={String(block.level)}
-            onValue={(level) =>
-              onChange({ ...block, level: level === "3" ? 3 : 2 })
-            }
+            value={String(block.level) as "2" | "3"}
+            onValue={(level) => onChange({ ...block, level: level === "3" ? 3 : 2 })}
           />
         </>
       ) : null}
 
       {block.kind === "paragraph" ? (
-        <label className="block">
-          <span className="mb-1 block text-xs font-medium text-ink">Text</span>
-          <textarea
-            value={block.text}
-            onChange={(e) => onChange({ ...block, text: e.target.value })}
-            rows={5}
-            className="w-full resize-y rounded-lg border border-line bg-white px-2.5 py-1.5 text-sm leading-relaxed text-ink focus:outline-none focus:ring-2 focus:ring-cobalt/25"
-          />
-        </label>
+        <Field
+          textarea
+          rows={6}
+          label="Text"
+          hint={`${block.text.length}/${LIMITS.paragraph}`}
+          value={block.text}
+          maxLength={LIMITS.paragraph}
+          onChange={(text) => onChange({ ...block, text })}
+        />
       ) : null}
 
       {block.kind === "image" ? (
         <>
-          <TextInput label="Image URL" value={block.src} onValue={(v) => onChange({ ...block, src: v })} placeholder="https://…" />
-          <TextInput label="Alt text" value={block.alt} onValue={(v) => onChange({ ...block, alt: v })} />
-          <TextInput label="Caption" value={block.caption} onValue={(v) => onChange({ ...block, caption: v })} />
+          <Field
+            label="Image URL"
+            placeholder="https://…"
+            value={block.src}
+            maxLength={LIMITS.url}
+            onChange={(src) => onChange({ ...block, src })}
+          />
+          <Field
+            label="Alt text"
+            hint="Describes the image for screen readers"
+            value={block.alt}
+            maxLength={LIMITS.alt}
+            onChange={(alt) => onChange({ ...block, alt })}
+          />
+          <Field
+            label="Caption"
+            value={block.caption}
+            maxLength={LIMITS.caption}
+            onChange={(caption) => onChange({ ...block, caption })}
+          />
         </>
       ) : null}
 
       {block.kind === "button" ? (
         <>
-          <TextInput label="Label" value={block.label} onValue={(v) => onChange({ ...block, label: v })} />
-          <TextInput label="Link (URL or anchor)" value={block.href} onValue={(v) => onChange({ ...block, href: v })} placeholder="https://… or #contact" />
+          <Field
+            label="Label"
+            value={block.label}
+            maxLength={LIMITS.buttonLabel}
+            onChange={(label) => onChange({ ...block, label })}
+          />
+          <Field
+            label="Link"
+            hint="https://…, mailto:, tel: or #section"
+            placeholder="https://… or #contact"
+            value={block.href}
+            maxLength={LIMITS.url}
+            onChange={(href) => onChange({ ...block, href })}
+          />
           <SegField<ButtonVariant>
-            label="Variant"
+            label="Style"
             options={buttonVariants}
             value={block.variant}
             onValue={(variant) => onChange({ ...block, variant })}
@@ -134,67 +147,99 @@ export function BlockControls({ block, onChange, onDelete }: Props) {
 
       {block.kind === "quote" ? (
         <>
-          <TextInput label="Quote" value={block.text} onValue={(v) => onChange({ ...block, text: v })} />
-          <TextInput label="Attribution" value={block.cite} onValue={(v) => onChange({ ...block, cite: v })} />
+          <Field
+            textarea
+            rows={3}
+            label="Quote"
+            value={block.text}
+            maxLength={LIMITS.quote}
+            onChange={(text) => onChange({ ...block, text })}
+          />
+          <Field
+            label="Attribution"
+            value={block.cite}
+            maxLength={LIMITS.cite}
+            onChange={(cite) => onChange({ ...block, cite })}
+          />
         </>
       ) : null}
 
       {block.kind === "columns" ? (
-        <div className="flex flex-col gap-3">
-          <span className="text-xs font-medium text-ink">Columns</span>
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-medium text-ink">Columns</legend>
           {block.cols.map((col, i) => (
-            <div key={i} className="flex flex-col gap-2 rounded-lg border border-line bg-white p-2.5">
-              <TextInput
+            <div
+              key={i}
+              className="flex flex-col gap-3 rounded-lg border border-line bg-canvas p-3"
+            >
+              <Field
                 label={`Column ${i + 1} heading`}
                 value={col.heading}
-                onValue={(v) => {
+                maxLength={LIMITS.columnHeading}
+                onChange={(heading) => {
                   const cols = [...block.cols];
-                  cols[i] = { ...cols[i], heading: v };
+                  cols[i] = { ...cols[i], heading };
                   onChange({ ...block, cols });
                 }}
               />
-              <TextInput
+              <Field
+                textarea
+                rows={3}
                 label="Text"
                 value={col.text}
-                onValue={(v) => {
+                maxLength={LIMITS.columnText}
+                onChange={(text) => {
                   const cols = [...block.cols];
-                  cols[i] = { ...cols[i], text: v };
+                  cols[i] = { ...cols[i], text };
                   onChange({ ...block, cols });
                 }}
               />
-              <button
-                onClick={() => {
-                  const cols = block.cols.filter((_, j) => j !== i);
-                  onChange({ ...block, cols: cols.length ? cols : [{ heading: "", text: "" }] });
-                }}
-                className="self-end text-xs font-medium text-danger hover:underline"
-              >
-                Remove column
-              </button>
+              {block.cols.length > 1 ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    onChange({ ...block, cols: block.cols.filter((_, j) => j !== i) })
+                  }
+                  className="self-end text-xs font-medium text-danger hover:underline"
+                >
+                  Remove column {i + 1}
+                </button>
+              ) : null}
             </div>
           ))}
           {block.cols.length < 3 ? (
             <button
+              type="button"
               onClick={() =>
-                onChange({
-                  ...block,
-                  cols: [...block.cols, { heading: "", text: "" }],
-                })
+                onChange({ ...block, cols: [...block.cols, { heading: "", text: "" }] })
               }
-              className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-ink/40 hover:text-ink"
+              className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt"
             >
               + Add column
             </button>
           ) : null}
-        </div>
+        </fieldset>
       ) : null}
 
       {block.kind === "footer" ? (
-        <TextInput label="Footer text" value={block.text} onValue={(v) => onChange({ ...block, text: v })} />
+        <Field
+          label="Footer text"
+          value={block.text}
+          maxLength={LIMITS.footer}
+          onChange={(text) => onChange({ ...block, text })}
+        />
       ) : null}
 
-      <div className="mt-1 border-t border-line pt-3">
+      <div className="mt-1 flex items-center justify-between border-t border-line pt-3">
         <button
+          type="button"
+          onClick={onDuplicate}
+          className="text-xs font-medium text-muted hover:text-ink hover:underline"
+        >
+          Duplicate block
+        </button>
+        <button
+          type="button"
           onClick={onDelete}
           className="text-xs font-medium text-danger hover:underline"
         >
@@ -205,27 +250,6 @@ export function BlockControls({ block, onChange, onDelete }: Props) {
   );
 }
 
-function ControlRow({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
-}
-
-function StylePicker({
-  value,
-  onChange,
-}: {
-  value: BlockStyle;
-  onChange: (s: BlockStyle) => void;
-}) {
-  return (
-    <SegField<BlockStyle>
-      label="Background"
-      options={styleOptions}
-      value={value}
-      onValue={onChange}
-    />
-  );
-}
-
 function SegField<T extends string>({
   label,
   options,
@@ -233,23 +257,26 @@ function SegField<T extends string>({
   onValue,
 }: {
   label: string;
-  options: { value: string; label: string }[];
+  options: { value: T; label: string }[];
   value: T;
   onValue: (v: T) => void;
 }) {
   return (
-    <div>
-      <span className="mb-1 block text-xs font-medium text-ink">{label}</span>
+    <div role="group" aria-label={label}>
+      <span className="mb-1.5 block text-sm font-medium text-ink">{label}</span>
       <div className="flex gap-1 rounded-lg bg-ink-soft p-0.5">
         {options.map((o) => (
           <button
             key={o.value}
-            onClick={() => onValue(o.value as T)}
-            className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+            type="button"
+            aria-pressed={value === o.value}
+            onClick={() => onValue(o.value)}
+            className={cn(
+              "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
               value === o.value
-                ? "bg-surface text-ink shadow-sm"
-                : "text-muted hover:text-ink"
-            }`}
+                ? "bg-surface text-ink shadow-ws-sm"
+                : "text-muted hover:text-ink",
+            )}
           >
             {o.label}
           </button>

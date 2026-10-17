@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -23,15 +23,23 @@ export const metadata: Metadata = {
     "WebSide is a calm, precise way to build a website: design it, preview it, save it, and submit it for review.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f7f8fa",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${sans.variable} ${mono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full">{children}</body>
+    <html lang="en" className={`${sans.variable} ${mono.variable} h-full antialiased`}>
+      <body className="min-h-full">
+        <a href="#main" className="ws-skip">
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }
