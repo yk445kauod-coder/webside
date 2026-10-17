@@ -56,30 +56,30 @@ set value = '["you@example.com"]'::jsonb
 where key = 'sudo_admin_emails';
 ```
 
-## Deploying (Cloudflare Workers via GitHub Actions)
+## Deploying (Cloudflare Pages via GitHub Actions)
 
 Pushes to `master` run `.github/workflows/deploy.yml`: typecheck → lint → tests → build with
-[OpenNext for Cloudflare](https://opennext.js.org/cloudflare) → `wrangler` deploy. Pull requests run
-the checks only.
+[OpenNext for Cloudflare](https://opennext.js.org/cloudflare) → bundle into a Pages
+*advanced-mode* `_worker.js` (`scripts/build-pages.mjs`) → `wrangler pages deploy`. Pull requests run
+the checks only. The site is served at `https://webside.pages.dev`.
 
-Repository **secrets** the workflow needs (Settings → Secrets and variables → Actions):
+Repository **secrets** (Settings → Secrets and variables → Actions):
 
 | Secret | Value |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | API token with *Edit Cloudflare Workers* permission |
+| `CLOUDFLARE_API_TOKEN` | API token with *Cloudflare Pages: Edit* permission |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account id |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase publishable/anon key |
 
-The app is served from `https://webside.<your-subdomain>.workers.dev` (change `name` in
-`wrangler.jsonc` to rename it). Add your Supabase redirect URL under **Auth → URL Configuration**.
-This is Workers, not the legacy Pages product: the OpenNext adapter only targets Workers.
+Add your Pages URL under Supabase **Auth → URL Configuration**. Local preview:
+`npm run cf:pages:preview`.
 
-Local: `npm run cf:preview` builds and runs the Worker locally; `npm run cf:deploy` deploys from your
-machine (needs `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` in the environment).
-
-> `src/proxy.ts` runs as Node.js middleware, which OpenNext marks experimental on Cloudflare. If
-> sessions misbehave in production, that is the first place to look.
+> OpenNext officially targets Workers, so Pages is the unsupported route: it works because the
+> whole server is one bundled `_worker.js` (about 2 MB gzipped; the free-plan limit is 3 MB). If a
+> future OpenNext/Next upgrade breaks it, `npm run cf:deploy` still deploys to Workers.
+> `cacheComponents` must stay off: it hangs every request on the Workers runtime (error 1101).
+> `src/proxy.ts` runs as Node.js middleware, which OpenNext marks experimental on Cloudflare.
 
 ## Scripts
 

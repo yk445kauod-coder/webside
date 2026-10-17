@@ -4,7 +4,6 @@ import { getSessionUser, isSudoUser } from "@/lib/auth";
 import { DashboardNav } from "@/components/site/dashboard-nav";
 
 // Reads cookies for the signed-in user + navigation.
-export const instant = false;
 
 export default async function DashboardLayout({
   children,

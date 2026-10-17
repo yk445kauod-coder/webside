@@ -5,7 +5,6 @@ import { SudoQueue } from "@/components/site/sudo-queue";
 export const metadata: Metadata = { title: "Review · SUDO" };
 
 // Reads cookies for the signed-in user.
-export const instant = false;
 
 export default async function SudoHomePage() {
   const { open, resolved, totals } = await getSudoQueue();
