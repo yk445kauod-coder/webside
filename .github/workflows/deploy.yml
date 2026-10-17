@@ -16,6 +16,7 @@ permissions:
 
 env:
   NEXT_TELEMETRY_DISABLED: "1"
+  PAGES_PROJECT: web-side
   # Inlined into the client bundle at build time (public by design).
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -65,13 +66,13 @@ jobs:
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           # Create (ignored if it already exists), then always enforce the runtime flags.
           curl -sS -X POST "$api" -H "$auth" -H "Content-Type: application/json" \
-            -d "{\"name\":\"webside\",\"production_branch\":\"master\"}" | jq '{success,errors}'
-          curl -sS -X PATCH "$api/webside" -H "$auth" -H "Content-Type: application/json" \
+            -d "{\"name\":\"$PAGES_PROJECT\",\"production_branch\":\"master\"}" | jq '{success,errors}'
+          curl -sS -X PATCH "$api/$PAGES_PROJECT" -H "$auth" -H "Content-Type: application/json" \
             -d "{\"deployment_configs\":{\"production\":$cfg,\"preview\":$cfg}}" \
             | tee /tmp/patch.json | jq '{success,errors}'
           jq -e '.success' /tmp/patch.json > /dev/null
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy pages-out --project-name=webside --branch=master --commit-dirty=true
+        run: npx wrangler pages deploy pages-out --project-name=$PAGES_PROJECT --branch=master --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
