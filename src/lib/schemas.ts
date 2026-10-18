@@ -14,7 +14,9 @@ const id = z.string().min(1).max(64);
 const style = z.enum(["light", "tint", "ink"]);
 const text = (max: number) => z.string().max(max);
 
-const base = { id, style };
+const accent = z.enum(["indigo", "sunset", "forest", "ocean", "rose", "mono"]).optional();
+
+const base = { id, style, accent };
 
 const blockSchema = z.discriminatedUnion("kind", [
   z.object({

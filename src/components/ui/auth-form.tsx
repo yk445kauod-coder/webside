@@ -6,6 +6,7 @@ import { signIn, signUp, type AuthState } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Wordmark } from "@/components/wordmark";
+import { Check } from "lucide-react";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const action = mode === "login" ? signIn : signUp;
@@ -13,12 +14,41 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const isLogin = mode === "login";
 
   return (
-    <main id="main" className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-12 sm:px-6">
-      <Link href="/" aria-label="WebSide home" className="mb-8">
-        <Wordmark className="text-[28px]" />
-      </Link>
+    <main id="main" className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+      {/* brand panel */}
+      <aside className="ws-night relative isolate hidden overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="ws-aurora" aria-hidden="true">
+          <i />
+        </div>
+        <div aria-hidden="true" className="ws-dots absolute inset-0" />
+        <Link href="/" aria-label="WebSide home" className="relative z-10">
+          <Wordmark variant="mono-white" className="text-[28px]" />
+        </Link>
+        <div className="relative z-10 max-w-md">
+          <h2 className="ws-display text-balance !text-5xl text-white">
+            Build it by <span className="ws-gradient-text">answering questions.</span>
+          </h2>
+          <ul className="mt-8 space-y-3 text-white/80">
+            {["Guided, step by step", "Live preview as you go", "Free to start"].map((t) => (
+              <li key={t} className="flex items-center gap-3">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-white/15">
+                  <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="relative z-10 text-sm text-white/50">Your web. Your side.</p>
+      </aside>
 
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 shadow-ws sm:p-8">
+      {/* form */}
+      <div className="relative flex flex-col items-center justify-center bg-canvas px-4 py-12 sm:px-6">
+        <Link href="/" aria-label="WebSide home" className="mb-8 lg:hidden">
+          <Wordmark className="text-[28px]" />
+        </Link>
+
+      <div className="w-full max-w-sm rounded-3xl border border-line bg-surface p-6 shadow-ws sm:p-8">
         <h1 className="ws-h2 mb-1">{isLogin ? "Welcome back" : "Create your account"}</h1>
         <p className="mb-6 text-sm text-muted">
           {isLogin ? "Sign in to get back to your sites." : "Start building your web, your side."}
@@ -88,6 +118,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           </>
         )}
       </p>
+      </div>
     </main>
   );
 }

@@ -8,48 +8,58 @@
 
 :root {
   /* Brand */
-  --ws-ink: #17212b;
-  --ws-cobalt: #4169e1;
-  --ws-apricot: #f3a879;
+  --ws-ink: #14122b;
+  --ws-cobalt: #6d4cff;
+  --ws-apricot: #ff9b6a;
   --ws-white: #ffffff;
 
   /* Surfaces */
-  --ws-canvas: #f7f8fa;
+  --ws-canvas: #f6f5ff;
   --ws-surface: #ffffff;
-  --ws-border: #e5e8ef;
-  --ws-muted: #667085;
+  --ws-border: #e6e3f7;
+  --ws-muted: #625f85;
 
   /* Semantic */
   --ws-success: #16845b;
   --ws-warning: #b7791f;
   --ws-danger: #c0393b;
-  --ws-info: #4169e1;
+  --ws-info: #6d4cff;
 
   /* Derived tints (kept as tokens so hex values are never scattered) */
-  --ws-cobalt-soft: #eef2ff;
-  --ws-apricot-soft: #fdf1e6;
+  --ws-cobalt-soft: #efebff;
+  --ws-apricot-soft: #fff0e8;
   --ws-success-soft: #e8f5ef;
   --ws-warning-soft: #fbf3e3;
   --ws-danger-soft: #fbeceb;
-  --ws-ink-soft: #eef0f3;
+  --ws-ink-soft: #efedfa;
 
   /* Interaction shades (hover / active) — tokens so components never hardcode hex */
-  --ws-cobalt-strong: #3357c9;
-  --ws-cobalt-stronger: #2b4cb0;
-  --ws-ink-strong: #101820;
-  --ws-ink-stronger: #0a1016;
+  --ws-cobalt-strong: #5a37f0;
+  --ws-cobalt-stronger: #4b2bd6;
+  --ws-ink-strong: #0c0a1f;
+  --ws-ink-stronger: #070614;
   --ws-success-strong: #116c44;
   --ws-success-stronger: #0e5a39;
   --ws-danger-strong: #a73333;
-  --ws-apricot-ink: #a05c2c;
+  --ws-apricot-ink: #b04f1d;
 
-  /* Radii + elevation (calm, not glassy) */
-  --ws-radius-sm: 6px;
-  --ws-radius: 10px;
-  --ws-radius-lg: 16px;
-  --ws-shadow-sm: 0 1px 2px rgba(23, 33, 43, 0.06);
-  --ws-shadow: 0 6px 24px -12px rgba(23, 33, 43, 0.18);
-  --ws-ring: 0 0 0 3px rgba(65, 105, 225, 0.28);
+  /* Brand gradients + glow (v2) */
+  --ws-violet: #6d4cff;
+  --ws-blue: #3b82f6;
+  --ws-pink: #ff5fa2;
+  --ws-gold: #ffc46b;
+  --ws-night: #0b0920;
+  --ws-grad: linear-gradient(120deg, #6d4cff 0%, #3b82f6 45%, #ff5fa2 100%);
+  --ws-grad-warm: linear-gradient(120deg, #ff5fa2 0%, #ff9b6a 55%, #ffc46b 100%);
+  --ws-glow: 0 10px 40px -8px rgba(109, 76, 255, 0.55);
+
+  /* Radii + elevation */
+  --ws-radius-sm: 8px;
+  --ws-radius: 14px;
+  --ws-radius-lg: 24px;
+  --ws-shadow-sm: 0 1px 2px rgba(20, 18, 43, 0.06), 0 2px 8px -4px rgba(109, 76, 255, 0.18);
+  --ws-shadow: 0 18px 50px -20px rgba(80, 50, 200, 0.35);
+  --ws-ring: 0 0 0 3px rgba(109, 76, 255, 0.32);
 }
 
 @theme inline {
@@ -246,4 +256,226 @@ body {
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: content-box;
+}
+
+
+/* =========================================================================
+   v2 effects — aurora, glass, glow, shimmer, tilt, marquee
+   ========================================================================= */
+
+.ws-night {
+  background: var(--ws-night);
+  color: #fff;
+}
+
+/* Animated aurora: three drifting colour blobs behind content */
+.ws-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.ws-aurora::before,
+.ws-aurora::after,
+.ws-aurora > i {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.ws-aurora::before {
+  width: 46rem;
+  height: 46rem;
+  left: -12rem;
+  top: -16rem;
+  background: radial-gradient(circle at 30% 30%, #6d4cff, transparent 65%);
+  animation: ws-drift-a 18s ease-in-out infinite alternate;
+}
+.ws-aurora::after {
+  width: 40rem;
+  height: 40rem;
+  right: -10rem;
+  top: -6rem;
+  background: radial-gradient(circle at 60% 40%, #ff5fa2, transparent 65%);
+  animation: ws-drift-b 22s ease-in-out infinite alternate;
+}
+.ws-aurora > i {
+  width: 38rem;
+  height: 38rem;
+  left: 30%;
+  bottom: -22rem;
+  background: radial-gradient(circle, #3b82f6, transparent 65%);
+  animation: ws-drift-c 26s ease-in-out infinite alternate;
+}
+@keyframes ws-drift-a {
+  to { transform: translate3d(8rem, 6rem, 0) scale(1.15); }
+}
+@keyframes ws-drift-b {
+  to { transform: translate3d(-9rem, 8rem, 0) scale(0.9); }
+}
+@keyframes ws-drift-c {
+  to { transform: translate3d(-6rem, -5rem, 0) scale(1.2); }
+}
+
+/* Fine dot grid, fades out toward the edges */
+.ws-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+.ws-dots-ink {
+  background-image: radial-gradient(rgba(20, 18, 43, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.ws-glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+.ws-glass-light {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+.ws-gradient-text {
+  background: var(--ws-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  animation: ws-gradient-pan 8s ease-in-out infinite alternate;
+}
+@keyframes ws-gradient-pan {
+  to { background-position: 100% 0; }
+}
+
+/* Primary button: gradient + glow + sweeping shine */
+.ws-btn-grad {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: var(--ws-grad);
+  background-size: 160% 100%;
+  box-shadow: var(--ws-glow);
+  transition: background-position 0.4s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.ws-btn-grad:hover {
+  background-position: 100% 0;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 44px -8px rgba(109, 76, 255, 0.7);
+}
+.ws-btn-grad:active {
+  transform: translateY(0) scale(0.98);
+}
+.ws-btn-grad::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.35) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+}
+.ws-btn-grad:hover::after {
+  transform: translateX(120%);
+}
+
+/* Card with animated gradient border on hover */
+.ws-card-glow {
+  position: relative;
+  background: var(--ws-surface);
+  border-radius: var(--ws-radius-lg);
+  box-shadow: var(--ws-shadow-sm);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+.ws-card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: var(--ws-grad);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.ws-card-glow:hover,
+.ws-card-glow[data-active="true"] {
+  transform: translateY(-3px);
+  box-shadow: var(--ws-shadow);
+}
+.ws-card-glow:hover::before,
+.ws-card-glow[data-active="true"]::before {
+  opacity: 1;
+}
+
+.ws-marquee {
+  display: flex;
+  width: max-content;
+  animation: ws-marquee 38s linear infinite;
+}
+.ws-marquee:hover {
+  animation-play-state: paused;
+}
+@keyframes ws-marquee {
+  to { transform: translateX(-50%); }
+}
+
+.ws-float {
+  animation: ws-float 6s ease-in-out infinite;
+}
+@keyframes ws-float {
+  50% { transform: translateY(-10px); }
+}
+
+.ws-pulse-ring {
+  animation: ws-pulse-ring 2.4s ease-out infinite;
+}
+@keyframes ws-pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(109, 76, 255, 0.45); }
+  100% { box-shadow: 0 0 0 16px rgba(109, 76, 255, 0); }
+}
+
+.ws-pop {
+  animation: ws-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes ws-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* Per-block accent themes: the wizard stores an accent on each block and the
+   renderer scopes these tokens to it, so a generated site gets its own colour
+   without any database change. */
+[data-accent="sunset"] {
+  --ws-cobalt: #f2603f;
+  --ws-cobalt-strong: #d94a2a;
+  --ws-cobalt-soft: #fff0ea;
+}
+[data-accent="forest"] {
+  --ws-cobalt: #1f8f63;
+  --ws-cobalt-strong: #177650;
+  --ws-cobalt-soft: #e8f6ef;
+}
+[data-accent="ocean"] {
+  --ws-cobalt: #1c7ed6;
+  --ws-cobalt-strong: #1668b2;
+  --ws-cobalt-soft: #e7f3ff;
+}
+[data-accent="rose"] {
+  --ws-cobalt: #e0378a;
+  --ws-cobalt-strong: #c42a74;
+  --ws-cobalt-soft: #ffeaf4;
+}
+[data-accent="mono"] {
+  --ws-cobalt: #1a1a1a;
+  --ws-cobalt-strong: #000000;
+  --ws-cobalt-soft: #f0f0f0;
 }

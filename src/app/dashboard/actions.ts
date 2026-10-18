@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
-import { uuidSchema } from "@/lib/schemas";
+import { parseBlocks, uuidSchema } from "@/lib/schemas";
+import { buildWizardPages, wizardSchema, type WizardInput } from "@/lib/wizard";
+import type { PageDraft } from "@/lib/types/blocks";
 import { getTemplate, blankPages } from "@/lib/templates";
 import { slugify } from "@/lib/utils";
 
@@ -32,24 +34,38 @@ export async function createSite(
   const user = await getSessionUser();
   if (!user) return { error: "You need to sign in." };
 
-  // Normalise the address. Names with no latin letters (e.g. Arabic) slugify
-  // to nothing, so fall back to a short random suffix instead of failing.
-  let slug = slugify(parsed.data.slug || parsed.data.name);
-  if (slug.length < 2) {
-    slug = `site-${slug || Math.random().toString(36).slice(2, 7)}`;
-  }
+  const slug = fallbackSlug(parsed.data.name, parsed.data.slug ?? "");
 
   const template = getTemplate(parsed.data.template);
-  const pages = blankPages(template);
+  return persistSite({
+    ownerId: user.id,
+    name: parsed.data.name,
+    slug,
+    templateKey: template.key,
+    pages: blankPages(template),
+  });
+}
 
+function fallbackSlug(name: string, wanted: string): string {
+  const slug = slugify(wanted || name);
+  return slug.length >= 2 ? slug : `site-${slug || Math.random().toString(36).slice(2, 7)}`;
+}
+
+async function persistSite(args: {
+  ownerId: string;
+  name: string;
+  slug: string;
+  templateKey: string;
+  pages: PageDraft[];
+}): Promise<CreateSiteState> {
   const supabase = await createClient();
   const { data: site, error: siteError } = await supabase
     .from("sites")
     .insert({
-      owner_id: user.id,
-      name: parsed.data.name,
-      slug,
-      template_key: template.key,
+      owner_id: args.ownerId,
+      name: args.name,
+      slug: args.slug,
+      template_key: args.templateKey,
       description: null,
     })
     .select()
@@ -63,7 +79,7 @@ export async function createSite(
   }
 
   const { error: pagesError } = await supabase.from("pages").insert(
-    pages.map((p) => ({
+    args.pages.map((p) => ({
       site_id: site.id,
       key: p.key,
       title: p.title,
@@ -80,6 +96,36 @@ export async function createSite(
 
   revalidatePath("/dashboard");
   return { slug: site.slug };
+}
+
+/**
+ * Creates a site from the guided wizard. The client only sends the answers;
+ * the blocks are generated and validated here, so they can't be tampered with.
+ */
+export async function createSiteFromWizard(input: WizardInput): Promise<CreateSiteState> {
+  const parsed = wizardSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Some answers look invalid." };
+  }
+
+  const user = await getSessionUser();
+  if (!user) return { error: "You need to sign in." };
+
+  const data = parsed.data;
+  const pages = buildWizardPages(data);
+  for (const page of pages) {
+    const checked = parseBlocks(page.blocks);
+    if (!checked.ok) return { error: checked.error };
+    page.blocks = checked.blocks;
+  }
+
+  return persistSite({
+    ownerId: user.id,
+    name: data.name,
+    slug: fallbackSlug(data.name, data.slug),
+    templateKey: `wizard-${data.type}`,
+    pages,
+  });
 }
 
 export async function deleteSite(siteId: string): Promise<{ error?: string }> {

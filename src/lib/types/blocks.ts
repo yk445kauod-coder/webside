@@ -17,6 +17,7 @@ export type BlockKind =
   | "footer";
 
 export type BlockStyle = "light" | "tint" | "ink";
+export type BlockAccent = "indigo" | "sunset" | "forest" | "ocean" | "rose" | "mono";
 export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 export interface Block<
@@ -25,6 +26,8 @@ export interface Block<
   id: string;
   kind: K;
   style: BlockStyle;
+  /** Optional colour theme (set by the creation wizard). */
+  accent?: BlockAccent;
 }
 
 export interface HeroBlock extends Block<"hero"> {
