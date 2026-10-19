@@ -7,8 +7,7 @@ type Variant = "primary" | "secondary" | "ghost" | "danger" | "success" | "outli
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-cobalt text-white hover:bg-cobalt-strong active:bg-cobalt-stronger shadow-ws-sm",
+  primary: "ws-btn-grad",
   secondary: "bg-ink text-white hover:bg-ink-strong active:bg-ink-stronger",
   success: "bg-success text-white hover:bg-success-strong active:bg-success-stronger",
   outline:
@@ -18,9 +17,9 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-8 px-3 text-[13px] gap-1.5 rounded-lg",
-  md: "h-10 px-4 text-sm gap-2",
-  lg: "h-11 px-5 text-[15px] gap-2",
+  sm: "h-9 px-3.5 text-[13px] gap-1.5 rounded-xl",
+  md: "h-11 px-5 text-sm gap-2",
+  lg: "h-13 px-7 text-base gap-2 rounded-2xl",
 };
 
 const base =
