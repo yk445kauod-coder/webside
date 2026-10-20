@@ -16,6 +16,7 @@ import { getDashboardSites, type DashboardSite } from "@/lib/queries/dashboard";
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 import { submissionStatus, isOpenStatus } from "@/lib/submission-status";
+import { InstallPrompt } from "@/components/pwa/pwa";
 import { coverFor } from "@/lib/cover";
 import { formatDate } from "@/lib/utils";
 
@@ -39,6 +40,7 @@ export default async function DashboardPage({
 
   return (
     <div>
+      <InstallPrompt />
       {forbidden === "sudo" ? (
         <p role="alert" className="mb-6 rounded-2xl border border-line bg-warning-soft px-4 py-3 text-sm text-warning">
           That area is for the WebSide owner. Your account doesn&apos;t have access to it.

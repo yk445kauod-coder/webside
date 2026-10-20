@@ -8,6 +8,7 @@ import {
   submitForReview,
 } from "@/app/dashboard/sites/actions";
 import { BlockControls } from "@/components/editor/block-controls";
+import { DesignPanel } from "@/components/editor/design-panel";
 import { BlockPalette, createBlock, uid } from "@/components/editor/block-palette";
 import {
   CanvasToolbar,
@@ -51,7 +52,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
   );
   const [activeKey, setActiveKey] = useState(pages[0]?.key ?? "");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [panel, setPanel] = useState<"pages" | "blocks">("pages");
+  const [panel, setPanel] = useState<"pages" | "blocks" | "design">("pages");
   const [railOpen, setRailOpen] = useState(false);
   const [dialog, setDialog] = useState<Dialogs>("none");
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
@@ -100,7 +101,14 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
 
   const addBlock = (kind: BlockKind) => {
     // Insert after the selected block so new content lands where you're working.
-    const block = createBlock(kind);
+    // New blocks inherit the site's colour and fonts so the page stays coherent.
+    const ref = tabs.flatMap((t) => t.blocks)[0];
+    const block = {
+      ...createBlock(kind),
+      ...(ref?.accent ? { accent: ref.accent } : {}),
+      ...(ref?.fontHeading ? { fontHeading: ref.fontHeading } : {}),
+      ...(ref?.fontBody ? { fontBody: ref.fontBody } : {}),
+    } as AnyBlock;
     patchBlocks((list) => {
       const at = selectedId ? list.findIndex((b) => b.id === selectedId) : -1;
       if (at < 0) return [...list, block];
@@ -111,6 +119,25 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
     setSelectedId(block.id);
     setRailOpen(false);
   };
+
+  /** Site-wide look: stamp fonts/accent onto every block on every page. */
+  const applyDesign = useCallback(
+    (patch: Partial<Pick<AnyBlock, "fontHeading" | "fontBody" | "accent">>) => {
+      setTabs((prev) =>
+        prev.map((t) => ({
+          ...t,
+          blocks: t.blocks.map((b) => {
+            const next = { ...b, ...patch } as AnyBlock;
+            for (const k of Object.keys(patch) as (keyof typeof patch)[]) {
+              if (patch[k] === undefined) delete next[k];
+            }
+            return next;
+          }),
+        })),
+      );
+    },
+    [],
+  );
 
   const deleteBlock = () => {
     if (!selectedId) return;
@@ -320,7 +347,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
         {/* ---- Left rail: pages / blocks (drawer below lg) ---- */}
         <aside
           className={cn(
-            "w-64 shrink-0 flex-col border-r border-line bg-surface",
+            "w-72 shrink-0 flex-col border-r border-line bg-surface",
             railOpen
               ? "fixed bottom-0 left-0 top-14 z-30 flex shadow-ws lg:static lg:shadow-none"
               : "hidden lg:flex",
@@ -339,6 +366,8 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
                   openDialog("delete-page");
                 }}
               />
+            ) : panel === "design" ? (
+              <DesignPanel tabs={tabs} onApply={applyDesign} />
             ) : (
               <div className="p-3">
                 <p className="pb-2 text-[11px] font-medium uppercase tracking-wider text-muted">
@@ -395,7 +424,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
 
       {/* ---- Inspector as a bottom sheet on small screens ---- */}
       {inspector ? (
-        <div className="ws-sheet fixed inset-x-0 bottom-0 z-30 flex max-h-[65dvh] flex-col rounded-t-2xl border-t border-line bg-surface shadow-ws lg:hidden">
+        <div className="ws-sheet fixed inset-x-0 bottom-0 z-30 flex max-h-[65dvh] flex-col rounded-t-2xl pb-[env(safe-area-inset-bottom)] border-t border-line bg-surface shadow-ws lg:hidden">
           {inspector}
         </div>
       ) : null}

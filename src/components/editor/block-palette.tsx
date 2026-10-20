@@ -49,6 +49,29 @@ const iconPaths: Record<BlockKind, ReactElement> = {
       <path d="M9 3v18M15 3v18" />
     </>
   ),
+  cta: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path d="M8 12h8M13 9l3 3-3 3" />
+    </>
+  ),
+  faq: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01" />
+    </>
+  ),
+  stats: (
+    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+  ),
+  gallery: (
+    <>
+      <rect x="3" y="3" width="8" height="8" rx="1.5" />
+      <rect x="13" y="3" width="8" height="8" rx="1.5" />
+      <rect x="3" y="13" width="8" height="8" rx="1.5" />
+      <rect x="13" y="13" width="8" height="8" rx="1.5" />
+    </>
+  ),
   footer: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -110,6 +133,39 @@ export function createBlock(kind: BlockKind, style: BlockStyle = "light"): AnyBl
           { heading: "Column three", text: "A short description of the third idea." },
         ],
       };
+    case "cta":
+      return {
+        id,
+        kind: "cta",
+        style,
+        title: "Ready to get started?",
+        text: "Tell people what to do next.",
+        label: "Get started",
+        href: "#contact",
+      };
+    case "faq":
+      return {
+        id,
+        kind: "faq",
+        style,
+        items: [
+          { q: "What is your first question?", a: "A short, clear answer." },
+          { q: "What is your second question?", a: "Another short, clear answer." },
+        ],
+      };
+    case "stats":
+      return {
+        id,
+        kind: "stats",
+        style,
+        items: [
+          { value: "10k+", label: "Happy customers" },
+          { value: "4.9", label: "Average rating" },
+          { value: "24/7", label: "Support" },
+        ],
+      };
+    case "gallery":
+      return { id, kind: "gallery", style, images: [{ src: "", alt: "" }, { src: "", alt: "" }, { src: "", alt: "" }] };
     case "footer":
       return { id, kind: "footer", style, text: "Your footer text" };
   }
@@ -123,6 +179,10 @@ const kinds: BlockKind[] = [
   "button",
   "quote",
   "columns",
+  "cta",
+  "faq",
+  "stats",
+  "gallery",
   "divider",
   "footer",
 ];
