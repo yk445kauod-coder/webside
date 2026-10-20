@@ -14,6 +14,10 @@ export type BlockKind =
   | "divider"
   | "quote"
   | "columns"
+  | "cta"
+  | "faq"
+  | "stats"
+  | "gallery"
   | "footer";
 
 export type BlockStyle = "light" | "tint" | "ink";
@@ -28,6 +32,9 @@ export interface Block<
   style: BlockStyle;
   /** Optional colour theme (set by the creation wizard). */
   accent?: BlockAccent;
+  /** Optional site fonts (catalogue names, see lib/fonts). Applied site-wide by the Design panel. */
+  fontHeading?: string;
+  fontBody?: string;
 }
 
 export interface HeroBlock extends Block<"hero"> {
@@ -71,6 +78,25 @@ export interface ColumnsBlock extends Block<"columns"> {
   }>;
 }
 
+export interface CtaBlock extends Block<"cta"> {
+  title: string;
+  text: string;
+  label: string;
+  href: string;
+}
+
+export interface FaqBlock extends Block<"faq"> {
+  items: Array<{ q: string; a: string }>;
+}
+
+export interface StatsBlock extends Block<"stats"> {
+  items: Array<{ value: string; label: string }>;
+}
+
+export interface GalleryBlock extends Block<"gallery"> {
+  images: Array<{ src: string; alt: string }>;
+}
+
 export interface FooterBlock extends Block<"footer"> {
   text: string;
 }
@@ -84,6 +110,10 @@ export type AnyBlock =
   | DividerBlock
   | QuoteBlock
   | ColumnsBlock
+  | CtaBlock
+  | FaqBlock
+  | StatsBlock
+  | GalleryBlock
   | FooterBlock;
 
 export const BLOCK_LABELS: Record<BlockKind, string> = {
@@ -95,6 +125,10 @@ export const BLOCK_LABELS: Record<BlockKind, string> = {
   divider: "Divider",
   quote: "Quote",
   columns: "Columns",
+  cta: "Call to action",
+  faq: "FAQ",
+  stats: "Numbers",
+  gallery: "Gallery",
   footer: "Footer",
 };
 
@@ -107,6 +141,10 @@ export const BLOCK_KINDS: BlockKind[] = [
   "divider",
   "quote",
   "columns",
+  "cta",
+  "faq",
+  "stats",
+  "gallery",
   "footer",
 ];
 

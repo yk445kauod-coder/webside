@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { LIMITS } from "@/lib/limits";
 import { safeHref, safeImageSrc } from "@/lib/safe-url";
+import { isFontName } from "@/lib/fonts";
 import type { AnyBlock } from "@/lib/types/blocks";
 
 // ============================================================
@@ -16,7 +17,12 @@ const text = (max: number) => z.string().max(max);
 
 const accent = z.enum(["indigo", "sunset", "forest", "ocean", "rose", "mono"]).optional();
 
-const base = { id, style, accent };
+const font = z
+  .string()
+  .refine(isFontName, "Unknown font")
+  .optional();
+
+const base = { id, style, accent, fontHeading: font, fontBody: font };
 
 const blockSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -66,6 +72,36 @@ const blockSchema = z.discriminatedUnion("kind", [
       )
       .min(1)
       .max(3),
+  }),
+  z.object({
+    ...base,
+    kind: z.literal("cta"),
+    title: text(LIMITS.ctaTitle),
+    text: text(LIMITS.ctaText),
+    label: text(LIMITS.buttonLabel),
+    href: text(LIMITS.url).transform(safeHref),
+  }),
+  z.object({
+    ...base,
+    kind: z.literal("faq"),
+    items: z
+      .array(z.object({ q: text(LIMITS.faqQ), a: text(LIMITS.faqA) }))
+      .max(LIMITS.faqItems),
+  }),
+  z.object({
+    ...base,
+    kind: z.literal("stats"),
+    items: z
+      .array(z.object({ value: text(LIMITS.statValue), label: text(LIMITS.statLabel) }))
+      .min(1)
+      .max(LIMITS.statItems),
+  }),
+  z.object({
+    ...base,
+    kind: z.literal("gallery"),
+    images: z
+      .array(z.object({ src: text(LIMITS.url).transform(safeImageSrc), alt: text(LIMITS.alt) }))
+      .max(LIMITS.galleryItems),
   }),
   z.object({ ...base, kind: z.literal("footer"), text: text(LIMITS.footer) }),
 ]);

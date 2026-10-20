@@ -81,6 +81,12 @@ Add your Pages URL under Supabase **Auth → URL Configuration**. Local preview:
 > `cacheComponents` must stay off: it hangs every request on the Workers runtime (error 1101).
 > `src/proxy.ts` runs as Node.js middleware, which OpenNext marks experimental on Cloudflare.
 
+## Fonts, PWA and blocks
+
+- **Fonts:** `src/lib/fonts.ts` is a curated catalogue of ~125 Google Fonts (sans, serif, display, script, mono, Arabic). The editor's **Design** tab picks heading/body fonts and a colour for the whole site. Names are validated server-side against the catalogue, so a tampered client can't inject CSS.
+- **PWA:** `src/app/manifest.ts`, `public/sw.js` (offline fallback and static caching only; signed-in pages are never cached), `public/offline.html`, icons in `public/icons/`, and an install card on the dashboard (iOS gets "Add to Home Screen" instructions).
+- **Blocks:** besides hero/heading/paragraph/image/button/divider/quote/columns/footer there are now call-to-action, FAQ, numbers and gallery blocks.
+
 ## Scripts
 
 ```bash

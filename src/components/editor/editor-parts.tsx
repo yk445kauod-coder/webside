@@ -181,13 +181,13 @@ export function RailTabs({
   value,
   onChange,
 }: {
-  value: "pages" | "blocks";
-  onChange: (v: "pages" | "blocks") => void;
+  value: "pages" | "blocks" | "design";
+  onChange: (v: "pages" | "blocks" | "design") => void;
 }) {
   return (
     <div className="border-b border-line px-3 pb-2 pt-3">
       <div role="tablist" aria-label="Editor panels" className="flex gap-1 rounded-lg bg-ink-soft p-0.5">
-        {(["pages", "blocks"] as const).map((tab) => (
+        {(["pages", "blocks", "design"] as const).map((tab) => (
           <button
             key={tab}
             type="button"

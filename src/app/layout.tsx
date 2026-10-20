@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { PwaRegister } from "@/components/pwa/pwa";
 
 const sans = Plus_Jakarta_Sans({
   variable: "--font-ws-sans",
@@ -15,6 +16,12 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  applicationName: "WebSide",
+  appleWebApp: { capable: true, title: "WebSide", statusBarStyle: "black-translucent" },
+  icons: {
+    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }, { url: "/icons/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
   title: {
     default: "WebSide — Your web. Your side.",
     template: "%s · WebSide",
@@ -26,7 +33,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f6f5ff",
+  viewportFit: "cover",
+  themeColor: "#6d4cff",
 };
 
 export default function RootLayout({
@@ -39,6 +47,7 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        <PwaRegister />
       </body>
     </html>
   );

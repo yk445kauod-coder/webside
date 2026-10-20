@@ -479,3 +479,13 @@ body {
   --ws-cobalt-strong: #000000;
   --ws-cobalt-soft: #f0f0f0;
 }
+
+
+/* ---- Per-site fonts (set via block fontHeading / fontBody) ---- */
+[data-sf-b] { font-family: var(--sf-b); }
+[data-sf-h] :is(h1, h2, h3, h4, blockquote p, .ws-display, .ws-h1, .ws-h2) { font-family: var(--sf-h); }
+
+/* ---- Touch polish ---- */
+html { -webkit-tap-highlight-color: transparent; }
+button, a, summary, [role="button"], input, select, textarea { touch-action: manipulation; }
+@media (max-width: 640px) { input, select, textarea { font-size: 16px; } } /* no iOS zoom-on-focus */

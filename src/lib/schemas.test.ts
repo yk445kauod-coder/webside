@@ -76,3 +76,26 @@ describe("canonicalJson", () => {
     expect(canonicalJson(a)).not.toBe(canonicalJson(b));
   });
 });
+
+describe("fonts and new blocks", () => {
+  it("accepts catalogue fonts and rejects unknown ones", () => {
+    const ok = parseBlocks([{ ...hero, fontHeading: "Playfair Display", fontBody: "Cairo" }]);
+    expect(ok.ok).toBe(true);
+    const bad = parseBlocks([{ ...hero, fontHeading: "x;}body{display:none" }]);
+    expect(bad.ok).toBe(false);
+  });
+
+  it("validates cta, faq, stats and gallery", () => {
+    const res = parseBlocks([
+      { id: "c", kind: "cta", style: "light", title: "T", text: "x", label: "Go", href: "javascript:alert(1)" },
+      { id: "f", kind: "faq", style: "light", items: [{ q: "q", a: "a" }] },
+      { id: "s", kind: "stats", style: "light", items: [{ value: "1", label: "one" }] },
+      { id: "g", kind: "gallery", style: "light", images: [{ src: "javascript:x", alt: "" }] },
+    ]);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.blocks[0]).toMatchObject({ href: "#" });
+    expect(res.blocks[3]).toMatchObject({ images: [{ src: "" }] });
+    expect(parseBlocks([{ id: "s", kind: "stats", style: "light", items: [] }]).ok).toBe(false);
+  });
+});

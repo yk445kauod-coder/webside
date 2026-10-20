@@ -46,6 +46,6 @@ export const config = {
     /*
      * Run on everything except static assets and _next internals.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|woff2?)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|woff2?|webmanifest|js|html)$).*)",
   ],
 };

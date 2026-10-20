@@ -221,6 +221,77 @@ export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props)
         </fieldset>
       ) : null}
 
+      {block.kind === "cta" ? (
+        <>
+          <Field label="Headline" value={block.title} maxLength={LIMITS.ctaTitle} onChange={(title) => onChange({ ...block, title })} />
+          <Field textarea rows={3} label="Text" value={block.text} maxLength={LIMITS.ctaText} onChange={(text) => onChange({ ...block, text })} />
+          <Field label="Button label" value={block.label} maxLength={LIMITS.buttonLabel} onChange={(label) => onChange({ ...block, label })} />
+          <Field label="Link" hint="https://…, mailto:, tel: or #section" value={block.href} maxLength={LIMITS.url} onChange={(href) => onChange({ ...block, href })} />
+        </>
+      ) : null}
+
+      {block.kind === "faq" ? (
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-medium text-ink">Questions</legend>
+          {block.items.map((it, i) => (
+            <div key={i} className="flex flex-col gap-3 rounded-lg border border-line bg-canvas p-3">
+              <Field label={`Question ${i + 1}`} value={it.q} maxLength={LIMITS.faqQ} onChange={(q) => { const items = [...block.items]; items[i] = { ...items[i], q }; onChange({ ...block, items }); }} />
+              <Field textarea rows={3} label="Answer" value={it.a} maxLength={LIMITS.faqA} onChange={(a) => { const items = [...block.items]; items[i] = { ...items[i], a }; onChange({ ...block, items }); }} />
+              <button type="button" onClick={() => onChange({ ...block, items: block.items.filter((_, j) => j !== i) })} className="self-end text-xs font-medium text-danger hover:underline">
+                Remove question {i + 1}
+              </button>
+            </div>
+          ))}
+          {block.items.length < LIMITS.faqItems ? (
+            <button type="button" onClick={() => onChange({ ...block, items: [...block.items, { q: "", a: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt">
+              + Add question
+            </button>
+          ) : null}
+        </fieldset>
+      ) : null}
+
+      {block.kind === "stats" ? (
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-medium text-ink">Numbers</legend>
+          {block.items.map((it, i) => (
+            <div key={i} className="flex flex-col gap-3 rounded-lg border border-line bg-canvas p-3">
+              <Field label="Number" value={it.value} maxLength={LIMITS.statValue} onChange={(value) => { const items = [...block.items]; items[i] = { ...items[i], value }; onChange({ ...block, items }); }} />
+              <Field label="Label" value={it.label} maxLength={LIMITS.statLabel} onChange={(label) => { const items = [...block.items]; items[i] = { ...items[i], label }; onChange({ ...block, items }); }} />
+              {block.items.length > 1 ? (
+                <button type="button" onClick={() => onChange({ ...block, items: block.items.filter((_, j) => j !== i) })} className="self-end text-xs font-medium text-danger hover:underline">
+                  Remove
+                </button>
+              ) : null}
+            </div>
+          ))}
+          {block.items.length < LIMITS.statItems ? (
+            <button type="button" onClick={() => onChange({ ...block, items: [...block.items, { value: "", label: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt">
+              + Add number
+            </button>
+          ) : null}
+        </fieldset>
+      ) : null}
+
+      {block.kind === "gallery" ? (
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-medium text-ink">Images</legend>
+          {block.images.map((img, i) => (
+            <div key={i} className="flex flex-col gap-3 rounded-lg border border-line bg-canvas p-3">
+              <Field label={`Image ${i + 1} URL`} placeholder="https://…" value={img.src} maxLength={LIMITS.url} onChange={(src) => { const images = [...block.images]; images[i] = { ...images[i], src }; onChange({ ...block, images }); }} />
+              <Field label="Alt text" value={img.alt} maxLength={LIMITS.alt} onChange={(alt) => { const images = [...block.images]; images[i] = { ...images[i], alt }; onChange({ ...block, images }); }} />
+              <button type="button" onClick={() => onChange({ ...block, images: block.images.filter((_, j) => j !== i) })} className="self-end text-xs font-medium text-danger hover:underline">
+                Remove image {i + 1}
+              </button>
+            </div>
+          ))}
+          {block.images.length < LIMITS.galleryItems ? (
+            <button type="button" onClick={() => onChange({ ...block, images: [...block.images, { src: "", alt: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt">
+              + Add image
+            </button>
+          ) : null}
+        </fieldset>
+      ) : null}
+
       {block.kind === "footer" ? (
         <Field
           label="Footer text"

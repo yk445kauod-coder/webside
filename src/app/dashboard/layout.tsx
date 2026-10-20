@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser, isSudoUser } from "@/lib/auth";
+import { MobileTabBar } from "@/components/site/mobile-tab-bar";
 import { DashboardNav } from "@/components/site/dashboard-nav";
 
 // Reads cookies for the signed-in user + navigation.
@@ -24,9 +25,10 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-canvas">
       <DashboardNav displayName={displayName} isSudo={sudo} />
-      <main id="main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+      <main id="main" className="mx-auto max-w-5xl px-4 pb-28 pt-8 sm:px-6 sm:py-10">
         {children}
       </main>
+      <MobileTabBar isSudo={sudo} />
     </div>
   );
 }
