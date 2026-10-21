@@ -39,10 +39,18 @@ if (existsSync("sites")) {
 
 // One stable stylesheet for every published page. The app's own CSS file has a hashed name that
 // changes each build, so published HTML (which is not rebuilt) links to this fixed path instead.
-const cssDir = `${out}/_next/static/css`;
-const css = existsSync(cssDir)
-  ? readdirSync(cssDir).filter((f) => f.endsWith(".css")).map((f) => readFileSync(`${cssDir}/${f}`, "utf8")).join("\n")
-  : "";
+// Turbopack emits CSS under _next/static/chunks, webpack under _next/static/css: scan the whole tree.
+const cssFiles = [];
+const walk = (dir) => {
+  if (!existsSync(dir)) return;
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = `${dir}/${e.name}`;
+    if (e.isDirectory()) walk(p);
+    else if (e.name.endsWith(".css")) cssFiles.push(p);
+  }
+};
+walk(`${out}/_next/static`);
+const css = cssFiles.sort().map((f) => readFileSync(f, "utf8")).join("\n");
 if (!css) {
   console.error("No compiled CSS found; published sites would be unstyled.");
   process.exit(1);
