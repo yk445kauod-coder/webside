@@ -22,8 +22,26 @@ env:
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
 jobs:
+  changes:
+    name: Detect code changes
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: diff
+        # Commits made by the publisher only touch sites/**: skip typecheck/lint/test for those.
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && git diff --name-only HEAD^1 HEAD | grep -qv '^sites/'; then echo "code=true" >> "$GITHUB_OUTPUT";
+          elif [ "${{ github.event_name }}" = "push" ]; then echo "code=false" >> "$GITHUB_OUTPUT";
+          else echo "code=true" >> "$GITHUB_OUTPUT"; fi
+
   check:
     name: Typecheck, lint, test
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -39,9 +57,9 @@ jobs:
 
   deploy:
     name: Build and deploy
-    needs: check
-    # Only deploy from the default branch (or when run by hand), never from PRs.
-    if: github.event_name != 'pull_request'
+    needs: [changes, check]
+    # Only deploy from the default branch (or by hand), never from PRs; site-only commits skip `check`.
+    if: ${{ !cancelled() && github.event_name != 'pull_request' && (needs.check.result == 'success' || needs.check.result == 'skipped') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
