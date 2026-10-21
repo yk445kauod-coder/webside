@@ -179,8 +179,20 @@ export function ReviewModal({ item, onClose }: Props) {
             </>
           ) : submission.status === "approved" ? (
             <div className="flex flex-col gap-3">
+              <Button
+                loading={busy === "auto"}
+                disabled={busy !== null}
+                onClick={() => run("auto", () => publishViaRoute(submission.id))}
+              >
+                Publish to WebSide hosting
+              </Button>
+              <p className="text-xs leading-relaxed text-muted">
+                Renders the approved version, commits it to the repository and records the link
+                automatically. It goes live after the deploy finishes (a few minutes).
+              </p>
+              <hr className="border-line" />
               <Field
-                label="Verified public URL"
+                label="Or record an external URL"
                 placeholder="https://yoursite.example.com"
                 value={url}
                 maxLength={2048}
@@ -195,7 +207,7 @@ export function ReviewModal({ item, onClose }: Props) {
                 Record public URL
               </Button>
               <p className="text-xs leading-relaxed text-muted">
-                Publish the approved version manually on your hosting, then record the verified URL
+                For a site hosted elsewhere (custom domain, own Pages project): record the verified URL
                 here. It appears on the customer&apos;s dashboard.
               </p>
             </div>
@@ -214,4 +226,18 @@ export function ReviewModal({ item, onClose }: Props) {
       </div>
     </Dialog>
   );
+}
+
+async function publishViaRoute(submissionId: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch("/sudo/publish", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ submissionId }),
+    });
+    const data = (await res.json()) as { ok: boolean; error?: string };
+    return data;
+  } catch {
+    return { ok: false, error: "Network error. Try again." };
+  }
 }
