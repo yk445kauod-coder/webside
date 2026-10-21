@@ -23,6 +23,9 @@ export function SudoNav({ displayName }: { displayName: string }) {
             <NavLink href="/sudo/audit" tone="dark">
               Audit
             </NavLink>
+            <NavLink href="/sudo/settings" tone="dark">
+              Settings
+            </NavLink>
           </nav>
         </div>
 

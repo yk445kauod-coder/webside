@@ -102,6 +102,31 @@ export async function recordPublication(
   return { ok: true };
 }
 
+/** A short-lived link to view the customer's transfer screenshot (SUDO only, via storage RLS). */
+export async function getPaymentProofUrl(submissionId: string): Promise<ReviewResult & { url?: string }> {
+  if (!uuidSchema.safeParse(submissionId).success) return invalidId();
+  const supabase = await createClient();
+  const { data } = await supabase.from("submissions").select("payment_proof_path").eq("id", submissionId).maybeSingle();
+  if (!data?.payment_proof_path) return { ok: false, error: "No payment proof attached." };
+  const signed = await supabase.storage.from("payment-proofs").createSignedUrl(data.payment_proof_path, 120);
+  if (signed.error || !signed.data) return { ok: false, error: "Couldn't open the screenshot." };
+  return { ok: true, url: signed.data.signedUrl };
+}
+
+/** Delete the screenshot file, then clear the reference. Done after verifying the payment. */
+export async function deletePaymentProof(submissionId: string): Promise<ReviewResult> {
+  if (!uuidSchema.safeParse(submissionId).success) return invalidId();
+  const supabase = await createClient();
+  const { data } = await supabase.from("submissions").select("payment_proof_path").eq("id", submissionId).maybeSingle();
+  if (!data?.payment_proof_path) return { ok: false, error: "No payment proof attached." };
+  const removed = await supabase.storage.from("payment-proofs").remove([data.payment_proof_path]);
+  if (removed.error) return { ok: false, error: removed.error.message };
+  const { error } = await supabase.rpc("sudo_clear_payment_proof", { p_submission_id: submissionId });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/sudo", "layout");
+  return { ok: true };
+}
+
 function parseUrl(input: string): string | null {
   const v = input.trim();
   if (!v || v.length > 2048) return null;

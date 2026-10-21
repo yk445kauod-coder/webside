@@ -6,6 +6,7 @@ import {
   createRevision,
   deletePage,
   submitForReview,
+  getPaymentInfo,
 } from "@/app/dashboard/sites/actions";
 import { BlockControls } from "@/components/editor/block-controls";
 import { DesignPanel } from "@/components/editor/design-panel";
@@ -20,6 +21,8 @@ import {
   VersionList,
 } from "@/components/editor/editor-parts";
 import { useAutosave } from "@/components/editor/use-autosave";
+import { PaymentProofField } from "@/components/editor/payment-proof-field";
+import { createClient as createBrowserClient } from "@/lib/supabase/client";
 import { PreviewCanvas } from "@/components/preview/preview-canvas";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -57,6 +60,8 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
   const [dialog, setDialog] = useState<Dialogs>("none");
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [submitNote, setSubmitNote] = useState("");
+  const [payInfo, setPayInfo] = useState<{ needsProof: boolean; instapay: string } | null>(null);
+  const [proofBlob, setProofBlob] = useState<Blob | null>(null);
   const [busy, setBusy] = useState(false);
   const [dialogError, setDialogError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
@@ -210,6 +215,10 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
   function openDialog(next: Dialogs) {
     setDialogError(null);
     setDialog(next);
+    if (next === "submit") {
+      setProofBlob(null);
+      void getPaymentInfo(site.id).then(setPayInfo);
+    }
   }
   const closeDialog = useCallback(() => {
     setDialog("none");
@@ -248,7 +257,32 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
       setDialogError("Your latest changes couldn't be saved yet. Try again in a moment.");
       return;
     }
-    const res = await submitForReview(site.id, submitNote);
+    let proofPath: string | undefined;
+    if (payInfo?.needsProof && !proofBlob) {
+      setBusy(false);
+      setDialogError("Attach your InstaPay transfer screenshot first.");
+      return;
+    }
+    if (proofBlob) {
+      const supabase = createBrowserClient();
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        setBusy(false);
+        setDialogError("You need to sign in again.");
+        return;
+      }
+      const path = `${auth.user.id}/${crypto.randomUUID()}.webp`;
+      const up = await supabase.storage
+        .from("payment-proofs")
+        .upload(path, proofBlob, { contentType: "image/webp", upsert: false });
+      if (up.error) {
+        setBusy(false);
+        setDialogError("Couldn't upload the screenshot. Try again.");
+        return;
+      }
+      proofPath = path;
+    }
+    const res = await submitForReview(site.id, submitNote, proofPath);
     setBusy(false);
     if (!res.ok) {
       setDialogError(res.error ?? "Something went wrong.");
@@ -256,6 +290,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
     }
     closeDialog();
     setSubmitNote("");
+    setProofBlob(null);
     showFlash(`Submitted version ${res.revisionNumber} for review. The owner reviews exactly this version.`);
   }
 
@@ -492,6 +527,9 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
             maxLength={LIMITS.note}
             onChange={setSubmitNote}
           />
+          {payInfo ? (
+            <PaymentProofField instapay={payInfo.instapay} required={payInfo.needsProof} onBlob={setProofBlob} />
+          ) : null}
           <DialogError message={dialogError} />
         </Dialog>
       ) : null}

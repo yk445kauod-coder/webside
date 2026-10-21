@@ -57,6 +57,7 @@ export interface SubmissionRow {
   status: SubmissionStatus;
   note: string | null;
   owner_notes: string | null;
+  payment_proof_path: string | null;
   reviewed_by: string | null;
   submitted_at: string;
   reviewed_at: string | null;

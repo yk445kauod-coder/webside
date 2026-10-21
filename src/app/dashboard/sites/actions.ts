@@ -180,6 +180,7 @@ export async function createRevision(
 export async function submitForReview(
   siteId: string,
   note?: string,
+  proofPath?: string,
 ): Promise<ActionResult & { revisionNumber?: number; submissionId?: string }> {
   if (!uuidSchema.safeParse(siteId).success) {
     return { ok: false, error: "Unknown site." };
@@ -192,6 +193,14 @@ export async function submitForReview(
   if (!user) return { ok: false, error: NOT_SIGNED_IN };
 
   const supabase = await createClient();
+
+  // Payment proof: required for a site's first publication; the path must be inside the caller's own folder.
+  if (proofPath !== undefined && !isOwnProofPath(proofPath, user.id)) {
+    return { ok: false, error: "Invalid payment proof." };
+  }
+  if (!proofPath && (await needsPaymentProof(supabase, siteId))) {
+    return { ok: false, error: "Attach your InstaPay transfer screenshot to publish for the first time." };
+  }
 
   // 1. Fail fast — before any revision is written — if one is already open.
   const { data: open } = await supabase
@@ -254,6 +263,7 @@ export async function submitForReview(
       site_id: siteId,
       revision_id: revisionId,
       note: parsedNote.data || null,
+      payment_proof_path: proofPath || null,
     })
     .select()
     .single();
@@ -268,9 +278,36 @@ export async function submitForReview(
   return { ok: true, revisionNumber, submissionId: submission.id };
 }
 
+/** What the publish dialog needs: whether a transfer screenshot is required, and where to pay. */
+export async function getPaymentInfo(
+  siteId: string,
+): Promise<{ needsProof: boolean; instapay: string }> {
+  if (!uuidSchema.safeParse(siteId).success) return { needsProof: false, instapay: "" };
+  const supabase = await createClient();
+  const [needsProof, { data: setting }] = await Promise.all([
+    needsPaymentProof(supabase, siteId),
+    supabase.from("settings").select("value").eq("key", "instapay_link").eq("is_public", true).maybeSingle(),
+  ]);
+  const v = setting?.value;
+  return { needsProof, instapay: typeof v === "string" ? v.slice(0, 300) : "" };
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function isOwnProofPath(path: string, userId: string): boolean {
+  return path.startsWith(`${userId}/`) && /^[0-9a-f-]{36}\/[A-Za-z0-9._-]{1,80}$/.test(path);
+}
+
+/** First publication = the site has never been published, so a payment screenshot is required. */
+async function needsPaymentProof(supabase: Supabase, siteId: string): Promise<boolean> {
+  const { count } = await supabase
+    .from("publications")
+    .select("id", { count: "exact", head: true })
+    .eq("site_id", siteId);
+  return (count ?? 0) === 0;
+}
 
 const OPEN_SUBMISSION_ERROR =
   "You already have a submission in review. Wait for it to be resolved.";

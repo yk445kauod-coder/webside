@@ -9,7 +9,7 @@ import { CloseButton, Dialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { isOpenStatus, submissionStatus } from "@/lib/submission-status";
 import { cn, formatDateTime } from "@/lib/utils";
-import { recordPublication, reviewSubmission, takeSubmission } from "@/app/sudo/actions";
+import { deletePaymentProof, getPaymentProofUrl, recordPublication, reviewSubmission, takeSubmission } from "@/app/sudo/actions";
 import type { SudoQueueItem } from "@/lib/queries/sudo";
 
 interface Props {
@@ -132,6 +132,40 @@ export function ReviewModal({ item, onClose }: Props) {
                   </li>
                 ))}
               </ul>
+            </div>
+          ) : null}
+
+          {submission.payment_proof_path ? (
+            <div className="flex flex-col gap-2 rounded-xl border border-line bg-canvas p-3">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted">Payment proof</p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  loading={busy === "proof"}
+                  disabled={busy !== null}
+                  onClick={async () => {
+                    setBusy("proof");
+                    setError(null);
+                    const res = await getPaymentProofUrl(submission.id);
+                    setBusy(null);
+                    if (res.ok && res.url) window.open(res.url, "_blank", "noopener,noreferrer");
+                    else setError(res.error ?? "Couldn't open the screenshot.");
+                  }}
+                >
+                  View
+                </Button>
+                <Button
+                  variant="danger"
+                  disabled={busy !== null}
+                  onClick={() => {
+                    if (confirm("Delete the screenshot? Do this after verifying the payment.")) {
+                      void run("proof-del", () => deletePaymentProof(submission.id));
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           ) : null}
 
