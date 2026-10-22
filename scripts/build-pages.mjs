@@ -64,6 +64,32 @@ writeFileSync(
   `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Not found</title><link rel="stylesheet" href="/_site/site.css"></head><body class="bg-white text-ink"><main class="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center"><h1 class="text-3xl font-semibold">This page does not exist</h1><p class="text-ink/70">The address may be mistyped, or the site is no longer published.</p><a class="font-semibold text-cobalt" href="/">Go to WebSide</a></main></body></html>`,
 );
 
+// ---- sitemap.xml + robots.txt for the published sites ---------------------------------------
+const origin = (process.env.PUBLIC_SITES_ORIGIN || "https://web-side.pages.dev").replace(/\/+$/, "");
+const siteUrls = [];
+const collect = (dir, rel) => {
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (e.isDirectory()) collect(`${dir}/${e.name}`, `${rel}${e.name}/`);
+    else if (e.name === "index.html") siteUrls.push(`${origin}/${rel}`);
+  }
+};
+if (existsSync("sites")) {
+  for (const e of readdirSync("sites", { withFileTypes: true })) {
+    if (e.isDirectory() && existsSync(`${out}/${e.name}/index.html`)) collect(`${out}/${e.name}`, `${e.name}/`);
+  }
+}
+siteUrls.sort();
+writeFileSync(
+  `${out}/sitemap.xml`,
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${siteUrls
+    .map((u) => `  <url><loc>${u}</loc></url>`)
+    .join("\n")}\n</urlset>\n`,
+);
+if (!existsSync(`${out}/robots.txt`)) {
+  writeFileSync(`${out}/robots.txt`, `User-agent: *\nAllow: /\nDisallow: /sudo\nDisallow: /dashboard\n\nSitemap: ${origin}/sitemap.xml\n`);
+}
+console.log(`sitemap.xml: ${siteUrls.length} URL(s)`);
+
 // ---- Routing ---------------------------------------------------------------
 // Pages sends a request to _worker.js only if it matches "include" (max 100 rules in total).
 // An include-list of the app's own routes scales to any number of customer sites; excluding every
