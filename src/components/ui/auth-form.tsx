@@ -105,14 +105,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         {isLogin ? (
           <>
             New to WebSide?{" "}
-            <Link href="/signup" className="font-medium text-cobalt hover:underline">
+            <Link href="/signup" className="font-medium text-copper hover:underline">
               Create an account
             </Link>
           </>
         ) : (
           <>
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-cobalt hover:underline">
+            <Link href="/login" className="font-medium text-copper hover:underline">
               Sign in
             </Link>
           </>

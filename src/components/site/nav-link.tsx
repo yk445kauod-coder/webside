@@ -27,7 +27,7 @@ export function NavLink({
         "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
         tone === "light"
           ? active
-            ? "bg-cobalt-soft text-cobalt"
+            ? "bg-copper-soft text-copper"
             : "text-ink hover:bg-ink-soft"
           : active
             ? "bg-white/15 text-white"

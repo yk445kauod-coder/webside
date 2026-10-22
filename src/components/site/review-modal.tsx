@@ -67,8 +67,8 @@ export function ReviewModal({ item, onClose }: Props) {
             </span>
           </p>
           {submission.note ? (
-            <p className="mt-2 rounded-lg bg-apricot-soft/60 px-3 py-2 text-sm text-ink">
-              <span className="font-medium text-apricot-ink">Customer note: </span>
+            <p className="mt-2 rounded-lg bg-orange-soft/60 px-3 py-2 text-sm text-ink">
+              <span className="font-medium text-orange-ink">Customer note: </span>
               {submission.note}
             </p>
           ) : null}

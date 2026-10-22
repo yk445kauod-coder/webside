@@ -24,7 +24,7 @@ const sizes: Record<Size, string> = {
 
 const base =
   "inline-flex items-center justify-center rounded-ws font-medium transition-colors duration-150 " +
-  "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-cobalt/30";
+  "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-copper/30";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
