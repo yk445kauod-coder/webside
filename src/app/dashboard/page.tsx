@@ -86,7 +86,7 @@ function Stat({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 shadow-ws-sm">
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-cobalt-soft text-cobalt">
+      <span className="grid h-10 w-10 place-items-center rounded-xl bg-copper-soft text-copper">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <div>
@@ -152,7 +152,7 @@ function SiteGrid({ sites }: { sites: DashboardSite[] }) {
                 ) : null}
 
                 <span className="min-h-4 flex-1" aria-hidden="true" />
-                <div className="mt-4 flex items-center justify-between border-t border-line pt-4 text-sm font-semibold text-cobalt">
+                <div className="mt-4 flex items-center justify-between border-t border-line pt-4 text-sm font-semibold text-copper">
                   <span className="flex items-center gap-1.5">
                     {latestSubmission?.status === "approved" ? (
                       <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
@@ -170,9 +170,9 @@ function SiteGrid({ sites }: { sites: DashboardSite[] }) {
       <li>
         <Link
           href="/dashboard/new"
-          className="group flex h-full min-h-64 flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-line bg-surface/60 p-6 text-center transition hover:border-cobalt hover:bg-cobalt-soft/60"
+          className="group flex h-full min-h-64 flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-line bg-surface/60 p-6 text-center transition hover:border-copper hover:bg-copper-soft/60"
         >
-          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-cobalt-soft text-cobalt transition group-hover:scale-110 group-hover:bg-cobalt group-hover:text-white">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-copper-soft text-copper transition group-hover:scale-110 group-hover:bg-copper group-hover:text-white">
             <Plus className="h-7 w-7" aria-hidden="true" />
           </span>
           <span className="text-[15px] font-semibold">Build a new site</span>
@@ -187,8 +187,8 @@ function EmptyState() {
   return (
     <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface px-6 py-16 text-center shadow-ws-sm sm:py-24">
       <div aria-hidden="true" className="ws-dots-ink absolute inset-0 opacity-50" />
-      <div aria-hidden="true" className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-cobalt/20 blur-3xl" />
-      <div aria-hidden="true" className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#ff5fa2]/20 blur-3xl" />
+      <div aria-hidden="true" className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-copper/20 blur-3xl" />
+      <div aria-hidden="true" className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#e8772e]/20 blur-3xl" />
 
       <div className="relative">
         <div className="ws-float mx-auto mb-6 grid h-20 w-20 place-items-center rounded-3xl text-white shadow-lg" style={{ background: "var(--ws-grad)" }}>

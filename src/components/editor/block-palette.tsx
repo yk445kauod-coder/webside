@@ -195,7 +195,7 @@ export function BlockPalette({ onAdd }: { onAdd: (kind: BlockKind) => void }) {
           key={kind}
           type="button"
           onClick={() => onAdd(kind)}
-          className="flex items-center gap-2.5 rounded-xl border border-line bg-white px-3 py-2.5 text-left text-sm text-ink transition-colors hover:border-cobalt/50 hover:bg-cobalt-soft/50"
+          className="flex items-center gap-2.5 rounded-xl border border-line bg-white px-3 py-2.5 text-left text-sm text-ink transition-colors hover:border-copper/50 hover:bg-copper-soft/50"
         >
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-canvas text-ink">
             <svg

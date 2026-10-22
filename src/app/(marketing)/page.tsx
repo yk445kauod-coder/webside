@@ -58,7 +58,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
-      <header className="ws-night fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-[#0b0920]/70 backdrop-blur-xl">
+      <header className="ws-night fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-[#1d1310]/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" aria-label="WebSide home">
             <Wordmark variant="mono-white" className="text-2xl" />
@@ -82,7 +82,7 @@ export default function LandingPage() {
           <div className="ws-marquee gap-4" aria-hidden="true">
             {[...TYPES, ...TYPES].map(({ icon: Icon, label }, i) => (
               <span key={i} className="mr-4 inline-flex shrink-0 items-center gap-2.5 rounded-full border border-line bg-canvas px-5 py-2.5 text-sm font-semibold text-ink">
-                <Icon className="h-4 w-4 text-cobalt" />
+                <Icon className="h-4 w-4 text-copper" />
                 {label}
               </span>
             ))}
@@ -104,7 +104,7 @@ export default function LandingPage() {
                 <li className="ws-card-glow relative h-full overflow-hidden p-7">
                   <span
                     aria-hidden="true"
-                    className="absolute -right-2 -top-6 select-none text-[9rem] font-black leading-none text-cobalt/8"
+                    className="absolute -right-2 -top-6 select-none text-[9rem] font-black leading-none text-copper/8"
                   >
                     {s.n}
                   </span>
@@ -152,7 +152,7 @@ export default function LandingPage() {
               <Reveal delay={0.08} className="md:col-span-2">
                 <article className="h-full rounded-3xl border border-line bg-canvas p-8">
                   <div aria-hidden="true" className="mb-6 flex gap-2">
-                    {["#6d4cff", "#f2603f", "#1f8f63", "#1c7ed6", "#e0378a"].map((c) => (
+                    {["#b5482a", "#f2603f", "#1f8f63", "#1c7ed6", "#e0378a"].map((c) => (
                       <span key={c} className="h-9 w-9 rounded-full shadow-inner" style={{ background: c }} />
                     ))}
                   </div>
@@ -163,7 +163,7 @@ export default function LandingPage() {
 
               <Reveal delay={0.04} className="md:col-span-2">
                 <article className="h-full rounded-3xl border border-line bg-canvas p-8">
-                  <div aria-hidden="true" className="mb-6 flex items-end gap-3 text-cobalt">
+                  <div aria-hidden="true" className="mb-6 flex items-end gap-3 text-copper">
                     <Smartphone className="h-8 w-8" />
                     <Tablet className="h-10 w-10" />
                     <Monitor className="h-12 w-12" />
@@ -175,8 +175,8 @@ export default function LandingPage() {
 
               <Reveal delay={0.12} className="md:col-span-4">
                 <article className="relative h-full overflow-hidden rounded-3xl bg-ink p-8 text-white">
-                  <div aria-hidden="true" className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-cobalt/40 blur-3xl" />
-                  <ShieldCheck className="relative mb-5 h-9 w-9 text-[#7bd389]" aria-hidden="true" />
+                  <div aria-hidden="true" className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-copper/40 blur-3xl" />
+                  <ShieldCheck className="relative mb-5 h-9 w-9 text-[#6fb7ae]" aria-hidden="true" />
                   <h3 className="relative max-w-sm text-2xl font-semibold tracking-tight">Checked before it goes live</h3>
                   <p className="relative mt-2 max-w-md text-white/75">
                     Every version you submit is frozen and reviewed exactly as you made it. What we approve is

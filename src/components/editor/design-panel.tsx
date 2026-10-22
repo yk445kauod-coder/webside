@@ -46,7 +46,7 @@ export function DesignPanel({
               onClick={() => onApply({ accent: k })}
               className={cn(
                 "flex flex-col items-center gap-1.5 rounded-xl border p-2 text-[11px] font-medium transition-colors",
-                accent === k ? "border-cobalt bg-cobalt-soft" : "border-line bg-white hover:border-cobalt/40",
+                accent === k ? "border-copper bg-copper-soft" : "border-line bg-white hover:border-copper/40",
               )}
             >
               <span className="h-7 w-full rounded-lg" style={{ background: ACCENT_META[k].swatch }} />
@@ -85,7 +85,7 @@ export function DesignPanel({
           }}
           placeholder={`Search ${FONTS.length} fonts…`}
           aria-label="Search fonts"
-          className="mb-2 h-10 w-full rounded-xl border border-line bg-white px-3 text-sm outline-none focus:border-cobalt focus:ring-[3px] focus:ring-cobalt/20"
+          className="mb-2 h-10 w-full rounded-xl border border-line bg-white px-3 text-sm outline-none focus:border-copper focus:ring-[3px] focus:ring-copper/20"
         />
         <div className="mb-2 flex flex-wrap gap-1">
           {FONT_CATEGORIES.map((c) => (
@@ -99,7 +99,7 @@ export function DesignPanel({
               }}
               className={cn(
                 "rounded-full border px-2.5 py-1 text-[11px] font-medium",
-                cat === c.value ? "border-cobalt bg-cobalt text-white" : "border-line bg-white text-muted hover:text-ink",
+                cat === c.value ? "border-copper bg-copper text-white" : "border-line bg-white text-muted hover:text-ink",
               )}
             >
               {c.label}
@@ -115,7 +115,7 @@ export function DesignPanel({
               onClick={() => onApply({ [role]: undefined })}
               className={cn(
                 "w-full rounded-xl border px-3 py-2 text-left text-sm",
-                !current ? "border-cobalt bg-cobalt-soft" : "border-line bg-white hover:border-cobalt/40",
+                !current ? "border-copper bg-copper-soft" : "border-line bg-white hover:border-copper/40",
               )}
             >
               WebSide default
@@ -133,7 +133,7 @@ export function DesignPanel({
                   onClick={() => onApply({ [role]: f.name })}
                   className={cn(
                     "flex w-full items-baseline justify-between gap-3 rounded-xl border px-3 py-2 text-left",
-                    active ? "border-cobalt bg-cobalt-soft" : "border-line bg-white hover:border-cobalt/40",
+                    active ? "border-copper bg-copper-soft" : "border-line bg-white hover:border-copper/40",
                   )}
                 >
                   <span className="truncate text-lg leading-tight" style={{ fontFamily: fontStack(f.name) }}>
@@ -150,7 +150,7 @@ export function DesignPanel({
           <button
             type="button"
             onClick={() => setShown((n) => n + PAGE)}
-            className="mt-2 w-full rounded-xl border border-dashed border-line py-2 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt"
+            className="mt-2 w-full rounded-xl border border-dashed border-line py-2 text-xs font-medium text-muted hover:border-copper/50 hover:text-copper"
           >
             Show more ({list.length - shown} left)
           </button>

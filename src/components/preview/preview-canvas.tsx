@@ -73,8 +73,8 @@ export function PreviewCanvas({
                   }
                 }}
                 className={cn(
-                  "relative cursor-pointer ring-inset transition-shadow hover:ring-2 hover:ring-cobalt/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cobalt",
-                  selected && "ring-2 ring-cobalt",
+                  "relative cursor-pointer ring-inset transition-shadow hover:ring-2 hover:ring-copper/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper",
+                  selected && "ring-2 ring-copper",
                 )}
               >
                 {/* Links inside blocks must not navigate while editing. */}

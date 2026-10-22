@@ -9,7 +9,7 @@ export function SudoNav({ displayName }: { displayName: string }) {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           <Link href="/sudo" aria-label="SUDO home" className="flex items-center gap-2.5">
-            <span className="rounded-md bg-cobalt px-2 py-0.5 font-mono text-xs font-bold tracking-widest text-white">
+            <span className="rounded-md bg-copper px-2 py-0.5 font-mono text-xs font-bold tracking-widest text-white">
               SUDO
             </span>
             <span className="hidden sm:inline">
@@ -33,7 +33,7 @@ export function SudoNav({ displayName }: { displayName: string }) {
           <span className="hidden items-center gap-2 text-sm text-white/80 md:flex">
             <span
               aria-hidden="true"
-              className="grid h-6 w-6 place-items-center rounded-full bg-cobalt text-xs font-bold"
+              className="grid h-6 w-6 place-items-center rounded-full bg-copper text-xs font-bold"
             >
               {displayName.slice(0, 1).toUpperCase()}
             </span>

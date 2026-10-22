@@ -28,7 +28,7 @@ export function SiteDocument({
                 key={n.href}
                 href={n.href}
                 aria-current={n.current ? "page" : undefined}
-                className={n.current ? "font-semibold text-cobalt" : "text-ink/70 hover:text-ink"}
+                className={n.current ? "font-semibold text-copper" : "text-ink/70 hover:text-ink"}
               >
                 {n.title}
               </a>

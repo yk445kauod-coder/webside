@@ -50,7 +50,7 @@ export function Hero({ blocks }: { blocks: AnyBlock[] }) {
           {...fade(0)}
           className="ws-glass mx-auto mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium text-white/90"
         >
-          <Sparkles className="h-4 w-4 text-[#ffc46b]" aria-hidden="true" />
+          <Sparkles className="h-4 w-4 text-[#f2a65a]" aria-hidden="true" />
           Build a website by answering questions
         </motion.p>
 
@@ -106,20 +106,20 @@ export function Hero({ blocks }: { blocks: AnyBlock[] }) {
           >
             <div
               aria-hidden="true"
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#6d4cff]/50 via-[#3b82f6]/30 to-[#ff5fa2]/50 blur-3xl"
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#b5482a]/35 to-[#e8772e]/35 blur-3xl"
             />
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-white text-left shadow-[0_40px_120px_-30px_rgba(109,76,255,0.7)]">
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-white text-left shadow-[0_40px_120px_-30px_rgba(181,72,42,0.55)]">
               <PreviewCanvas blocks={blocks} title="corner-and-co.webside.dev" framed className="rounded-none border-0 shadow-none" />
               <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white to-transparent" />
             </div>
 
-            <FloatingChip className="-left-3 top-24 sm:-left-12" delay={0} icon={<Wand2 className="h-4 w-4" aria-hidden="true" />} tone="from-[#6d4cff] to-[#3b82f6]">
+            <FloatingChip className="-left-3 top-24 sm:-left-12" delay={0} icon={<Wand2 className="h-4 w-4" aria-hidden="true" />} tone="from-[#b5482a] to-[#2e7d87]">
               Guided builder
             </FloatingChip>
-            <FloatingChip className="-right-3 top-44 sm:-right-12" delay={1.2} icon={<Eye className="h-4 w-4" aria-hidden="true" />} tone="from-[#ff5fa2] to-[#ff9b6a]">
+            <FloatingChip className="-right-3 top-44 sm:-right-12" delay={1.2} icon={<Eye className="h-4 w-4" aria-hidden="true" />} tone="from-[#e8772e] to-[#f2a65a]">
               Live preview
             </FloatingChip>
-            <FloatingChip className="-left-2 bottom-24 sm:-left-8" delay={2.2} icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} tone="from-[#1f8f63] to-[#7bd389]">
+            <FloatingChip className="-left-2 bottom-24 sm:-left-8" delay={2.2} icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} tone="from-[#1f8f63] to-[#6fb7ae]">
               Reviewed before it goes live
             </FloatingChip>
           </motion.div>
