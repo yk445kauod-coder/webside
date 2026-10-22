@@ -47,13 +47,13 @@ export async function POST(request: NextRequest) {
   const slugError = validatePublishSlug(site.slug);
   if (slugError) return fail(slugError);
 
-  const rendered = renderSite(site.slug, site.name, rev.pages as SiteSnapshot);
+  const base = (process.env.PUBLIC_SITES_ORIGIN || "https://web-side.pages.dev").replace(/\/+$/, "");
+  const rendered = renderSite(site.slug, site.name, rev.pages as SiteSnapshot, base);
   if ("error" in rendered) return fail(rendered.error);
 
   const committed = await commitSite(site.slug, rendered.files, `publish: ${site.slug}`);
   if (!committed.ok) return fail(committed.error, 502);
 
-  const base = (process.env.PUBLIC_SITES_ORIGIN || "https://web-side.pages.dev").replace(/\/+$/, "");
   const url = `${base}/${site.slug}/`;
   const { error } = await supabase.rpc("sudo_record_publication", {
     p_site_id: sub.site_id,

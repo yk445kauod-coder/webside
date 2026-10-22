@@ -41,6 +41,25 @@ describe("renderSite", () => {
     expect(r.files[0].content).not.toContain("/cafe/cafe/");
     expect(r.files[0].content).toContain("Hello");
   });
+  it("adds canonical, description and Open Graph tags", () => {
+    const r = renderSite("cafe", "Cafe", {
+      home: {
+        title: "Home",
+        path: "/",
+        blocks: [
+          block({ kind: "hero", title: "Hi", subtitle: "Fresh coffee, \"daily\".", align: "left" }),
+          block({ kind: "image", src: "https://img.example/a.jpg", alt: "a", caption: "" }),
+        ],
+      },
+      about: { title: "About", path: "/about", blocks: [] },
+    });
+    if ("error" in r) throw new Error(r.error);
+    const home = r.files[0].content;
+    expect(home).toContain('<link rel="canonical" href="https://web-side.pages.dev/cafe/">');
+    expect(home).toContain('content="Fresh coffee, &quot;daily&quot;."');
+    expect(home).toContain('property="og:image" content="https://img.example/a.jpg"');
+    expect(r.files[1].content).toContain('href="https://web-side.pages.dev/cafe/about/"');
+  });
   it("needs a home page", () => {
     const r = renderSite("cafe", "C", { a: { title: "A", path: "/a", blocks: [] } });
     expect("error" in r).toBe(true);
