@@ -53,6 +53,12 @@ export function pageDescription(blocks: Blocks): string {
 export function pageImage(blocks: Blocks): string {
   for (const b of blocks) {
     if (b.kind === "image" && /^https?:\/\//i.test(b.src)) return b.src;
+    if (b.kind === "menu") {
+      for (const c of b.categories) {
+        const first = c.items.find((i) => /^https?:\/\//i.test(i.image));
+        if (first) return first.image;
+      }
+    }
     if (b.kind === "gallery") {
       const first = b.images.find((i) => /^https?:\/\//i.test(i.src));
       if (first) return first.src;

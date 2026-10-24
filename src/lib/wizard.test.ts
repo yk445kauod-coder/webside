@@ -79,3 +79,12 @@ describe("wizardSchema", () => {
     expect(wizardSchema.safeParse({ ...base(), accent: "neon" }).success).toBe(false);
   });
 });
+
+describe("restaurant menu", () => {
+  it("builds a menu block (not columns) for restaurants", () => {
+    const blocks = buildWizardBlocks(base({ type: "restaurant" }));
+    const kinds = blocks.map((b) => b.kind);
+    expect(kinds).toContain("menu");
+    expect(kinds).not.toContain("columns");
+  });
+});
