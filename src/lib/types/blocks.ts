@@ -18,6 +18,7 @@ export type BlockKind =
   | "faq"
   | "stats"
   | "gallery"
+  | "menu"
   | "footer";
 
 export type BlockStyle = "light" | "tint" | "ink";
@@ -97,6 +98,33 @@ export interface GalleryBlock extends Block<"gallery"> {
   images: Array<{ src: string; alt: string }>;
 }
 
+/** How a menu is laid out. All views are static HTML (no script needed). */
+export type MenuView = "list" | "grid" | "compact" | "tabs";
+
+export interface MenuItem {
+  name: string;
+  description: string;
+  /** Free text so "85", "from 85" and "85 / 120" all work. */
+  price: string;
+  image: string;
+  /** Short label such as "New" or "Spicy". */
+  badge: string;
+  available: boolean;
+}
+
+export interface MenuCategory {
+  name: string;
+  items: MenuItem[];
+}
+
+export interface MenuBlock extends Block<"menu"> {
+  title: string;
+  /** Shown after each price, e.g. "EGP" or "ج.م". */
+  currency: string;
+  view: MenuView;
+  categories: MenuCategory[];
+}
+
 export interface FooterBlock extends Block<"footer"> {
   text: string;
 }
@@ -114,6 +142,7 @@ export type AnyBlock =
   | FaqBlock
   | StatsBlock
   | GalleryBlock
+  | MenuBlock
   | FooterBlock;
 
 export const BLOCK_LABELS: Record<BlockKind, string> = {
@@ -129,6 +158,7 @@ export const BLOCK_LABELS: Record<BlockKind, string> = {
   faq: "FAQ",
   stats: "Numbers",
   gallery: "Gallery",
+  menu: "Menu",
   footer: "Footer",
 };
 
@@ -145,6 +175,7 @@ export const BLOCK_KINDS: BlockKind[] = [
   "faq",
   "stats",
   "gallery",
+  "menu",
   "footer",
 ];
 
