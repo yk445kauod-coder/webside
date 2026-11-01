@@ -72,6 +72,11 @@ const iconPaths: Record<BlockKind, ReactElement> = {
       <rect x="13" y="13" width="8" height="8" rx="1.5" />
     </>
   ),
+  menu: (
+    <>
+      <path d="M6 3v7a2 2 0 0 0 2 2v9M10 3v7M8 3v4M17 3c-2 1.5-3 4-3 7 0 1.5 1 2 2 2h1v9" />
+    </>
+  ),
   footer: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -166,6 +171,30 @@ export function createBlock(kind: BlockKind, style: BlockStyle = "light"): AnyBl
       };
     case "gallery":
       return { id, kind: "gallery", style, images: [{ src: "", alt: "" }, { src: "", alt: "" }, { src: "", alt: "" }] };
+    case "menu":
+      return {
+        id,
+        kind: "menu",
+        style,
+        title: "Our menu",
+        currency: "EGP",
+        view: "list",
+        categories: [
+          {
+            name: "Hot drinks",
+            items: [
+              { name: "Espresso", description: "Double shot, rich and short.", price: "45", image: "", badge: "", available: true },
+              { name: "Cappuccino", description: "Espresso, steamed milk, silky foam.", price: "60", image: "", badge: "Popular", available: true },
+            ],
+          },
+          {
+            name: "Desserts",
+            items: [
+              { name: "Basbousa", description: "Semolina cake with syrup.", price: "55", image: "", badge: "", available: true },
+            ],
+          },
+        ],
+      };
     case "footer":
       return { id, kind: "footer", style, text: "Your footer text" };
   }
@@ -183,6 +212,7 @@ const kinds: BlockKind[] = [
   "faq",
   "stats",
   "gallery",
+  "menu",
   "divider",
   "footer",
 ];

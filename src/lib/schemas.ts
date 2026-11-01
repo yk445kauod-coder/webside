@@ -103,6 +103,32 @@ const blockSchema = z.discriminatedUnion("kind", [
       .array(z.object({ src: text(LIMITS.url).transform(safeImageSrc), alt: text(LIMITS.alt) }))
       .max(LIMITS.galleryItems),
   }),
+  z.object({
+    ...base,
+    kind: z.literal("menu"),
+    title: text(LIMITS.menuTitle),
+    currency: text(LIMITS.menuCurrency),
+    view: z.enum(["list", "grid", "compact", "tabs"]),
+    categories: z
+      .array(
+        z.object({
+          name: text(LIMITS.menuCategoryName),
+          items: z
+            .array(
+              z.object({
+                name: text(LIMITS.menuItemName),
+                description: text(LIMITS.menuItemDescription),
+                price: text(LIMITS.menuItemPrice),
+                image: text(LIMITS.url).transform(safeImageSrc),
+                badge: text(LIMITS.menuItemBadge),
+                available: z.boolean(),
+              }),
+            )
+            .max(LIMITS.menuItemsPerCategory),
+        }),
+      )
+      .max(LIMITS.menuCategories),
+  }),
   z.object({ ...base, kind: z.literal("footer"), text: text(LIMITS.footer) }),
 ]);
 

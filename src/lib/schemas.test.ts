@@ -99,3 +99,35 @@ describe("fonts and new blocks", () => {
     expect(parseBlocks([{ id: "s", kind: "stats", style: "light", items: [] }]).ok).toBe(false);
   });
 });
+
+describe("menu block", () => {
+  const menu = (over: Record<string, unknown> = {}) => ({
+    id: "m1",
+    kind: "menu",
+    style: "light",
+    title: "Menu",
+    currency: "EGP",
+    view: "grid",
+    categories: [
+      {
+        name: "Drinks",
+        items: [{ name: "Tea", description: "", price: "20", image: "javascript:x", badge: "", available: true }],
+      },
+    ],
+    ...over,
+  });
+
+  it("accepts a menu and sanitises item image URLs", () => {
+    const res = parseBlocks([menu()]);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    const b = res.blocks[0];
+    expect(b.kind === "menu" && b.categories[0].items[0].image).toBe("");
+  });
+
+  it("rejects unknown views and over-limit menus", () => {
+    expect(parseBlocks([menu({ view: "carousel" })]).ok).toBe(false);
+    const many = Array.from({ length: LIMITS.menuCategories + 1 }, () => ({ name: "c", items: [] }));
+    expect(parseBlocks([menu({ categories: many })]).ok).toBe(false);
+  });
+});

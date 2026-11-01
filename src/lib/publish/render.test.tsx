@@ -65,3 +65,52 @@ describe("renderSite", () => {
     expect("error" in r).toBe(true);
   });
 });
+
+describe("menu rendering", () => {
+  const menu = (view: string, name = "Tea") =>
+    block({
+      kind: "menu",
+      title: "Menu",
+      currency: "EGP",
+      view,
+      categories: [
+        { name: "Drinks", items: [{ name, description: "Hot", price: "20", image: "", badge: "New", available: true }] },
+        { name: "Cakes", items: [{ name: "Cake", description: "", price: "40", image: "", badge: "", available: false }] },
+      ],
+    });
+  const html = (view: string, name?: string) => {
+    const r = renderSite("cafe", "Cafe", { home: { title: "Home", path: "/", blocks: [menu(view, name)] } });
+    if ("error" in r) throw new Error(r.error);
+    return r.files[0].content;
+  };
+
+  it("renders every view as static html with prices and sold-out state", () => {
+    for (const view of ["list", "grid", "compact", "tabs"]) {
+      const h = html(view);
+      expect(h).toContain("Tea");
+      expect(h).toContain("20");
+      expect(h).toContain("EGP");
+      expect(h).toContain("Sold out");
+    }
+  });
+
+  it("tabs view links to category anchors that exist", () => {
+    const h = html("tabs");
+    const href = /href="#(menu-[a-zA-Z0-9-]+)"/.exec(h);
+    expect(href).toBeTruthy();
+    expect(h).toContain(`id="${href![1]}"`);
+  });
+
+  it("escapes item names", () => {
+    expect(html("list", "<script>x</script>")).not.toContain("<script>x</script>");
+  });
+
+  it("marks mostly-Arabic sites rtl", () => {
+    const r = renderSite("ar", "قهوة", {
+      home: { title: "الرئيسية", path: "/", blocks: [block({ kind: "paragraph", text: "أهلا بكم في مقهانا", align: "left" })] },
+    });
+    if ("error" in r) throw new Error(r.error);
+    expect(r.files[0].content).toContain('<html lang="ar" dir="rtl">');
+    expect(r.files[0].content).toContain("IBM+Plex+Sans+Arabic");
+  });
+});

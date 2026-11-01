@@ -293,7 +293,31 @@ export function buildWizardBlocks(input: WizardInput): AnyBlock[] {
         heading: clip(o.heading, LIMITS.columnHeading),
         text: clip(o.text, LIMITS.columnText),
       }));
-    if (cols.length > 0) {
+    if (cols.length > 0 && input.type === "restaurant") {
+      // Restaurants get a real menu: each answer becomes a category the owner can fill in.
+      blocks.push({
+        id: id(),
+        kind: "menu",
+        style: "tint",
+        accent,
+        title: preset.offeringsHeading,
+        currency: "EGP",
+        view: "list",
+        categories: cols.map((c) => ({
+          name: clip(c.heading, LIMITS.menuCategoryName),
+          items: [
+            {
+              name: clip(c.heading, LIMITS.menuItemName),
+              description: clip(c.text, LIMITS.menuItemDescription),
+              price: "",
+              image: "",
+              badge: "",
+              available: true,
+            },
+          ],
+        })),
+      });
+    } else if (cols.length > 0) {
       blocks.push({ id: id(), kind: "heading", style: "tint", accent, level: 2, text: preset.offeringsHeading });
       blocks.push({ id: id(), kind: "columns", style: "tint", accent, cols });
     }
