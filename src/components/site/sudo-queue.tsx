@@ -54,7 +54,7 @@ function Section({
       <div className="mb-3 flex items-center gap-2">
         <h2 className="ws-h2">{title}</h2>
         {items.length > 0 ? (
-          <span className="rounded-full bg-cobalt-soft px-2.5 py-0.5 text-xs font-semibold text-cobalt">
+          <span className="rounded-full bg-copper-soft px-2.5 py-0.5 text-xs font-semibold text-copper">
             {items.length}
           </span>
         ) : null}
@@ -119,8 +119,8 @@ function RequestCard({ item, onOpen }: { item: SudoQueueItem; onOpen: () => void
       </div>
 
       {submission.note ? (
-        <p className="line-clamp-2 rounded-lg bg-apricot-soft/50 px-3 py-2 text-xs text-ink">
-          <span className="font-medium text-apricot-ink">Note: </span>
+        <p className="line-clamp-2 rounded-lg bg-orange-soft/50 px-3 py-2 text-xs text-ink">
+          <span className="font-medium text-orange-ink">Note: </span>
           {submission.note}
         </p>
       ) : null}
@@ -132,7 +132,7 @@ function RequestCard({ item, onOpen }: { item: SudoQueueItem; onOpen: () => void
         </p>
       ) : null}
 
-      <div className="mt-auto border-t border-line pt-3 text-xs font-medium text-cobalt">
+      <div className="mt-auto border-t border-line pt-3 text-xs font-medium text-copper">
         Review this version →
       </div>
     </button>

@@ -1,12 +1,12 @@
 // A calm, deterministic cover for each site card: same slug, same artwork.
 
 const PALETTES: [string, string, string][] = [
-  ["#6d4cff", "#3b82f6", "#ff5fa2"],
-  ["#f2603f", "#ffb25e", "#ff5fa2"],
-  ["#1f8f63", "#7bd389", "#3b82f6"],
-  ["#1c7ed6", "#4cd4e8", "#6d4cff"],
-  ["#e0378a", "#ff9ec7", "#ffc46b"],
-  ["#14122b", "#6d4cff", "#3b82f6"],
+  ["#b5482a", "#2e7d87", "#e8772e"],
+  ["#f2603f", "#ffb25e", "#e8772e"],
+  ["#1f8f63", "#6fb7ae", "#2e7d87"],
+  ["#1c7ed6", "#4cd4e8", "#b5482a"],
+  ["#e0378a", "#ff9ec7", "#f2a65a"],
+  ["#14122b", "#b5482a", "#2e7d87"],
 ];
 
 function hash(s: string): number {

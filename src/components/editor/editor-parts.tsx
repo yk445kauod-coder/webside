@@ -117,7 +117,7 @@ function SaveIndicator({
       {state === "error" ? (
         <span title={error ?? undefined}>
           Not saved ·{" "}
-          <button type="button" onClick={onRetry} className="font-medium text-cobalt hover:underline">
+          <button type="button" onClick={onRetry} className="font-medium text-copper hover:underline">
             Retry
           </button>
         </span>
@@ -255,7 +255,7 @@ export function PageList({
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex w-full flex-col rounded-lg px-2.5 py-2 pr-8 text-left text-sm transition-colors",
-                  active ? "bg-cobalt-soft text-cobalt" : "text-ink hover:bg-ink-soft",
+                  active ? "bg-copper-soft text-copper" : "text-ink hover:bg-ink-soft",
                 )}
               >
                 <span className="truncate font-medium">{t.title || "Untitled"}</span>
@@ -291,7 +291,7 @@ export function PageList({
             aria-label="Page title"
             maxLength={60}
             autoFocus
-            className="rounded-md border border-line px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cobalt/25"
+            className="rounded-md border border-line px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-copper/25"
           />
           {error ? (
             <p role="alert" className="text-xs text-danger">
@@ -311,7 +311,7 @@ export function PageList({
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="mt-2 flex w-full items-center gap-1.5 rounded-lg border border-dashed border-line px-2.5 py-2 text-sm text-muted hover:border-cobalt/50 hover:text-cobalt"
+          className="mt-2 flex w-full items-center gap-1.5 rounded-lg border border-dashed border-line px-2.5 py-2 text-sm text-muted hover:border-copper/50 hover:text-copper"
         >
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M12 5v14M5 12h14" />
@@ -422,7 +422,7 @@ export function VersionList({
                 <p className="text-sm font-medium text-ink">
                   Version {r.number}
                   {i === 0 ? (
-                    <Badge tone="cobalt" className="ml-2">
+                    <Badge tone="copper" className="ml-2">
                       latest
                     </Badge>
                   ) : null}
@@ -476,7 +476,7 @@ export function FullPreviewModal({
               className={cn(
                 "shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium",
                 t.key === page?.key
-                  ? "bg-cobalt-soft text-cobalt"
+                  ? "bg-copper-soft text-copper"
                   : "text-muted hover:bg-ink-soft hover:text-ink",
               )}
             >

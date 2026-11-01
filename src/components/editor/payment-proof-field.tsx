@@ -46,7 +46,7 @@ export function PaymentProofField({ instapay, required, onBlob }: Props) {
           <>
             {" "}
             using{" "}
-            <a href={link} target="_blank" rel="noopener noreferrer" className="font-medium text-cobalt underline">
+            <a href={link} target="_blank" rel="noopener noreferrer" className="font-medium text-copper underline">
               this link
             </a>
           </>

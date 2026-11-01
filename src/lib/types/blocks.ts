@@ -21,7 +21,7 @@ export type BlockKind =
   | "footer";
 
 export type BlockStyle = "light" | "tint" | "ink";
-export type BlockAccent = "indigo" | "sunset" | "forest" | "ocean" | "rose" | "mono";
+export type BlockAccent = "indigo" | "oxide" | "sunset" | "forest" | "ocean" | "rose" | "mono";
 export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 export interface Block<

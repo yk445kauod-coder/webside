@@ -16,6 +16,19 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /** Root-relative links written by the customer must stay inside /<slug>/. */
+/** Published pages load the brand fonts themselves (they are not rendered by the app layout). */
+const FONT_HEAD =
+  `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>` +
+  `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">` +
+  `<style>:root{--font-ws-sans:"IBM Plex Sans";--font-ws-arabic:"IBM Plex Sans Arabic";--font-ws-display:"Fraunces"}</style>`;
+
+/** True when most letters are Arabic, so the page gets lang="ar" dir="rtl". */
+export function isArabic(text: string): boolean {
+  const ar = (text.match(/[\u0600-\u06FF]/g) ?? []).length;
+  const la = (text.match(/[A-Za-z]/g) ?? []).length;
+  return ar > 0 && ar >= la;
+}
+
 export function prefixLinks(html: string, slug: string): string {
   return html.replace(/href="\/(?!\/)([^"]*)"/g, (_m, rest: string) => `href="/${slug}/${rest}"`);
 }
@@ -82,6 +95,7 @@ export function renderSite(
       renderToStaticMarkup(<SiteDocument blocks={page.blocks} siteName={siteName} nav={nav} />),
       slug,
     );
+    const rtl = isArabic(`${siteName} ${body.replace(/<[^>]*>/g, " ")}`);
     const title = page.segs.length ? `${page.title} · ${siteName}` : siteName;
     const desc = pageDescription(page.blocks) || pageDescription(resolved[0].blocks);
     const img = pageImage(page.blocks) || pageImage(resolved[0].blocks);
@@ -95,11 +109,12 @@ export function renderSite(
       (img ? `<meta property="og:image" content="${esc(img)}">` : "") +
       `<meta name="twitter:card" content="${img ? "summary_large_image" : "summary"}">`;
     const html =
-      `<!doctype html><html lang="en"><head><meta charset="utf-8">` +
+      `<!doctype html><html lang="${rtl ? "ar" : "en"}"${rtl ? ' dir="rtl"' : ""}><head><meta charset="utf-8">` +
       `<meta name="viewport" content="width=device-width,initial-scale=1">` +
       `<title>${esc(title)}</title>` +
       meta +
       `<meta name="robots" content="index,follow">` +
+      FONT_HEAD +
       `<link rel="stylesheet" href="/_site/site.css"></head><body>${body}</body></html>`;
     total += Buffer.byteLength(html);
     files.push({ path: `sites/${slug}/${page.segs.length ? page.segs.join("/") + "/" : ""}index.html`, content: html });

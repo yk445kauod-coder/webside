@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const styleClasses: Record<BlockStyle, string> = {
   light: "bg-white text-ink",
-  tint: "bg-cobalt-soft text-ink",
+  tint: "bg-copper-soft text-ink",
   ink: "bg-ink text-white",
 };
 
@@ -73,14 +73,14 @@ function BlockInner({ block }: { block: AnyBlock }) {
             aria-hidden="true"
             className={cn(
               "pointer-events-none absolute -right-24 -top-24 -z-10 h-72 w-72 rounded-full blur-3xl",
-              dark ? "bg-cobalt/50" : "bg-cobalt/20",
+              dark ? "bg-copper/50" : "bg-copper/20",
             )}
           />
           <span
             aria-hidden="true"
             className={cn(
               "pointer-events-none absolute -bottom-28 -left-16 -z-10 h-64 w-64 rounded-full blur-3xl",
-              dark ? "bg-apricot/35" : "bg-apricot/25",
+              dark ? "bg-orange/35" : "bg-orange/25",
             )}
           />
           <h1 className="ws-display max-w-3xl text-balance break-words">
@@ -163,7 +163,7 @@ function BlockInner({ block }: { block: AnyBlock }) {
               className={cn(
                 "inline-flex h-12 items-center rounded-2xl px-6 text-[15px] font-medium transition-colors",
                 block.variant === "primary" &&
-                  "bg-cobalt text-white shadow-ws-sm hover:bg-cobalt-strong",
+                  "bg-copper text-white shadow-ws-sm hover:bg-copper-strong",
                 block.variant === "secondary" &&
                   (block.style === "ink"
                     ? "bg-white text-ink hover:bg-ink-soft"
@@ -232,7 +232,7 @@ function BlockInner({ block }: { block: AnyBlock }) {
               >
                 <span
                   aria-hidden="true"
-                  className="mb-1 grid h-9 w-9 place-items-center rounded-xl bg-cobalt/12 font-mono text-sm font-semibold text-cobalt"
+                  className="mb-1 grid h-9 w-9 place-items-center rounded-xl bg-copper/12 font-mono text-sm font-semibold text-copper"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -292,7 +292,7 @@ function BlockInner({ block }: { block: AnyBlock }) {
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold">
                   <span className="break-words">{it.q}</span>
-                  <span aria-hidden="true" className="text-xl leading-none text-cobalt transition-transform group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="text-xl leading-none text-copper transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className={cn("mt-3 whitespace-pre-line break-words text-[15px] leading-relaxed", block.style === "ink" ? "text-white/75" : "text-ink/70")}>
                   {it.a}

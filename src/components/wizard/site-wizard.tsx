@@ -43,13 +43,13 @@ import {
 } from "@/lib/wizard";
 
 const TYPE_ICONS: Record<SiteType, { icon: LucideIcon; grad: string }> = {
-  business: { icon: Briefcase, grad: "from-indigo-500 to-blue-500" },
+  business: { icon: Briefcase, grad: "from-[#b5482a] to-[#e8772e]" },
   portfolio: { icon: Palette, grad: "from-fuchsia-500 to-pink-500" },
   shop: { icon: ShoppingBag, grad: "from-orange-500 to-amber-400" },
   restaurant: { icon: UtensilsCrossed, grad: "from-rose-500 to-orange-400" },
-  event: { icon: PartyPopper, grad: "from-violet-500 to-fuchsia-500" },
+  event: { icon: PartyPopper, grad: "from-[#e8772e] to-[#b5482a]" },
   personal: { icon: PenLine, grad: "from-emerald-500 to-teal-400" },
-  agency: { icon: Rocket, grad: "from-blue-500 to-cyan-400" },
+  agency: { icon: Rocket, grad: "from-[#2e7d87] to-[#6fb7ae]" },
   nonprofit: { icon: HeartHandshake, grad: "from-pink-500 to-rose-400" },
 };
 
@@ -65,7 +65,7 @@ const STEPS = ["Type", "Name", "Look", "Details", "Sections", "Launch"] as const
 
 const inputClass =
   "w-full rounded-2xl border border-line bg-white px-4 py-3 text-[15px] text-ink shadow-ws-sm " +
-  "outline-none transition placeholder:text-muted/60 focus:border-cobalt focus:ring-4 focus:ring-cobalt/15";
+  "outline-none transition placeholder:text-muted/60 focus:border-copper focus:ring-4 focus:ring-copper/15";
 
 export function SiteWizard() {
   const router = useRouter();
@@ -140,7 +140,7 @@ export function SiteWizard() {
           spread: 75,
           startVelocity: 48,
           origin: { x, y: 0.7 },
-          colors: ["#6d4cff", "#3b82f6", "#ff5fa2", "#ffc46b", "#ffffff"],
+          colors: ["#b5482a", "#2e7d87", "#e8772e", "#f2a65a", "#ffffff"],
         });
       burst(0.2);
       burst(0.8);
@@ -164,8 +164,8 @@ export function SiteWizard() {
     >
       {/* soft background glow */}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-cobalt/15 blur-3xl" />
-        <div className="absolute -right-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[#ff5fa2]/15 blur-3xl" />
+        <div className="absolute -left-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-copper/15 blur-3xl" />
+        <div className="absolute -right-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[#e8772e]/15 blur-3xl" />
       </div>
 
       <header className="relative z-10 flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
@@ -180,7 +180,7 @@ export function SiteWizard() {
                 className={cn(
                   "flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-all",
                   i === step && "bg-ink text-white shadow-ws-sm",
-                  i < step && "bg-cobalt-soft text-cobalt",
+                  i < step && "bg-copper-soft text-copper",
                   i > step && "text-muted",
                 )}
               >
@@ -374,7 +374,7 @@ export function SiteWizard() {
 function Title({ eyebrow, title, sub }: { eyebrow: string; title: string; sub: string }) {
   return (
     <div className="mb-7">
-      <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-cobalt-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-cobalt">
+      <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-copper-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-copper">
         <WandSparkles className="h-3.5 w-3.5" aria-hidden="true" />
         {eyebrow}
       </p>
@@ -469,7 +469,7 @@ function StepName({
       <label className="mb-1.5 mt-6 block text-sm font-semibold text-ink" htmlFor="wiz-slug">
         Site address
       </label>
-      <div className="flex items-center overflow-hidden rounded-2xl border border-line bg-white shadow-ws-sm focus-within:border-cobalt focus-within:ring-4 focus-within:ring-cobalt/15">
+      <div className="flex items-center overflow-hidden rounded-2xl border border-line bg-white shadow-ws-sm focus-within:border-copper focus-within:ring-4 focus-within:ring-copper/15">
         <input
           id="wiz-slug"
           value={slug}
@@ -512,7 +512,7 @@ function StepLook({
               onClick={() => onChange({ accent: a })}
               className={cn(
                 "group flex flex-col items-center gap-2 rounded-2xl border bg-white p-3 transition",
-                active ? "border-cobalt ring-4 ring-cobalt/15" : "border-line hover:border-ink/25",
+                active ? "border-copper ring-4 ring-copper/15" : "border-line hover:border-ink/25",
               )}
             >
               <span
@@ -562,13 +562,13 @@ function LookThumb({ look }: { look: "spotlight" | "airy" | "bold" }) {
       className={cn(
         "flex h-20 w-full flex-col justify-center gap-1.5 overflow-hidden rounded-xl px-3",
         dark && "bg-ink items-center",
-        tint && "bg-cobalt-soft items-center",
+        tint && "bg-copper-soft items-center",
         look === "airy" && "border border-line bg-white items-start",
       )}
     >
       <span className={cn("h-2.5 w-2/3 rounded-full", dark ? "bg-white" : "bg-ink")} />
       <span className={cn("h-1.5 w-1/2 rounded-full", dark ? "bg-white/50" : "bg-ink/30")} />
-      <span className="mt-1 h-3 w-10 rounded-md bg-cobalt" />
+      <span className="mt-1 h-3 w-10 rounded-md bg-copper" />
     </span>
   );
 }
@@ -610,7 +610,7 @@ function StepDetails({
             key={t}
             type="button"
             onClick={() => onChange({ tagline: t })}
-            className="rounded-full border border-line bg-white px-3 py-1 text-xs text-muted transition hover:border-cobalt hover:text-cobalt"
+            className="rounded-full border border-line bg-white px-3 py-1 text-xs text-muted transition hover:border-copper hover:text-copper"
           >
             {t}
           </button>
@@ -705,7 +705,7 @@ function StepSections({
                 <span
                   className={cn(
                     "grid h-11 w-11 shrink-0 place-items-center rounded-xl transition",
-                    on ? "bg-cobalt text-white" : "bg-ink-soft text-muted",
+                    on ? "bg-copper text-white" : "bg-ink-soft text-muted",
                   )}
                 >
                   {on ? <Check className="ws-pop h-5 w-5" aria-hidden="true" /> : <span className="h-2 w-2 rounded-full bg-muted/50" />}
@@ -716,7 +716,7 @@ function StepSections({
                 </span>
                 <span
                   aria-hidden="true"
-                  className={cn("relative h-7 w-12 shrink-0 rounded-full transition", on ? "bg-cobalt" : "bg-ink/15")}
+                  className={cn("relative h-7 w-12 shrink-0 rounded-full transition", on ? "bg-copper" : "bg-ink/15")}
                 >
                   <span
                     className={cn(

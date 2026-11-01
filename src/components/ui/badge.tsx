@@ -1,14 +1,14 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "neutral" | "cobalt" | "success" | "warning" | "danger" | "apricot";
+type Tone = "neutral" | "copper" | "success" | "warning" | "danger" | "orange";
 
 const tones: Record<Tone, string> = {
   neutral: "bg-ink-soft text-ink",
-  cobalt: "bg-cobalt-soft text-cobalt",
+  copper: "bg-copper-soft text-copper",
   success: "bg-success-soft text-success",
   warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
-  apricot: "bg-apricot-soft text-apricot-ink",
+  orange: "bg-orange-soft text-orange-ink",
 };
 
 export function Badge({

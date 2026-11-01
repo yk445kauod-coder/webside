@@ -23,7 +23,7 @@ export const SITE_TYPES = [
 ] as const;
 export type SiteType = (typeof SITE_TYPES)[number];
 
-export const ACCENTS = ["indigo", "sunset", "forest", "ocean", "rose", "mono"] as const;
+export const ACCENTS = ["indigo", "oxide", "sunset", "forest", "ocean", "rose", "mono"] as const;
 export const LOOKS = ["spotlight", "airy", "bold"] as const;
 export type Look = (typeof LOOKS)[number];
 
@@ -216,9 +216,11 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
 };
 
 export const ACCENT_META: Record<BlockAccent, { label: string; swatch: string }> = {
-  indigo: { label: "Aurora", swatch: "linear-gradient(135deg,#6d4cff,#3b82f6)" },
+  // key "indigo" is the legacy name of the default accent; it now means the brand copper
+  indigo: { label: "Copper", swatch: "linear-gradient(135deg,#b5482a,#e8772e)" },
+  oxide: { label: "Oxide blue", swatch: "linear-gradient(135deg,#2e7d87,#6fb7ae)" },
   sunset: { label: "Sunset", swatch: "linear-gradient(135deg,#f2603f,#ffb25e)" },
-  forest: { label: "Forest", swatch: "linear-gradient(135deg,#1f8f63,#7bd389)" },
+  forest: { label: "Forest", swatch: "linear-gradient(135deg,#1f8f63,#6fb7ae)" },
   ocean: { label: "Ocean", swatch: "linear-gradient(135deg,#1c7ed6,#4cd4e8)" },
   rose: { label: "Rose", swatch: "linear-gradient(135deg,#e0378a,#ff9ec7)" },
   mono: { label: "Mono", swatch: "linear-gradient(135deg,#1a1a1a,#8a8a8a)" },

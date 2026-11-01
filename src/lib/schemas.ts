@@ -15,7 +15,7 @@ const id = z.string().min(1).max(64);
 const style = z.enum(["light", "tint", "ink"]);
 const text = (max: number) => z.string().max(max);
 
-const accent = z.enum(["indigo", "sunset", "forest", "ocean", "rose", "mono"]).optional();
+const accent = z.enum(["indigo", "oxide", "sunset", "forest", "ocean", "rose", "mono"]).optional();
 
 const font = z
   .string()

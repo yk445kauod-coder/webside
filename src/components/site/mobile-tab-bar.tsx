@@ -26,7 +26,7 @@ export function MobileTabBar({ isSudo }: { isSudo?: boolean }) {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex min-h-12 min-w-16 flex-col items-center justify-center gap-0.5 rounded-xl px-3 text-[11px] font-semibold",
-                active ? "text-cobalt" : "text-muted",
+                active ? "text-copper" : "text-muted",
               )}
             >
               <span

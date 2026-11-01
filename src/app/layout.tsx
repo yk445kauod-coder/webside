@@ -1,11 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Sans_Arabic, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa/pwa";
 
-const sans = Plus_Jakarta_Sans({
+// Brand type: IBM Plex Sans Arabic for Arabic, IBM Plex Sans for Latin text,
+// Fraunces (a warm, sturdy display serif) for English headlines.
+const sans = IBM_Plex_Sans({
   variable: "--font-ws-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const arabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-ws-arabic",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const display = Fraunces({
+  variable: "--font-ws-display",
+  subsets: ["latin"],
+  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -34,14 +51,14 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#6d4cff",
+  themeColor: "#b5482a",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable} h-full antialiased`}>
+    <html lang="en" className={`${sans.variable} ${arabic.variable} ${display.variable} ${mono.variable} h-full antialiased`}>
       <body className="min-h-full">
         <a href="#main" className="ws-skip">
           Skip to content

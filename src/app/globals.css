@@ -7,65 +7,64 @@
    ========================================================================= */
 
 :root {
-  /* Brand */
-  --ws-ink: #14122b;
-  --ws-cobalt: #6d4cff;
-  --ws-apricot: #ff9b6a;
+  /* Brand — reddish copper, orange, and the oxide blue of oxidised copper (verdigris) */
+  --ws-ink: #231813;          /* warm espresso: text and hierarchy */
+  --ws-copper: #b5482a;       /* reddish copper: primary action */
+  --ws-orange: #e8772e;       /* orange: warmth and highlights */
+  --ws-oxide: #2e7d87;        /* oxide blue (copper patina): secondary, info, calm contrast */
   --ws-white: #ffffff;
 
-  /* Surfaces */
-  --ws-canvas: #f6f5ff;
+  /* Surfaces — warm paper, never cold grey */
+  --ws-canvas: #faf6f1;
   --ws-surface: #ffffff;
-  --ws-border: #e6e3f7;
-  --ws-muted: #625f85;
+  --ws-border: #eadfd3;
+  --ws-muted: #6f6258;
 
   /* Semantic */
-  --ws-success: #16845b;
+  --ws-success: #2f7d5a;
   --ws-warning: #b7791f;
-  --ws-danger: #c0393b;
-  --ws-info: #6d4cff;
+  --ws-danger: #b3322f;
+  --ws-info: #2e7d87;
 
-  /* Derived tints (kept as tokens so hex values are never scattered) */
-  --ws-cobalt-soft: #efebff;
-  --ws-apricot-soft: #fff0e8;
-  --ws-success-soft: #e8f5ef;
+  /* Derived tints (tokens, so hex values are never scattered) */
+  --ws-copper-soft: #fbece5;
+  --ws-orange-soft: #fff0e3;
+  --ws-oxide-soft: #e3f1f1;
+  --ws-success-soft: #e6f3ec;
   --ws-warning-soft: #fbf3e3;
   --ws-danger-soft: #fbeceb;
-  --ws-ink-soft: #efedfa;
+  --ws-ink-soft: #f3ece4;
 
-  /* Interaction shades (hover / active) — tokens so components never hardcode hex */
-  --ws-cobalt-strong: #5a37f0;
-  --ws-cobalt-stronger: #4b2bd6;
-  --ws-ink-strong: #0c0a1f;
-  --ws-ink-stronger: #070614;
-  --ws-success-strong: #116c44;
-  --ws-success-stronger: #0e5a39;
-  --ws-danger-strong: #a73333;
-  --ws-apricot-ink: #b04f1d;
+  /* Interaction shades (hover / active) */
+  --ws-copper-strong: #9c3d22;
+  --ws-copper-stronger: #84321b;
+  --ws-oxide-strong: #25666e;
+  --ws-ink-strong: #170f0b;
+  --ws-ink-stronger: #0e0806;
+  --ws-success-strong: #266548;
+  --ws-success-stronger: #1e5239;
+  --ws-danger-strong: #962a28;
+  --ws-orange-ink: #a8501b;
 
-  /* Brand gradients + glow (v2) */
-  --ws-violet: #6d4cff;
-  --ws-blue: #3b82f6;
-  --ws-pink: #ff5fa2;
-  --ws-gold: #ffc46b;
-  --ws-night: #0b0920;
-  --ws-grad: linear-gradient(120deg, #6d4cff 0%, #3b82f6 45%, #ff5fa2 100%);
-  --ws-grad-warm: linear-gradient(120deg, #ff5fa2 0%, #ff9b6a 55%, #ffc46b 100%);
-  --ws-glow: 0 10px 40px -8px rgba(109, 76, 255, 0.55);
+  /* Warm gradient (copper → orange). Used sparingly, mainly on the primary call to action. */
+  --ws-night: #1d1310;
+  --ws-grad: linear-gradient(120deg, #b5482a 0%, #d2602a 55%, #e8772e 100%);
+  --ws-grad-warm: linear-gradient(120deg, #b5482a 0%, #e8772e 60%, #f2a65a 100%);
+  --ws-glow: 0 10px 36px -10px rgba(181, 72, 42, 0.5);
 
   /* Radii + elevation */
   --ws-radius-sm: 8px;
   --ws-radius: 14px;
   --ws-radius-lg: 24px;
-  --ws-shadow-sm: 0 1px 2px rgba(20, 18, 43, 0.06), 0 2px 8px -4px rgba(109, 76, 255, 0.18);
-  --ws-shadow: 0 18px 50px -20px rgba(80, 50, 200, 0.35);
-  --ws-ring: 0 0 0 3px rgba(109, 76, 255, 0.32);
+  --ws-shadow-sm: 0 1px 2px rgba(35, 24, 19, 0.06), 0 2px 8px -4px rgba(181, 72, 42, 0.16);
+  --ws-shadow: 0 18px 50px -22px rgba(120, 50, 20, 0.38);
+  --ws-ring: 0 0 0 3px rgba(181, 72, 42, 0.32);
 }
 
 @theme inline {
   --color-ink: var(--ws-ink);
-  --color-cobalt: var(--ws-cobalt);
-  --color-apricot: var(--ws-apricot);
+  --color-copper: var(--ws-copper);
+  --color-orange: var(--ws-orange);
   --color-canvas: var(--ws-canvas);
   --color-surface: var(--ws-surface);
   --color-line: var(--ws-border);
@@ -73,22 +72,26 @@
   --color-success: var(--ws-success);
   --color-warning: var(--ws-warning);
   --color-danger: var(--ws-danger);
-  --color-cobalt-soft: var(--ws-cobalt-soft);
-  --color-apricot-soft: var(--ws-apricot-soft);
+  --color-oxide: var(--ws-oxide);
+  --color-oxide-soft: var(--ws-oxide-soft);
+  --color-oxide-strong: var(--ws-oxide-strong);
+  --color-copper-soft: var(--ws-copper-soft);
+  --color-orange-soft: var(--ws-orange-soft);
   --color-success-soft: var(--ws-success-soft);
   --color-warning-soft: var(--ws-warning-soft);
   --color-danger-soft: var(--ws-danger-soft);
   --color-ink-soft: var(--ws-ink-soft);
-  --color-cobalt-strong: var(--ws-cobalt-strong);
-  --color-cobalt-stronger: var(--ws-cobalt-stronger);
+  --color-copper-strong: var(--ws-copper-strong);
+  --color-copper-stronger: var(--ws-copper-stronger);
   --color-ink-strong: var(--ws-ink-strong);
   --color-ink-stronger: var(--ws-ink-stronger);
   --color-success-strong: var(--ws-success-strong);
   --color-success-stronger: var(--ws-success-stronger);
   --color-danger-strong: var(--ws-danger-strong);
-  --color-apricot-ink: var(--ws-apricot-ink);
+  --color-orange-ink: var(--ws-orange-ink);
 
   --font-sans: var(--font-ws-sans);
+  --font-display: var(--font-ws-display);
   --font-mono: var(--font-ws-mono);
 
   --radius-ws: var(--ws-radius);
@@ -110,8 +113,7 @@ html {
 body {
   background: var(--ws-canvas);
   color: var(--ws-ink);
-  font-family: var(--font-ws-sans), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv01";
+  font-family: var(--font-ws-sans), var(--font-ws-arabic), ui-sans-serif, system-ui, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -123,11 +125,26 @@ body {
 }
 
 ::selection {
-  background: var(--ws-cobalt);
+  background: var(--ws-copper);
   color: var(--ws-white);
 }
 
 /* Typography scale — editorial, calm */
+.ws-display,
+.ws-h1,
+.ws-h2 {
+  font-family: var(--font-ws-display), var(--font-ws-arabic), ui-serif, Georgia, serif;
+}
+:lang(ar) .ws-display,
+:lang(ar) .ws-h1,
+:lang(ar) .ws-h2,
+:lang(ar) h1,
+:lang(ar) h2,
+:lang(ar) h3 {
+  font-family: var(--font-ws-arabic), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
 .ws-display {
   font-size: clamp(2.5rem, 6vw, 4.25rem);
   line-height: 1.02;
@@ -174,7 +191,7 @@ body {
   color: var(--ws-ink);
 }
 .ws-wordmark .ws-wordmark-side {
-  color: var(--ws-cobalt);
+  color: var(--ws-copper);
 }
 .ws-wordmark[data-variant="mono-ink"] .ws-wordmark-side {
   color: var(--ws-ink);
@@ -291,7 +308,7 @@ body {
   height: 46rem;
   left: -12rem;
   top: -16rem;
-  background: radial-gradient(circle at 30% 30%, #6d4cff, transparent 65%);
+  background: radial-gradient(circle at 30% 30%, #b5482a, transparent 65%);
   animation: ws-drift-a 18s ease-in-out infinite alternate;
 }
 .ws-aurora::after {
@@ -299,7 +316,7 @@ body {
   height: 40rem;
   right: -10rem;
   top: -6rem;
-  background: radial-gradient(circle at 60% 40%, #ff5fa2, transparent 65%);
+  background: radial-gradient(circle at 60% 40%, #e8772e, transparent 65%);
   animation: ws-drift-b 22s ease-in-out infinite alternate;
 }
 .ws-aurora > i {
@@ -307,7 +324,7 @@ body {
   height: 38rem;
   left: 30%;
   bottom: -22rem;
-  background: radial-gradient(circle, #3b82f6, transparent 65%);
+  background: radial-gradient(circle, #2e7d87, transparent 65%);
   animation: ws-drift-c 26s ease-in-out infinite alternate;
 }
 @keyframes ws-drift-a {
@@ -327,7 +344,7 @@ body {
   mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
 }
 .ws-dots-ink {
-  background-image: radial-gradient(rgba(20, 18, 43, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(35, 24, 19, 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -367,7 +384,7 @@ body {
 .ws-btn-grad:hover {
   background-position: 100% 0;
   transform: translateY(-1px);
-  box-shadow: 0 14px 44px -8px rgba(109, 76, 255, 0.7);
+  box-shadow: 0 14px 44px -8px rgba(181, 72, 42, 0.6);
 }
 .ws-btn-grad:active {
   transform: translateY(0) scale(0.98);
@@ -439,8 +456,8 @@ body {
   animation: ws-pulse-ring 2.4s ease-out infinite;
 }
 @keyframes ws-pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(109, 76, 255, 0.45); }
-  100% { box-shadow: 0 0 0 16px rgba(109, 76, 255, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(181, 72, 42, 0.4); }
+  100% { box-shadow: 0 0 0 16px rgba(181, 72, 42, 0); }
 }
 
 .ws-pop {
@@ -455,29 +472,34 @@ body {
    renderer scopes these tokens to it, so a generated site gets its own colour
    without any database change. */
 [data-accent="sunset"] {
-  --ws-cobalt: #f2603f;
-  --ws-cobalt-strong: #d94a2a;
-  --ws-cobalt-soft: #fff0ea;
+  --ws-copper: #f2603f;
+  --ws-copper-strong: #d94a2a;
+  --ws-copper-soft: #fff0ea;
 }
 [data-accent="forest"] {
-  --ws-cobalt: #1f8f63;
-  --ws-cobalt-strong: #177650;
-  --ws-cobalt-soft: #e8f6ef;
+  --ws-copper: #1f8f63;
+  --ws-copper-strong: #177650;
+  --ws-copper-soft: #e8f6ef;
+}
+[data-accent="oxide"] {
+  --ws-copper: #2e7d87;
+  --ws-copper-strong: #25666e;
+  --ws-copper-soft: #e3f1f1;
 }
 [data-accent="ocean"] {
-  --ws-cobalt: #1c7ed6;
-  --ws-cobalt-strong: #1668b2;
-  --ws-cobalt-soft: #e7f3ff;
+  --ws-copper: #1c7ed6;
+  --ws-copper-strong: #1668b2;
+  --ws-copper-soft: #e7f3ff;
 }
 [data-accent="rose"] {
-  --ws-cobalt: #e0378a;
-  --ws-cobalt-strong: #c42a74;
-  --ws-cobalt-soft: #ffeaf4;
+  --ws-copper: #e0378a;
+  --ws-copper-strong: #c42a74;
+  --ws-copper-soft: #ffeaf4;
 }
 [data-accent="mono"] {
-  --ws-cobalt: #1a1a1a;
-  --ws-cobalt-strong: #000000;
-  --ws-cobalt-soft: #f0f0f0;
+  --ws-copper: #1a1a1a;
+  --ws-copper-strong: #000000;
+  --ws-copper-soft: #f0f0f0;
 }
 
 

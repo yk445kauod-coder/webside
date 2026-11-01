@@ -67,7 +67,7 @@ export function Field(props: FieldProps) {
     "aria-describedby": error ? errorId : undefined,
     className: cn(
       "w-full rounded-ws border bg-surface px-3 py-2 text-[15px] text-ink",
-      "placeholder:text-muted/70 focus:outline-none focus:ring-[3px] focus:ring-cobalt/25",
+      "placeholder:text-muted/70 focus:outline-none focus:ring-[3px] focus:ring-copper/25",
       error ? "border-danger" : "border-line",
       disabled && "cursor-not-allowed opacity-60",
     ),

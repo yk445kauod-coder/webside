@@ -213,7 +213,7 @@ export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props)
               onClick={() =>
                 onChange({ ...block, cols: [...block.cols, { heading: "", text: "" }] })
               }
-              className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt"
+              className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-copper/50 hover:text-copper"
             >
               + Add column
             </button>
@@ -243,7 +243,7 @@ export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props)
             </div>
           ))}
           {block.items.length < LIMITS.faqItems ? (
-            <button type="button" onClick={() => onChange({ ...block, items: [...block.items, { q: "", a: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt">
+            <button type="button" onClick={() => onChange({ ...block, items: [...block.items, { q: "", a: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-copper/50 hover:text-copper">
               + Add question
             </button>
           ) : null}
@@ -265,7 +265,7 @@ export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props)
             </div>
           ))}
           {block.items.length < LIMITS.statItems ? (
-            <button type="button" onClick={() => onChange({ ...block, items: [...block.items, { value: "", label: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt">
+            <button type="button" onClick={() => onChange({ ...block, items: [...block.items, { value: "", label: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-copper/50 hover:text-copper">
               + Add number
             </button>
           ) : null}
@@ -285,7 +285,7 @@ export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props)
             </div>
           ))}
           {block.images.length < LIMITS.galleryItems ? (
-            <button type="button" onClick={() => onChange({ ...block, images: [...block.images, { src: "", alt: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-cobalt/50 hover:text-cobalt">
+            <button type="button" onClick={() => onChange({ ...block, images: [...block.images, { src: "", alt: "" }] })} className="self-start rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-copper/50 hover:text-copper">
               + Add image
             </button>
           ) : null}

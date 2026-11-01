@@ -9,7 +9,7 @@ export interface Template {
   key: string;
   name: string;
   blurb: string;
-  accent: "cobalt" | "apricot";
+  accent: "copper" | "orange";
   snapshot: SiteSnapshot;
 }
 
@@ -21,7 +21,7 @@ const blank: Template = {
   key: "blank",
   name: "Blank canvas",
   blurb: "Start empty and build from scratch.",
-  accent: "cobalt",
+  accent: "copper",
   snapshot: {
     home: {
       title: "Home",
@@ -51,7 +51,7 @@ const studio: Template = {
   key: "studio",
   name: "Studio",
   blurb: "A focused one-page portfolio for a designer or maker.",
-  accent: "apricot",
+  accent: "orange",
   snapshot: {
     home: {
       title: "Home",
@@ -122,7 +122,7 @@ const local: Template = {
   key: "local",
   name: "Local business",
   blurb: "A home for a cafe, shop or neighbourhood service.",
-  accent: "cobalt",
+  accent: "copper",
   snapshot: {
     home: {
       title: "Home",
