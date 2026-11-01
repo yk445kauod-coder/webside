@@ -114,3 +114,20 @@ describe("menu rendering", () => {
     expect(r.files[0].content).toContain("IBM+Plex+Sans+Arabic");
   });
 });
+
+describe("large menus", () => {
+  it("adds search for big menus and none for small ones", () => {
+    const mk = (n: number) =>
+      block({
+        kind: "menu", title: "M", currency: "", view: "list",
+        categories: [{ name: "A", items: Array.from({ length: n }, (_, i) => ({ name: `i${i}`, description: "", price: "1", image: "", badge: "", available: true })) }],
+      });
+    const run = (n: number) => {
+      const r = renderSite("s", "S", { home: { title: "H", path: "/", blocks: [mk(n)] } });
+      if ("error" in r) throw new Error(r.error);
+      return r.files[0].content;
+    };
+    expect(run(200)).toContain("data-menu-search");
+    expect(run(5)).not.toContain("data-menu-search");
+  });
+});

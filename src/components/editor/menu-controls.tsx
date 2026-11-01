@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Field } from "@/components/ui/field";
 import { LIMITS } from "@/lib/limits";
 import { cn } from "@/lib/utils";
@@ -80,8 +81,11 @@ export function MenuControls({
       </div>
 
       {block.categories.map((cat, ci) => (
-        <fieldset key={ci} className="flex flex-col gap-3 rounded-xl border border-line bg-canvas p-3">
-          <legend className="px-1 text-sm font-semibold text-ink">Category {ci + 1}</legend>
+        <details key={ci} open={block.categories.length <= 3} className="rounded-xl border border-line bg-canvas p-3">
+          <summary className="cursor-pointer text-sm font-semibold text-ink">
+            {cat.name || `Category ${ci + 1}`} <span className="font-normal text-muted">({cat.items.length})</span>
+          </summary>
+          <div className="mt-3 flex flex-col gap-3">
           <Field label="Category name" value={cat.name} maxLength={LIMITS.menuCategoryName} onChange={(name) => setCat(ci, { name })} />
           <div className="flex gap-3 text-xs font-medium">
             <button type="button" className="text-muted hover:text-ink" onClick={() => setCats(move(block.categories, ci, ci - 1))}>Move up</button>
@@ -115,7 +119,11 @@ export function MenuControls({
               + Add item
             </button>
           ) : null}
-        </fieldset>
+          <BulkAdd
+            onAdd={(items) => setCat(ci, { items: [...cat.items, ...items].slice(0, LIMITS.menuItemsPerCategory) })}
+          />
+          </div>
+        </details>
       ))}
 
       {block.categories.length < LIMITS.menuCategories ? (
@@ -127,6 +135,45 @@ export function MenuControls({
           + Add category
         </button>
       ) : null}
+    </div>
+  );
+}
+
+/** Paste many items at once: one per line as "name | price | description". */
+function BulkAdd({ onAdd }: { onAdd: (items: MenuItem[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  if (!open)
+    return (
+      <button type="button" className={cn(small, "self-start")} onClick={() => setOpen(true)}>
+        + Paste many items
+      </button>
+    );
+  const parse = () => {
+    const items = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .map((l) => {
+        const [name = "", price = "", ...rest] = l.split(/[|\t]/).map((s) => s.trim());
+        return {
+          ...emptyMenuItem(),
+          name: name.slice(0, LIMITS.menuItemName),
+          price: price.slice(0, LIMITS.menuItemPrice),
+          description: rest.join(" ").slice(0, LIMITS.menuItemDescription),
+        };
+      });
+    onAdd(items);
+    setText("");
+    setOpen(false);
+  };
+  return (
+    <div className="flex flex-col gap-2">
+      <Field label="One item per line: name | price | description" textarea rows={6} value={text} onChange={setText} />
+      <div className="flex gap-3 text-xs font-medium">
+        <button type="button" className="text-copper hover:underline" onClick={parse}>Add these items</button>
+        <button type="button" className="text-muted hover:underline" onClick={() => setOpen(false)}>Cancel</button>
+      </div>
     </div>
   );
 }
