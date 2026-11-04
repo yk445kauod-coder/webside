@@ -61,7 +61,7 @@ writeFileSync(`${out}/_site/site.css`, css);
 // Branded 404 for unknown addresses (Pages serves /404.html itself for paths the worker does not own).
 writeFileSync(
   `${out}/404.html`,
-  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Not found</title><link rel="stylesheet" href="/_site/site.css"></head><body class="bg-white text-ink"><main class="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center"><h1 class="text-3xl font-semibold">This page does not exist</h1><p class="text-ink/70">The address may be mistyped, or the site is no longer published.</p><a class="font-semibold text-cobalt" href="/">Go to WebSide</a></main></body></html>`,
+  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Not found</title><link rel="stylesheet" href="/_site/site.css"></head><body class="bg-white text-ink"><main class="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center"><h1 class="text-3xl font-semibold">This page does not exist</h1><p class="text-ink/70">The address may be mistyped, or the site is no longer published.</p><a class="font-semibold text-copper" href="/">Go to WebSide</a></main></body></html>`,
 );
 
 // ---- sitemap.xml + robots.txt for the published sites ---------------------------------------

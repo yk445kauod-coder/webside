@@ -16,17 +16,38 @@ interface Props {
 export function MenuView({ block, muted }: Props) {
   const dark = block.style === "ink";
   const cats = block.categories.filter((c) => c.name.trim() || c.items.length > 0);
+  const total = cats.reduce((n, c) => n + c.items.length, 0);
+  const big = total > 24;
+  const uid = block.id.replace(/[^a-zA-Z0-9]/g, "");
   const anchor = (i: number) => `menu-${block.id.replace(/[^a-zA-Z0-9]/g, "")}-${i}`;
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-8">
+    <div data-menu={uid} className="mx-auto flex max-w-4xl flex-col gap-8">
       {block.title ? (
         <h2 className="ws-h2 break-words text-3xl font-bold tracking-tight md:text-4xl">{block.title}</h2>
       ) : null}
 
+      {big ? (
+        <>
+          <input
+            type="search"
+            data-menu-search={uid}
+            placeholder="Search the menu / ابحث في القائمة"
+            aria-label="Search the menu"
+            className="w-full rounded-xl border border-line bg-white px-4 py-3 text-[16px] text-ink outline-none focus:border-copper"
+          />
+          <p data-menu-empty={uid} hidden className={cn("text-sm", muted)}>No matching items.</p>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){var i=document.querySelector('[data-menu-search="${uid}"]');if(!i)return;var e=document.querySelector('[data-menu-empty="${uid}"]');var r=i.closest('[data-menu="${uid}"]');i.addEventListener('input',function(){var q=i.value.trim().toLowerCase(),any=false;r.querySelectorAll('section[data-cat]').forEach(function(s){var h=0;s.querySelectorAll('li').forEach(function(l){var m=!q||l.textContent.toLowerCase().indexOf(q)>-1;l.hidden=!m;if(m)h++});s.hidden=h===0;if(h)any=true});e.hidden=any||!q})})();`,
+            }}
+          />
+        </>
+      ) : null}
+
       {cats.length === 0 ? <p className={cn("text-sm", muted)}>No menu items yet.</p> : null}
 
-      {block.view === "tabs" && cats.length > 1 ? (
+      {(block.view === "tabs" || big) && cats.length > 1 ? (
         <nav
           aria-label={block.title || "Menu categories"}
           className={cn(
@@ -52,7 +73,7 @@ export function MenuView({ block, muted }: Props) {
       ) : null}
 
       {cats.map((c, i) => (
-        <section key={i} id={anchor(i)} className="scroll-mt-16 flex flex-col gap-4">
+        <section key={i} id={anchor(i)} data-cat className="scroll-mt-16 flex flex-col gap-4">
           {c.name ? (
             <h3 className="ws-h2 break-words border-b border-current/15 pb-2 text-xl font-bold text-copper md:text-2xl">
               {c.name}
