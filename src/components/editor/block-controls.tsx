@@ -2,6 +2,7 @@
 
 import { Field } from "@/components/ui/field";
 import { MenuControls } from "@/components/editor/menu-controls";
+import { ContactControls } from "@/components/editor/contact-controls";
 import { LIMITS } from "@/lib/limits";
 import { cn } from "@/lib/utils";
 import type { AnyBlock, BlockStyle, ButtonVariant } from "@/lib/types/blocks";
@@ -294,6 +295,7 @@ export function BlockControls({ block, onChange, onDelete, onDuplicate }: Props)
       ) : null}
 
       {block.kind === "menu" ? <MenuControls block={block} onChange={onChange} /> : null}
+      {block.kind === "contact" ? <ContactControls block={block} onChange={onChange} /> : null}
 
       {block.kind === "footer" ? (
         <Field
