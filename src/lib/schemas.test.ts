@@ -131,3 +131,28 @@ describe("menu block", () => {
     expect(parseBlocks([menu({ categories: many })]).ok).toBe(false);
   });
 });
+
+describe("contact block", () => {
+  const contact = (over: Record<string, unknown> = {}) => ({
+    id: "c1",
+    kind: "contact",
+    style: "light",
+    title: "Find us",
+    phone: "",
+    whatsapp: "",
+    address: "",
+    mapUrl: "",
+    hours: [{ day: "Sat", time: "10-22" }],
+    qrUrl: "",
+    ...over,
+  });
+  it("accepts a valid block and neutralises hostile links", () => {
+    const ok = parseBlocks([contact({ mapUrl: "javascript:alert(1)", qrUrl: "javascript:x" })]);
+    expect(ok.ok).toBe(true);
+    if (ok.ok) expect(ok.blocks[0]).toMatchObject({ mapUrl: "#", qrUrl: "#" });
+  });
+  it("enforces the hours limit", () => {
+    const hours = Array.from({ length: LIMITS.contactHours + 1 }, () => ({ day: "d", time: "t" }));
+    expect(parseBlocks([contact({ hours })]).ok).toBe(false);
+  });
+});

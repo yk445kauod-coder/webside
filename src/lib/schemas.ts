@@ -105,6 +105,19 @@ const blockSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     ...base,
+    kind: z.literal("contact"),
+    title: text(LIMITS.contactTitle),
+    phone: text(LIMITS.contactPhone),
+    whatsapp: text(LIMITS.contactPhone),
+    address: text(LIMITS.contactAddress),
+    mapUrl: text(LIMITS.url).transform(safeHref),
+    hours: z
+      .array(z.object({ day: text(LIMITS.contactDay), time: text(LIMITS.contactTime) }))
+      .max(LIMITS.contactHours),
+    qrUrl: text(LIMITS.qrUrl).transform((v) => (v ? safeHref(v) : "")),
+  }),
+  z.object({
+    ...base,
     kind: z.literal("menu"),
     title: text(LIMITS.menuTitle),
     currency: text(LIMITS.menuCurrency),

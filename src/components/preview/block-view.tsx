@@ -3,6 +3,7 @@ import { isExternalHref, safeHref, safeImageSrc } from "@/lib/safe-url";
 import { fontCssUrl, fontStack } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { MenuView } from "@/components/preview/menu-view";
+import { ContactView } from "@/components/preview/contact-view";
 
 const styleClasses: Record<BlockStyle, string> = {
   light: "bg-white text-ink",
@@ -352,6 +353,13 @@ function BlockInner({ block }: { block: AnyBlock }) {
       return (
         <section className={cn(sectionPadding, styleClasses[block.style], "py-10 md:py-14")}>
           <MenuView block={block} muted={mutedClasses[block.style]} />
+        </section>
+      );
+
+    case "contact":
+      return (
+        <section className={cn(sectionPadding, styleClasses[block.style], "py-10 md:py-14")} id="contact">
+          <ContactView block={block} muted={mutedClasses[block.style]} />
         </section>
       );
 

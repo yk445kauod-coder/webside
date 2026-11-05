@@ -19,6 +19,7 @@ export type BlockKind =
   | "stats"
   | "gallery"
   | "menu"
+  | "contact"
   | "footer";
 
 export type BlockStyle = "light" | "tint" | "ink";
@@ -125,6 +126,19 @@ export interface MenuBlock extends Block<"menu"> {
   categories: MenuCategory[];
 }
 
+export interface ContactBlock extends Block<"contact"> {
+  title: string;
+  phone: string;
+  /** Any format; normalised to a wa.me link when rendered. */
+  whatsapp: string;
+  address: string;
+  /** Link to the place on a map. */
+  mapUrl: string;
+  hours: Array<{ day: string; time: string }>;
+  /** When set, a QR code pointing here is drawn (the menu, the site, WhatsApp...). */
+  qrUrl: string;
+}
+
 export interface FooterBlock extends Block<"footer"> {
   text: string;
 }
@@ -143,6 +157,7 @@ export type AnyBlock =
   | StatsBlock
   | GalleryBlock
   | MenuBlock
+  | ContactBlock
   | FooterBlock;
 
 export const BLOCK_LABELS: Record<BlockKind, string> = {
@@ -159,6 +174,7 @@ export const BLOCK_LABELS: Record<BlockKind, string> = {
   stats: "Numbers",
   gallery: "Gallery",
   menu: "Menu",
+  contact: "Contact",
   footer: "Footer",
 };
 
@@ -176,6 +192,7 @@ export const BLOCK_KINDS: BlockKind[] = [
   "stats",
   "gallery",
   "menu",
+  "contact",
   "footer",
 ];
 

@@ -131,3 +131,37 @@ describe("large menus", () => {
     expect(run(5)).not.toContain("data-menu-search");
   });
 });
+
+describe("contact block", () => {
+  const contact = (extra: object = {}) =>
+    block({
+      kind: "contact",
+      title: "Find us",
+      phone: "+20 10 1234 5678",
+      whatsapp: "01012345678",
+      address: "12 Nile St",
+      mapUrl: "https://maps.example.com/x",
+      hours: [{ day: "Sat - Thu", time: "10:00 - 22:00" }],
+      qrUrl: "https://wa.me/201012345678",
+      ...extra,
+    });
+  const html = (b: never) => {
+    const r = renderSite("cafe", "Cafe", { home: { title: "Home", path: "/", blocks: [b] } });
+    if ("error" in r) throw new Error(r.error);
+    return r.files.map((f) => f.content.toString()).join("\n");
+  };
+  it("renders WhatsApp, phone, hours and an inline QR without scripts", () => {
+    const h = html(contact());
+    expect(h).toContain("https://wa.me/201012345678");
+    expect(h).toContain('href="tel:+201012345678"');
+    expect(h).toContain("10:00 - 22:00");
+    expect(h).toContain("<svg");
+    expect(h).toContain("aria-label=\"QR code\"");
+  });
+  it("drops hostile links and omits the QR when empty", () => {
+    const h = html(contact({ qrUrl: "", mapUrl: "javascript:alert(1)", whatsapp: "x" }));
+    expect(h).not.toContain("javascript:");
+    expect(h).not.toContain("QR code");
+    expect(h).not.toContain("wa.me");
+  });
+});

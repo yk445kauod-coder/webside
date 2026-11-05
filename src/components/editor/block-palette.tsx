@@ -77,6 +77,11 @@ const iconPaths: Record<BlockKind, ReactElement> = {
       <path d="M6 3v7a2 2 0 0 0 2 2v9M10 3v7M8 3v4M17 3c-2 1.5-3 4-3 7 0 1.5 1 2 2 2h1v9" />
     </>
   ),
+  contact: (
+    <>
+      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+    </>
+  ),
   footer: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -195,6 +200,22 @@ export function createBlock(kind: BlockKind, style: BlockStyle = "light"): AnyBl
           },
         ],
       };
+    case "contact":
+      return {
+        id,
+        kind: "contact",
+        style,
+        title: "Find us",
+        phone: "",
+        whatsapp: "",
+        address: "",
+        mapUrl: "",
+        hours: [
+          { day: "Sat - Thu", time: "10:00 - 22:00" },
+          { day: "Friday", time: "14:00 - 23:00" },
+        ],
+        qrUrl: "",
+      };
     case "footer":
       return { id, kind: "footer", style, text: "Your footer text" };
   }
@@ -213,6 +234,7 @@ const kinds: BlockKind[] = [
   "stats",
   "gallery",
   "menu",
+  "contact",
   "divider",
   "footer",
 ];
