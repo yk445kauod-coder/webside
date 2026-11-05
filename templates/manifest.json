@@ -1,0 +1,6 @@
+{
+  "base": "dynamic-app",
+  "tier": "dynamic-catalog",
+  "howTo": "cd templates/dynamic-app && cp .env.example .env.local && VITE_VERTICAL=<id> npm run build",
+  "verticals": ["cafe", "restaurant", "bakery", "salon", "clinic", "gym", "shop"]
+}
