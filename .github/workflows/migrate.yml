@@ -1,0 +1,16 @@
+name: Apply database migrations
+on:
+  push:
+    branches: [master]
+    paths: ["supabase/migrations/**", "scripts/apply-migrations.sh"]
+  workflow_dispatch:
+concurrency: migrate
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply pending migrations
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash scripts/apply-migrations.sh
