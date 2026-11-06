@@ -26,6 +26,17 @@ top of the site price.
 | Custom domain | 250 | — | extra |
 | Migration | 600 | — | extra |
 
+Per-plan limits (enforced in Postgres by `00005_plans_and_server_side_limits.sql`, mirrored in `PLAN_LIMITS`):
+
+| Plan | Pages | Blocks per page | Menu items per page |
+| --- | --- | --- | --- |
+| Menu & Catalog | 3 | 80 | 800 |
+| Business Website | 5 | 120 | 300 |
+| Dynamic Catalog | 5 | 120 | 800 |
+
+New sites start on Menu & Catalog; only SUDO changes a plan (audited). Sites already over a limit are
+grandfathered: they can edit and shrink but not grow past it.
+
 Rules: per-plan limits in `src/lib/limits.ts`; data isolated per customer; when a subscription
 ends the site can be exported or unpublished; admin checks are enforced in the backend
 (`is_sudo` / RLS); no secrets in the public repo.

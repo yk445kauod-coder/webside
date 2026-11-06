@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { uuidSchema } from "@/lib/schemas";
+import { isSitePlan, type SitePlan } from "@/lib/limits";
 import type { SubmissionStatus } from "@/lib/types/database";
 
 // NOTE: this is a "use server" module — every export is a public endpoint.
@@ -139,4 +140,15 @@ function parseUrl(input: string): string | null {
   } catch {
     return null;
   }
+}
+
+/** Change a site's package. Only SUDO can; the RPC checks `is_sudo()` and writes the audit log. */
+export async function setSitePlan(siteId: string, plan: SitePlan): Promise<ReviewResult> {
+  if (!uuidSchema.safeParse(siteId).success) return { ok: false, error: "Unknown site." };
+  if (!isSitePlan(plan)) return { ok: false, error: "Unknown plan." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("sudo_set_site_plan", { p_site_id: siteId, p_plan: plan });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/sudo", "layout");
+  return { ok: true };
 }

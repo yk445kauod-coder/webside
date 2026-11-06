@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ReviewModal } from "@/components/site/review-modal";
 import { Badge } from "@/components/ui/badge";
 import { submissionStatus } from "@/lib/submission-status";
+import { PLAN_LIMITS } from "@/lib/limits";
 import { formatDateTime } from "@/lib/utils";
 import type { SudoQueueItem } from "@/lib/queries/sudo";
 
@@ -109,6 +110,9 @@ function RequestCard({ item, onOpen }: { item: SudoQueueItem; onOpen: () => void
 
       <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
         <span className="rounded-md bg-ink-soft px-2 py-1 font-mono text-[11px]">v{revision.number}</span>
+        <span className="rounded-md bg-copper-soft px-2 py-1 text-[11px] font-medium text-copper">
+          {PLAN_LIMITS[site.plan ?? "menu"].label}
+        </span>
         <span>
           {pageCount} page{pageCount === 1 ? "" : "s"}
         </span>

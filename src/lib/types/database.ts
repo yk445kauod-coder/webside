@@ -1,3 +1,4 @@
+import type { SitePlan } from "../limits";
 import type { AnyBlock, SnapshotPage } from "./blocks";
 
 // ============================================================
@@ -24,6 +25,7 @@ export interface SiteRow {
   slug: string;
   description: string | null;
   template_key: string;
+  plan: SitePlan;
   created_at: string;
   updated_at: string;
 }

@@ -2,6 +2,22 @@
 // (zod validation). Keeping one copy means the UI can never let a customer type
 // something the server will then refuse to save.
 
+/** Packages. Enforced in Postgres (supabase/migrations/00005); a unit test keeps the numbers in sync. */
+export type SitePlan = "menu" | "business" | "dynamic";
+export const SITE_PLANS: SitePlan[] = ["menu", "business", "dynamic"];
+
+export const PLAN_LIMITS: Record<
+  SitePlan,
+  { label: string; pages: number; blocksPerPage: number; menuItemsPerPage: number }
+> = {
+  menu: { label: "Menu & Catalog", pages: 3, blocksPerPage: 80, menuItemsPerPage: 800 },
+  business: { label: "Business Website", pages: 5, blocksPerPage: 120, menuItemsPerPage: 300 },
+  dynamic: { label: "Dynamic Catalog", pages: 5, blocksPerPage: 120, menuItemsPerPage: 800 },
+};
+
+export const isSitePlan = (v: unknown): v is SitePlan =>
+  typeof v === "string" && (SITE_PLANS as string[]).includes(v);
+
 export const LIMITS = {
   heroTitle: 200,
   heroSubtitle: 500,
