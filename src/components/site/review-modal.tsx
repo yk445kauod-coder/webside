@@ -9,7 +9,8 @@ import { CloseButton, Dialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { isOpenStatus, submissionStatus } from "@/lib/submission-status";
 import { cn, formatDateTime } from "@/lib/utils";
-import { deletePaymentProof, getPaymentProofUrl, recordPublication, reviewSubmission, takeSubmission } from "@/app/sudo/actions";
+import { PLAN_LIMITS, SITE_PLANS, isSitePlan } from "@/lib/limits";
+import { deletePaymentProof, getPaymentProofUrl, recordPublication, reviewSubmission, setSitePlan, takeSubmission } from "@/app/sudo/actions";
 import type { SudoQueueItem } from "@/lib/queries/sudo";
 
 interface Props {
@@ -27,6 +28,7 @@ export function ReviewModal({ item, onClose }: Props) {
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState<null | string>(null);
   const [error, setError] = useState<string | null>(null);
+  const [plan, setPlan] = useState(site.plan ?? "menu");
 
   const page = revision.pages[pageKey];
   const meta = submissionStatus(submission.status);
@@ -66,6 +68,39 @@ export function ReviewModal({ item, onClose }: Props) {
               {revision.content_hash.slice(0, 10)}…
             </span>
           </p>
+          <label className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
+            Package
+            <select
+              value={plan}
+              disabled={busy !== null}
+              onChange={async (e) => {
+                const next = e.target.value;
+                if (!isSitePlan(next)) return;
+                const prev = plan;
+                setPlan(next);
+                setBusy("plan");
+                setError(null);
+                const res = await setSitePlan(site.id, next);
+                setBusy(null);
+                if (!res.ok) {
+                  setPlan(prev);
+                  setError(res.error ?? "Could not change the package.");
+                } else {
+                  router.refresh();
+                }
+              }}
+              className="rounded-lg border border-line bg-white px-2 py-1 text-sm text-ink"
+            >
+              {SITE_PLANS.map((p) => (
+                <option key={p} value={p}>
+                  {PLAN_LIMITS[p].label}
+                </option>
+              ))}
+            </select>
+            <span>
+              up to {PLAN_LIMITS[plan].pages} pages · {PLAN_LIMITS[plan].blocksPerPage} blocks per page
+            </span>
+          </label>
           {submission.note ? (
             <p className="mt-2 rounded-lg bg-orange-soft/60 px-3 py-2 text-sm text-ink">
               <span className="font-medium text-orange-ink">Customer note: </span>
