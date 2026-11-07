@@ -20,7 +20,8 @@ import {
 import { Wordmark } from "@/components/wordmark";
 import { Hero } from "@/components/marketing/hero";
 import { Reveal } from "@/components/marketing/reveal";
-import { buildWizardBlocks, defaultInput } from "@/lib/wizard";
+import { showcaseBlocks } from "@/lib/showcase";
+import { PLAN_LIMITS, type SitePlan } from "@/lib/limits";
 
 export const metadata: Metadata = {
   title: "WebSide — Build a website by answering questions",
@@ -43,18 +44,44 @@ const STEPS = [
   { n: "3", t: "Launch", d: "Hit one button. Your site is built, saved and ready to polish or send for review." },
 ];
 
+const PRICING: Array<{
+  plan: SitePlan;
+  setup: string;
+  from?: boolean;
+  monthly: string;
+  note: string;
+  features: string[];
+  featured?: boolean;
+}> = [
+  {
+    plan: "menu",
+    setup: "799",
+    monthly: "50",
+    note: "For cafés, restaurants and shops that need a menu or catalog online.",
+    features: ["Tabbed, list or grid menu", "WhatsApp, QR code and opening hours", "Lives at web-side.pages.dev/your-name"],
+  },
+  {
+    plan: "business",
+    setup: "1,499",
+    monthly: "50",
+    note: "A small business website with its own address.",
+    features: ["Your own yourname.pages.dev", "Motion graphics added by our team", "Contact, FAQ, gallery and more"],
+    featured: true,
+  },
+  {
+    plan: "dynamic",
+    setup: "1,499",
+    from: true,
+    monthly: "50",
+    note: "When you need orders, a database or an admin panel.",
+    features: ["Private database and backend, just for you", "Supabase or Firebase, your choice", "Export your data any time"],
+  },
+];
+
 export default function LandingPage() {
-  // The product shot is the real renderer fed by the real wizard generator,
+  // The product shot is the real renderer fed by real blocks (see lib/showcase.ts),
   // so it can never drift from what a new customer actually gets.
-  const showcase = buildWizardBlocks({
-    ...defaultInput("restaurant"),
-    name: "Corner & Co.",
-    slug: "corner-and-co",
-    tagline: "Fresh every morning, from our kitchen to your table.",
-    accent: "sunset",
-    look: "spotlight",
-    email: "hello@corner.co",
-  });
+  const showcase = showcaseBlocks();
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
@@ -189,6 +216,65 @@ export default function LandingPage() {
         </section>
 
         {/* Final CTA */}
+        {/* Pricing */}
+        <section id="pricing" className="mx-auto max-w-6xl px-4 py-24 sm:px-6" aria-labelledby="pricing-title">
+          <Reveal className="mx-auto mb-14 max-w-2xl text-center">
+            <p className="ws-eyebrow mb-3">Simple pricing, in EGP</p>
+            <h2 id="pricing-title" className="ws-h1 text-balance">
+              Build free. Pay when you go live.
+            </h2>
+            <p className="mt-4 text-muted">One setup fee, then 50 EGP a month. Custom domain +250, moving an existing site +600.</p>
+          </Reveal>
+          <ul className="grid gap-5 md:grid-cols-3">
+            {PRICING.map((p, i) => (
+              <li key={p.plan}>
+                <Reveal delay={0.08 * i} className="h-full">
+                <div
+                  className={
+                    "flex h-full flex-col rounded-3xl border p-7 " +
+                    (p.featured
+                      ? "border-transparent bg-ink text-white shadow-ws"
+                      : "border-line bg-surface text-ink shadow-ws-sm")
+                  }
+                >
+                  <h3 className="text-lg font-semibold">{PLAN_LIMITS[p.plan].label}</h3>
+                  <p className={"mt-2 text-sm " + (p.featured ? "text-white/70" : "text-muted")}>{p.note}</p>
+                  <p className="mt-6 flex items-baseline gap-2">
+                    {p.from ? <span className="text-sm text-muted">from</span> : null}
+                    <span className="ws-display text-4xl">{p.setup}</span>
+                    <span className={"text-sm " + (p.featured ? "text-white/70" : "text-muted")}>EGP setup</span>
+                  </p>
+                  <p className={"mt-1 text-sm " + (p.featured ? "text-white/70" : "text-muted")}>
+                    then {p.monthly} EGP / month
+                  </p>
+                  <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm">
+                    {[
+                      `Up to ${PLAN_LIMITS[p.plan].pages} pages`,
+                      `Up to ${PLAN_LIMITS[p.plan].menuItemsPerPage} menu items per page`,
+                      ...p.features,
+                    ].map((f) => (
+                      <li key={f} className="flex gap-2">
+                        <Check className={"mt-0.5 h-4 w-4 shrink-0 " + (p.featured ? "text-[#f2a65a]" : "text-success")} aria-hidden="true" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/signup"
+                    className={
+                      "mt-8 inline-flex h-12 items-center justify-center rounded-xl px-5 text-sm font-semibold " +
+                      (p.featured ? "ws-btn-grad" : "border border-line bg-white text-ink hover:bg-ink-soft")
+                    }
+                  >
+                    Start free
+                  </Link>
+                </div>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section className="ws-night relative isolate overflow-hidden">
           <div className="ws-aurora" aria-hidden="true">
             <i />
