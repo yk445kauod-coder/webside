@@ -10,9 +10,6 @@ import {
   useTransform,
 } from "motion/react";
 import { ArrowRight, Eye, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
-import { PreviewCanvas } from "@/components/preview/preview-canvas";
-import type { AnyBlock } from "@/lib/types/blocks";
-import { SHOWCASE_URL } from "@/lib/showcase";
 
 const fade = (i: number) => ({
   initial: { opacity: 0, y: 24 },
@@ -20,7 +17,13 @@ const fade = (i: number) => ({
   transition: { duration: 0.7, delay: 0.12 * i, ease: [0.22, 1, 0.36, 1] as const },
 });
 
-export function Hero({ blocks }: { blocks: AnyBlock[] }) {
+const PHONES = [
+  { src: "/showcase/menu-ar.webp", alt: "Arabic right-to-left menu in the café template", cls: "hidden sm:block -rotate-3 translate-y-6" },
+  { src: "/showcase/menu.webp", alt: "Café template: menu cards with prices", cls: "z-10 scale-105" },
+  { src: "/showcase/ai.webp", alt: "Café template: AI barista chat", cls: "hidden sm:block rotate-3 translate-y-6" },
+];
+
+export function Hero() {
   const reduce = useReducedMotion();
   const stage = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
@@ -109,9 +112,13 @@ export function Hero({ blocks }: { blocks: AnyBlock[] }) {
               aria-hidden="true"
               className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#b5482a]/35 to-[#e8772e]/35 blur-3xl"
             />
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-white text-left shadow-[0_40px_120px_-30px_rgba(181,72,42,0.55)]">
-              <PreviewCanvas blocks={blocks} title={SHOWCASE_URL} framed className="rounded-none border-0 shadow-none" />
-              <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white to-transparent" />
+            <div className="relative flex items-end justify-center gap-4 sm:gap-6">
+              {PHONES.map((p) => (
+                <div key={p.src} className={`w-[min(68vw,15rem)] shrink-0 overflow-hidden rounded-[2rem] border-[6px] border-ink bg-ink shadow-[0_40px_120px_-30px_rgba(181,72,42,0.55)] ${p.cls}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.src} alt={p.alt} width={300} height={510} loading="eager" className="block h-auto w-full" />
+                </div>
+              ))}
             </div>
 
             <FloatingChip className="-left-3 top-24 sm:-left-12" delay={0} icon={<Wand2 className="h-4 w-4" aria-hidden="true" />} tone="from-[#b5482a] to-[#2e7d87]">

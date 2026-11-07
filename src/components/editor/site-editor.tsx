@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { isOpenStatus } from "@/lib/submission-status";
+import { siteAddress } from "@/lib/wizard";
 import { LIMITS } from "@/lib/limits";
 import { cn } from "@/lib/utils";
 import type { AnyBlock, BlockKind, PageDraft } from "@/lib/types/blocks";
@@ -291,7 +292,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
     closeDialog();
     setSubmitNote("");
     setProofBlob(null);
-    showFlash(`Submitted version ${res.revisionNumber} for review. The owner reviews exactly this version.`);
+    showFlash(`Publish request sent (version ${res.revisionNumber}). We review exactly this version.`);
   }
 
   const hasContent = tabs.some((t) => t.blocks.length > 0);
@@ -495,7 +496,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
 
       {dialog === "submit" ? (
         <Dialog
-          title="Submit for review"
+          title="Request publish"
           onClose={closeDialog}
           footer={
             <>
@@ -503,18 +504,19 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
                 Cancel
               </Button>
               <Button onClick={handleSubmit} loading={busy} disabled={!hasContent}>
-                Submit site
+                Send publish request
               </Button>
             </>
           }
         >
           <p className="text-sm leading-relaxed text-muted">
-            Submitting freezes the current version and sends it to the owner. They review this exact
-            version — later edits don&apos;t change what they see until you submit again.
+            This freezes the current version and sends it to our team. We review this exact version and
+            publish it at {siteAddress(site.slug)}. Later edits don&apos;t change what we see until you
+            send a new request.
           </p>
           {!hasContent ? (
             <p className="rounded-lg bg-warning-soft px-3 py-2 text-sm text-warning">
-              Add some content before submitting.
+              Add some content before sending your request.
             </p>
           ) : null}
           <Field
