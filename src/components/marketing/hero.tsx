@@ -12,6 +12,7 @@ import {
 import { ArrowRight, Eye, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
 import { PreviewCanvas } from "@/components/preview/preview-canvas";
 import type { AnyBlock } from "@/lib/types/blocks";
+import { SHOWCASE_URL } from "@/lib/showcase";
 
 const fade = (i: number) => ({
   initial: { opacity: 0, y: 24 },
@@ -109,7 +110,7 @@ export function Hero({ blocks }: { blocks: AnyBlock[] }) {
               className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#b5482a]/35 to-[#e8772e]/35 blur-3xl"
             />
             <div className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-white text-left shadow-[0_40px_120px_-30px_rgba(181,72,42,0.55)]">
-              <PreviewCanvas blocks={blocks} title="corner-and-co.webside.dev" framed className="rounded-none border-0 shadow-none" />
+              <PreviewCanvas blocks={blocks} title={SHOWCASE_URL} framed className="rounded-none border-0 shadow-none" />
               <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white to-transparent" />
             </div>
 
