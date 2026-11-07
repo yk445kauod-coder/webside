@@ -26,17 +26,21 @@ import { Wordmark } from "@/components/wordmark";
 import { ScaledPreview } from "@/components/wizard/scaled-preview";
 import { createSiteFromWizard } from "@/app/dashboard/actions";
 import { cn, slugify } from "@/lib/utils";
-import { LIMITS } from "@/lib/limits";
+import { LIMITS, PLAN_LIMITS } from "@/lib/limits";
 import {
   ACCENTS,
   ACCENT_META,
+  HOURS_KEYS,
+  HOURS_PRESETS,
   LOOKS,
   LOOK_META,
   SECTION_KEYS,
+  SITES_HOST,
   SITE_TYPES,
   TYPE_PRESETS,
   buildWizardBlocks,
   defaultInput,
+  siteAddress,
   type SectionKey,
   type SiteType,
   type WizardInput,
@@ -90,7 +94,7 @@ export function SiteWizard() {
       const next = defaultInput(type);
       return detailsTouched
         ? { ...prev, type }
-        : { ...next, name: prev.name, slug: prev.slug, email: prev.email, accent: prev.accent, look: prev.look };
+        : { ...next, name: prev.name, slug: prev.slug, email: prev.email, phone: prev.phone, address: prev.address, accent: prev.accent, look: prev.look };
     });
     // Choosing a type is the whole step, so move on right away.
     window.setTimeout(() => go(1), 260);
@@ -148,7 +152,7 @@ export function SiteWizard() {
     window.setTimeout(() => router.push(`/dashboard/sites/${result.slug}`), reduce ? 0 : 1100);
   }
 
-  const previewTitle = `${input.slug || "your-site"}.webside.dev`;
+  const previewTitle = siteAddress(input.slug);
 
   return (
     <div
@@ -478,7 +482,7 @@ function StepName({
           placeholder="corner-and-co"
           className="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-[15px] outline-none"
         />
-        <span className="border-l border-line bg-ink-soft/60 px-4 py-3 font-mono text-sm text-muted">.webside.dev</span>
+        <span className="order-first border-r border-line bg-ink-soft/60 px-3 py-3 font-mono text-sm text-muted">{SITES_HOST}/</span>
       </div>
       <p className="mt-2 text-xs text-muted">We made this from your name. You can change it now or later.</p>
     </>
@@ -651,6 +655,62 @@ function StepDetails({
         ))}
       </div>
 
+      <label className="mb-1.5 mt-6 block text-sm font-semibold text-ink" htmlFor="wiz-phone">
+        WhatsApp / phone <span className="font-normal text-muted">(optional)</span>
+      </label>
+      <input
+        id="wiz-phone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        value={input.phone}
+        onChange={(e) => onChange({ phone: e.target.value })}
+        placeholder="+20 100 123 4567"
+        maxLength={LIMITS.contactPhone}
+        className={inputClass}
+      />
+      <p className="mt-1.5 text-xs text-muted">Customers get a WhatsApp button and a call button.</p>
+
+      <label className="mb-1.5 mt-6 block text-sm font-semibold text-ink" htmlFor="wiz-address">
+        Address <span className="font-normal text-muted">(optional)</span>
+      </label>
+      <input
+        id="wiz-address"
+        autoComplete="street-address"
+        value={input.address}
+        onChange={(e) => onChange({ address: e.target.value })}
+        placeholder="12 Safiya Zaghloul St, Alexandria"
+        maxLength={LIMITS.contactAddress}
+        className={inputClass}
+      />
+
+      <p className="mb-2 mt-6 text-sm font-semibold text-ink">Opening hours</p>
+      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Opening hours">
+        {HOURS_KEYS.map((k) => (
+          <button
+            key={k}
+            type="button"
+            role="radio"
+            aria-checked={input.hours === k}
+            onClick={() => onChange({ hours: k })}
+            className={cn(
+              "rounded-full border px-3.5 py-1.5 text-sm transition",
+              input.hours === k
+                ? "border-copper bg-copper-soft font-semibold text-copper"
+                : "border-line bg-white text-muted hover:border-copper hover:text-copper",
+            )}
+          >
+            {HOURS_PRESETS[k].label}
+            {k === preset.hours && k !== "none" && input.hours !== k ? <span className="ml-1 text-xs text-copper">· suggested</span> : null}
+          </button>
+        ))}
+      </div>
+      {input.hours !== "none" ? (
+        <p className="mt-2 text-xs text-muted">
+          {HOURS_PRESETS[input.hours].rows.map((r) => `${r.day}: ${r.time}`).join(" · ")}. You can change this in the editor.
+        </p>
+      ) : null}
+
       <label className="mb-1.5 mt-6 block text-sm font-semibold text-ink" htmlFor="wiz-email">
         Contact email <span className="font-normal text-muted">(optional)</span>
       </label>
@@ -738,7 +798,8 @@ function StepLaunch({ input, error }: { input: WizardInput; error: string | null
   const rows: [string, string][] = [
     ["Type", TYPE_PRESETS[input.type].label],
     ["Name", input.name || "—"],
-    ["Address", `${input.slug || "your-site"}.webside.dev`],
+    ["Address", siteAddress(input.slug)],
+    ["Best package", `${PLAN_LIMITS[TYPE_PRESETS[input.type].plan].label}`],
     ["Colour", ACCENT_META[input.accent].label],
     ["Sections", `${input.sections.length} on`],
   ];
