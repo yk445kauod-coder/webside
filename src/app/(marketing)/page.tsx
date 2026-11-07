@@ -20,7 +20,6 @@ import {
 import { Wordmark } from "@/components/wordmark";
 import { Hero } from "@/components/marketing/hero";
 import { Reveal } from "@/components/marketing/reveal";
-import { showcaseBlocks } from "@/lib/showcase";
 import { PLAN_LIMITS, type SitePlan } from "@/lib/limits";
 
 export const metadata: Metadata = {
@@ -58,7 +57,7 @@ const PRICING: Array<{
     setup: "799",
     monthly: "50",
     note: "For cafés, restaurants and shops that need a menu or catalog online.",
-    features: ["Tabbed, list or grid menu", "WhatsApp, QR code and opening hours", "Lives at web-side.pages.dev/your-name"],
+    features: ["Tabbed, list or grid menu", "WhatsApp, QR code and opening hours", "Lives at web-side.pages.dev/your-name", "Static: every later menu or order change is a redeploy, +50 EGP"],
   },
   {
     plan: "business",
@@ -74,15 +73,11 @@ const PRICING: Array<{
     from: true,
     monthly: "50",
     note: "When you need orders, a database or an admin panel.",
-    features: ["Private database and backend, just for you", "Supabase or Firebase, your choice", "Export your data any time"],
+    features: ["Edit menu and orders yourself from a dashboard; saved changes publish as a new commit", "Real backend (Supabase, Firebase or Neon): connect your own, or we set it up for a modest fee", "Export your data any time"],
   },
 ];
 
 export default function LandingPage() {
-  // The product shot is the real renderer fed by real blocks (see lib/showcase.ts),
-  // so it can never drift from what a new customer actually gets.
-  const showcase = showcaseBlocks();
-
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
       <header className="ws-night fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-[#1d1310]/70 backdrop-blur-xl">
@@ -102,7 +97,7 @@ export default function LandingPage() {
       </header>
 
       <main id="main" className="flex-1">
-        <Hero blocks={showcase} />
+        <Hero />
 
         {/* Who it's for — endless marquee */}
         <section aria-label="Sites you can build" className="overflow-hidden border-b border-line bg-surface py-6">
