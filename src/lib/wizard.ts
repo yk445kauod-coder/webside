@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LIMITS } from "@/lib/limits";
+import { LIMITS, type SitePlan } from "@/lib/limits";
 import type { AnyBlock, BlockAccent, BlockStyle, PageDraft } from "@/lib/types/blocks";
 
 // ============================================================
@@ -35,6 +35,40 @@ export interface Offering {
   text: string;
 }
 
+export const HOURS_KEYS = ["none", "office", "shop", "cafe", "late"] as const;
+export type HoursKey = (typeof HOURS_KEYS)[number];
+
+/** One-tap opening-hours presets (editable afterwards in the editor). */
+export const HOURS_PRESETS: Record<HoursKey, { label: string; rows: Array<{ day: string; time: string }> }> = {
+  none: { label: "Skip for now", rows: [] },
+  office: {
+    label: "Office hours",
+    rows: [
+      { day: "Sat – Thu", time: "9:00 am – 5:00 pm" },
+      { day: "Friday", time: "Closed" },
+    ],
+  },
+  shop: {
+    label: "Shop hours",
+    rows: [
+      { day: "Sat – Thu", time: "10:00 am – 10:00 pm" },
+      { day: "Friday", time: "2:00 pm – 10:00 pm" },
+    ],
+  },
+  cafe: {
+    label: "Café, all day",
+    rows: [
+      { day: "Sat – Thu", time: "8:00 am – 1:00 am" },
+      { day: "Friday", time: "1:00 pm – 2:00 am" },
+    ],
+  },
+  late: { label: "Open daily, late", rows: [{ day: "Every day", time: "12:00 pm – 2:00 am" }] },
+};
+
+/** Where published sites live. Mirrors PUBLIC_SITES_ORIGIN used by the publisher. */
+export const SITES_HOST = "web-side.pages.dev";
+export const siteAddress = (slug: string) => `${SITES_HOST}/${slug || "your-site"}`;
+
 export interface WizardInput {
   type: SiteType;
   name: string;
@@ -43,6 +77,10 @@ export interface WizardInput {
   about: string;
   offerings: Offering[];
   email: string;
+  /** WhatsApp / phone number, any format. */
+  phone: string;
+  address: string;
+  hours: HoursKey;
   accent: BlockAccent;
   look: Look;
   sections: SectionKey[];
@@ -58,6 +96,12 @@ export interface TypePreset {
   about: string;
   quote: { text: string; cite: string };
   cta: string;
+  /** Suggested opening hours for this kind of business. */
+  hours: HoursKey;
+  /** Which package usually fits this kind of site. */
+  plan: SitePlan;
+  /** Sample menu items per offering, used while the offering text is still the default. */
+  menuSeed?: Array<Array<{ name: string; description: string; price: string; badge?: string }>>;
 }
 
 export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
@@ -79,6 +123,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "We are a small team that cares about doing the work properly. Tell us what you need and we will tell you honestly how we can help.",
     quote: { text: "They made a complicated project feel easy.", cite: "A happy client" },
     cta: "Book a call",
+    hours: "office",
+    plan: "business",
   },
   portfolio: {
     label: "Portfolio",
@@ -98,6 +144,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "I work with people who care about the details. Here is a little about how I think, what I make and what I am looking for next.",
     quote: { text: "Rare to find someone this thoughtful and this fast.", cite: "A past collaborator" },
     cta: "Work with me",
+    hours: "none",
+    plan: "business",
   },
   shop: {
     label: "Online shop",
@@ -117,6 +165,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "We started with one product and a lot of care. Every order is packed by hand and sent with a note.",
     quote: { text: "Arrived fast and exactly as pictured. Ordering again.", cite: "A verified buyer" },
     cta: "Order now",
+    hours: "shop",
+    plan: "menu",
   },
   restaurant: {
     label: "Restaurant or cafe",
@@ -127,15 +177,34 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
       "Come hungry. Leave happy.",
     ],
     aboutLabel: "Our kitchen",
-    offeringsHeading: "On the menu",
+    offeringsHeading: "Our menu",
     offerings: [
-      { heading: "Breakfast", text: "Baked and brewed before the doors open." },
-      { heading: "Lunch", text: "Seasonal plates made with local ingredients." },
-      { heading: "Dessert", text: "Something sweet to finish, made in house." },
+      { heading: "Coffee", text: "Freshly roasted, brewed to order." },
+      { heading: "Cold drinks", text: "Juices, lemonade and iced favourites." },
+      { heading: "Bakery", text: "Baked every morning, made in house." },
+    ],
+    menuSeed: [
+      [
+        { name: "Espresso", description: "Double shot, single-origin beans.", price: "55" },
+        { name: "Flat White", description: "Silky milk, two shots.", price: "85", badge: "Popular" },
+        { name: "Turkish Coffee", description: "Slow-cooked, cardamom optional.", price: "50" },
+      ],
+      [
+        { name: "Fresh Orange", description: "Squeezed to order.", price: "70" },
+        { name: "Mint Lemonade", description: "Fresh mint, a little sugar.", price: "65" },
+        { name: "Hibiscus Iced Tea", description: "Karkade, lightly sweet.", price: "60" },
+      ],
+      [
+        { name: "Butter Croissant", description: "Baked every morning.", price: "60" },
+        { name: "Pistachio Roll", description: "Warm, with whipped cream.", price: "90", badge: "New" },
+        { name: "Honey Feteer", description: "Honey and cream, for sharing.", price: "120" },
+      ],
     ],
     about: "We cook the way we eat at home: simple, generous and fresh. Drop in, grab a table and stay as long as you like.",
     quote: { text: "The best meal we have had all year.", cite: "A regular guest" },
     cta: "Reserve a table",
+    hours: "cafe",
+    plan: "menu",
   },
   event: {
     label: "Event or wedding",
@@ -155,6 +224,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "We are so happy you are part of this. Here is everything you need, and if anything is missing, just ask.",
     quote: { text: "Cannot wait to celebrate with you all.", cite: "The hosts" },
     cta: "RSVP",
+    hours: "none",
+    plan: "business",
   },
   personal: {
     label: "Personal or blog",
@@ -174,6 +245,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "Hi, I am glad you are here. This is where I share what I am working on and what I am curious about.",
     quote: { text: "I read every post. Please keep writing.", cite: "A reader" },
     cta: "Say hello",
+    hours: "none",
+    plan: "business",
   },
   agency: {
     label: "Agency or studio",
@@ -193,6 +266,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "We are a small studio with big standards. We keep teams tight, so the people you meet are the people who do the work.",
     quote: { text: "They felt like part of our team from day one.", cite: "A founder we worked with" },
     cta: "Start a project",
+    hours: "office",
+    plan: "business",
   },
   nonprofit: {
     label: "Nonprofit or community",
@@ -212,6 +287,8 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
     about: "We exist to make a real difference where we live. Here is what we do, why it matters and how you can be part of it.",
     quote: { text: "Because of this team, our street is a better place.", cite: "A neighbour" },
     cta: "Get involved",
+    hours: "office",
+    plan: "business",
   },
 };
 
@@ -242,6 +319,10 @@ export function defaultInput(type: SiteType = "business"): WizardInput {
     about: p.about,
     offerings: p.offerings.map((o) => ({ ...o })),
     email: "",
+    phone: "",
+    address: "",
+    // Never invent opening hours: the owner opts in (the preset only marks a suggestion).
+    hours: "none",
     accent: "indigo",
     look: "spotlight",
     sections: ["about", "offerings", "quote", "cta", "contact"],
@@ -294,7 +375,10 @@ export function buildWizardBlocks(input: WizardInput): AnyBlock[] {
         text: clip(o.text, LIMITS.columnText),
       }));
     if (cols.length > 0 && input.type === "restaurant") {
-      // Restaurants get a real menu: each answer becomes a category the owner can fill in.
+      // Restaurants get a real menu. While an offering still has its default text we fill the
+      // category with sample items (clearly editable); once the owner rewrites it, we respect that.
+      const defaults = preset.offerings;
+      const seed = preset.menuSeed ?? [];
       blocks.push({
         id: id(),
         kind: "menu",
@@ -302,20 +386,31 @@ export function buildWizardBlocks(input: WizardInput): AnyBlock[] {
         accent,
         title: preset.offeringsHeading,
         currency: "EGP",
-        view: "list",
-        categories: cols.map((c) => ({
-          name: clip(c.heading, LIMITS.menuCategoryName),
-          items: [
-            {
-              name: clip(c.heading, LIMITS.menuItemName),
-              description: clip(c.text, LIMITS.menuItemDescription),
-              price: "",
-              image: "",
-              badge: "",
-              available: true,
-            },
-          ],
-        })),
+        view: cols.length >= 3 ? "tabs" : "list",
+        categories: cols.map((c, i) => {
+          const untouched = defaults[i] && defaults[i].heading === c.heading && defaults[i].text === c.text;
+          const items =
+            untouched && seed[i]
+              ? seed[i].map((it) => ({
+                  name: clip(it.name, LIMITS.menuItemName),
+                  description: clip(it.description, LIMITS.menuItemDescription),
+                  price: it.price,
+                  image: "",
+                  badge: it.badge ?? "",
+                  available: true,
+                }))
+              : [
+                  {
+                    name: clip(c.heading, LIMITS.menuItemName),
+                    description: clip(c.text, LIMITS.menuItemDescription),
+                    price: "",
+                    image: "",
+                    badge: "",
+                    available: true,
+                  },
+                ];
+          return { name: clip(c.heading, LIMITS.menuCategoryName), items };
+        }),
       });
     } else if (cols.length > 0) {
       blocks.push({ id: id(), kind: "heading", style: "tint", accent, level: 2, text: preset.offeringsHeading });
@@ -346,7 +441,29 @@ export function buildWizardBlocks(input: WizardInput): AnyBlock[] {
     });
   }
 
-  if (has("contact")) {
+  const phone = input.phone.trim().slice(0, LIMITS.contactPhone);
+  const address = input.address.trim().slice(0, LIMITS.contactAddress);
+  const hours = HOURS_PRESETS[input.hours]?.rows ?? [];
+  const hasDetails = Boolean(phone || address || hours.length > 0);
+  if (has("contact") && hasDetails) {
+    // A real contact card: WhatsApp button, call, map-less address, hours and a QR to the site.
+    blocks.push({
+      id: id(),
+      kind: "contact",
+      style: "ink",
+      accent,
+      title: "Get in touch",
+      phone,
+      whatsapp: phone,
+      address,
+      mapUrl: "",
+      hours: hours.slice(0, LIMITS.contactHours).map((h) => ({ day: h.day, time: h.time })),
+      qrUrl: input.slug ? `https://${siteAddress(input.slug)}` : "",
+    });
+    if (email) {
+      blocks.push({ id: id(), kind: "paragraph", style: "ink", accent, text: `Or write to ${email}.` });
+    }
+  } else if (has("contact")) {
     blocks.push({ id: id(), kind: "heading", style: "ink", accent, level: 2, text: "Get in touch" });
     blocks.push({
       id: id(),
@@ -390,6 +507,9 @@ export const wizardSchema = z.object({
     )
     .max(3),
   email: z.string().trim().max(120),
+  phone: z.string().trim().max(LIMITS.contactPhone).default(""),
+  address: z.string().trim().max(LIMITS.contactAddress).default(""),
+  hours: z.enum(HOURS_KEYS).default("none"),
   accent: z.enum(ACCENTS),
   look: z.enum(LOOKS),
   sections: z.array(z.enum(SECTION_KEYS)).max(SECTION_KEYS.length),
