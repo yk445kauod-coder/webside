@@ -88,3 +88,53 @@ describe("restaurant menu", () => {
     expect(kinds).not.toContain("columns");
   });
 });
+
+describe("smarter onboarding", () => {
+  it("builds a real contact card when phone, address or hours are given", () => {
+    const blocks = buildWizardBlocks(
+      base({ slug: "corner", phone: "+20 100 123 4567", address: "12 Safiya Zaghloul St", hours: "cafe" }),
+    );
+    const contact = blocks.find((b) => b.kind === "contact");
+    expect(contact).toMatchObject({
+      whatsapp: "+20 100 123 4567",
+      qrUrl: "https://web-side.pages.dev/corner",
+    });
+    expect(contact && "hours" in contact ? contact.hours.length : 0).toBe(2);
+    expect(parseBlocks(blocks).ok).toBe(true);
+  });
+
+  it("keeps the simple contact text when no details are given", () => {
+    const kinds = buildWizardBlocks(base({ hours: "none" })).map((b) => b.kind);
+    expect(kinds).not.toContain("contact");
+  });
+
+  it("seeds a café with a priced, tabbed menu until the owner rewrites it", () => {
+    const blocks = buildWizardBlocks({ ...defaultInput("restaurant"), name: "Bunn" });
+    const menu = blocks.find((b) => b.kind === "menu");
+    expect(menu).toMatchObject({ view: "tabs", currency: "EGP" });
+    const items = menu && "categories" in menu ? menu.categories.flatMap((c) => c.items) : [];
+    expect(items.length).toBeGreaterThanOrEqual(9);
+    expect(items.every((i) => i.price !== "")).toBe(true);
+
+    const input = defaultInput("restaurant");
+    input.offerings[0] = { heading: "Shisha", text: "Our own blends." };
+    const custom = buildWizardBlocks({ ...input, name: "Bunn" }).find((b) => b.kind === "menu");
+    const first = custom && "categories" in custom ? custom.categories[0] : null;
+    expect(first?.name).toBe("Shisha");
+    expect(first?.items).toHaveLength(1);
+  });
+
+  it("stays valid for every site type with contact details", () => {
+    for (const type of SITE_TYPES) {
+      const blocks = buildWizardBlocks({ ...defaultInput(type), name: "T", phone: "01001234567", slug: "t" });
+      expect(parseBlocks(blocks).ok, type).toBe(true);
+    }
+  });
+
+  it("accepts old payloads without the new fields", () => {
+    const { phone: _p, address: _a, hours: _h, ...old } = base();
+    void _p; void _a; void _h;
+    const parsed = wizardSchema.safeParse(old);
+    expect(parsed.success).toBe(true);
+  });
+});
