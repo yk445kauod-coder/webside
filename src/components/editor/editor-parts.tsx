@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { History, Send } from "lucide-react";
 import { PreviewCanvas } from "@/components/preview/preview-canvas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,6 +74,7 @@ export function EditorTopBar({
           Preview
         </Button>
         <Button size="sm" variant="outline" onClick={onRevision}>
+          <History className="h-4 w-4 sm:hidden" aria-hidden="true" />
           <span className="rounded bg-ink-soft px-1.5 text-[11px] font-semibold">
             {revisionCount}
           </span>
@@ -80,8 +82,15 @@ export function EditorTopBar({
           <span className="sr-only sm:hidden">Versions</span>
         </Button>
         <Button size="sm" onClick={onSubmit} disabled={isOpenSubmission}>
-          {isOpenSubmission ? "In review" : "Submit"}
-          <span className="hidden sm:inline">{isOpenSubmission ? "" : "for review"}</span>
+          {isOpenSubmission ? (
+            "In review"
+          ) : (
+            <>
+              <Send className="h-4 w-4 sm:hidden" aria-hidden="true" />
+              <span className="sm:hidden">Publish</span>
+              <span className="hidden sm:inline">Request publish</span>
+            </>
+          )}
         </Button>
       </div>
     </header>
