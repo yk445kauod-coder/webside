@@ -15,6 +15,15 @@ export const PLAN_LIMITS: Record<
   dynamic: { label: "Dynamic Catalog", pages: 5, blocksPerPage: 120, menuItemsPerPage: 800 },
 };
 
+/** Prices in EGP. Mirrors plan_monthly_price_egp() and the edit fee in supabase/migrations/00008. */
+export const PLAN_PRICING_EGP: Record<SitePlan, { monthly: number; from?: boolean }> = {
+  menu: { monthly: 799 },
+  business: { monthly: 1499 },
+  dynamic: { monthly: 1499, from: true },
+};
+export const EDIT_FEE_EGP = 50;
+export const ADDON_PRICES_EGP = { domain: 250, migration: 600 } as const;
+
 export const isSitePlan = (v: unknown): v is SitePlan =>
   typeof v === "string" && (SITE_PLANS as string[]).includes(v);
 
