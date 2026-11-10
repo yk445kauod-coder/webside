@@ -41,7 +41,7 @@ export function EditorTopBar({
   isOpenSubmission: boolean;
 }) {
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-line bg-surface px-3 sm:px-4">
+    <header className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-line bg-surface px-3 py-1.5 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <button
           type="button"
@@ -68,7 +68,7 @@ export function EditorTopBar({
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex w-full shrink-0 items-center justify-end gap-1.5 sm:w-auto sm:gap-2">
         <SaveIndicator state={saveState} error={saveError} onRetry={onRetrySave} />
         <Button size="sm" variant="outline" onClick={onPreview}>
           Preview
@@ -81,7 +81,7 @@ export function EditorTopBar({
           <span className="hidden sm:inline">Versions</span>
           <span className="sr-only sm:hidden">Versions</span>
         </Button>
-        <Button size="sm" onClick={onSubmit} disabled={isOpenSubmission}>
+        <Button size="sm" onClick={onSubmit} disabled={isOpenSubmission} className="shrink-0">
           {isOpenSubmission ? (
             "In review"
           ) : (
