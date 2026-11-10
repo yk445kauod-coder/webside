@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server.edge";
 import { SiteDocument, type NavItem } from "@/components/preview/site-document";
 import type { SiteSnapshot } from "@/lib/types/blocks";
 import { pathSegments } from "./slug";
+import { toItems } from "@/puck/legacy";
 
 export interface RenderedFile {
   /** Path inside the repo, e.g. sites/my-shop/about/index.html */
@@ -42,7 +43,14 @@ const clean = (t: string, max: number) => {
 
 /** A search/social description taken from the page's own words (first hero subtitle or paragraph). */
 export function pageDescription(blocks: Blocks): string {
+  for (const it of toItems(blocks as unknown[])) {
+    const p = it.props as Record<string, unknown>;
+    const txt = typeof p.description === "string" ? p.description : typeof p.text === "string" && it.type === "Text" ? p.text : "";
+    const plain = txt.replace(/<[^>]*>/g, " ");
+    if (plain.trim()) return clean(plain, 160);
+  }
   for (const b of blocks) {
+    if (!("kind" in b)) continue;
     if (b.kind === "hero" && b.subtitle.trim()) return clean(b.subtitle, 160);
     if (b.kind === "paragraph" && b.text.trim()) return clean(b.text, 160);
   }
@@ -51,7 +59,13 @@ export function pageDescription(blocks: Blocks): string {
 
 /** First http(s) image on the page, used as the social-share preview. */
 export function pageImage(blocks: Blocks): string {
+  for (const it of toItems(blocks as unknown[])) {
+    const p = it.props as { src?: unknown; image?: { source?: { src?: unknown } } };
+    const src = typeof p.src === "string" ? p.src : p.image?.source?.src;
+    if (typeof src === "string" && /^https?:\/\//i.test(src)) return src;
+  }
   for (const b of blocks) {
+    if (!("kind" in b)) continue;
     if (b.kind === "image" && /^https?:\/\//i.test(b.src)) return b.src;
     if (b.kind === "menu") {
       for (const c of b.categories) {

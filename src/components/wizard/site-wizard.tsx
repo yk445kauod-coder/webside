@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { AgentChat } from "./agent-chat";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -47,13 +48,13 @@ import {
 } from "@/lib/wizard";
 
 const TYPE_ICONS: Record<SiteType, { icon: LucideIcon; grad: string }> = {
-  business: { icon: Briefcase, grad: "from-[#b5482a] to-[#e8772e]" },
+  business: { icon: Briefcase, grad: "from-[#E4502D] to-[#FD6B47]" },
   portfolio: { icon: Palette, grad: "from-fuchsia-500 to-pink-500" },
   shop: { icon: ShoppingBag, grad: "from-orange-500 to-amber-400" },
   restaurant: { icon: UtensilsCrossed, grad: "from-rose-500 to-orange-400" },
-  event: { icon: PartyPopper, grad: "from-[#e8772e] to-[#b5482a]" },
+  event: { icon: PartyPopper, grad: "from-[#FD6B47] to-[#E4502D]" },
   personal: { icon: PenLine, grad: "from-emerald-500 to-teal-400" },
-  agency: { icon: Rocket, grad: "from-[#2e7d87] to-[#6fb7ae]" },
+  agency: { icon: Rocket, grad: "from-[#2F5D8C] to-[#7FA6D1]" },
   nonprofit: { icon: HeartHandshake, grad: "from-pink-500 to-rose-400" },
 };
 
@@ -144,7 +145,7 @@ export function SiteWizard() {
           spread: 75,
           startVelocity: 48,
           origin: { x, y: 0.7 },
-          colors: ["#b5482a", "#2e7d87", "#e8772e", "#f2a65a", "#ffffff"],
+          colors: ["#E4502D", "#2F5D8C", "#FD6B47", "#FF9B7F", "#ffffff"],
         });
       burst(0.2);
       burst(0.8);
@@ -169,7 +170,7 @@ export function SiteWizard() {
       {/* soft background glow */}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
         <div className="absolute -left-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-copper/15 blur-3xl" />
-        <div className="absolute -right-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[#e8772e]/15 blur-3xl" />
+        <div className="absolute -right-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[#FD6B47]/15 blur-3xl" />
       </div>
 
       <header className="relative z-10 flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
@@ -367,6 +368,7 @@ export function SiteWizard() {
           </motion.div>
         ) : null}
       </AnimatePresence>
+      <AgentChat />
     </div>
   );
 }

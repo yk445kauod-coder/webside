@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Sans_Arabic, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 import { PwaRegister } from "@/components/pwa/pwa";
 
 // Brand type: IBM Plex Sans Arabic for Arabic, IBM Plex Sans for Latin text,
@@ -51,7 +52,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#b5482a",
+  themeColor: "#E4502D",
 };
 
 export default function RootLayout({
@@ -63,7 +64,9 @@ export default function RootLayout({
         <a href="#main" className="ws-skip">
           Skip to content
         </a>
+        <webside-logo mode="splash" once="" />
         {children}
+        <Script src="/webside-logo.js" strategy="afterInteractive" />
         <PwaRegister />
       </body>
     </html>

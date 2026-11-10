@@ -54,7 +54,7 @@ export function Hero() {
           {...fade(0)}
           className="ws-glass mx-auto mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium text-white/90"
         >
-          <Sparkles className="h-4 w-4 text-[#f2a65a]" aria-hidden="true" />
+          <Sparkles className="h-4 w-4 text-[#FF9B7F]" aria-hidden="true" />
           Build a website by answering questions
         </motion.p>
 
@@ -110,7 +110,7 @@ export function Hero() {
           >
             <div
               aria-hidden="true"
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#b5482a]/35 to-[#e8772e]/35 blur-3xl"
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#E4502D]/35 to-[#FD6B47]/35 blur-3xl"
             />
             <div className="relative flex items-end justify-center gap-4 sm:gap-6">
               {PHONES.map((p) => (
@@ -121,13 +121,13 @@ export function Hero() {
               ))}
             </div>
 
-            <FloatingChip className="-left-3 top-24 sm:-left-12" delay={0} icon={<Wand2 className="h-4 w-4" aria-hidden="true" />} tone="from-[#b5482a] to-[#2e7d87]">
+            <FloatingChip className="-left-3 top-24 sm:-left-12" delay={0} icon={<Wand2 className="h-4 w-4" aria-hidden="true" />} tone="from-[#E4502D] to-[#2F5D8C]">
               Guided builder
             </FloatingChip>
-            <FloatingChip className="-right-3 top-44 sm:-right-12" delay={1.2} icon={<Eye className="h-4 w-4" aria-hidden="true" />} tone="from-[#e8772e] to-[#f2a65a]">
+            <FloatingChip className="-right-3 top-44 sm:-right-12" delay={1.2} icon={<Eye className="h-4 w-4" aria-hidden="true" />} tone="from-[#FD6B47] to-[#FF9B7F]">
               Live preview
             </FloatingChip>
-            <FloatingChip className="-left-2 bottom-24 sm:-left-8" delay={2.2} icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} tone="from-[#1f8f63] to-[#6fb7ae]">
+            <FloatingChip className="-left-2 bottom-24 sm:-left-8" delay={2.2} icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} tone="from-[#1f8f63] to-[#7FA6D1]">
               Reviewed before it goes live
             </FloatingChip>
           </motion.div>

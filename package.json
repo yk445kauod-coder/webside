@@ -17,11 +17,13 @@
     "cf:pages:preview": "npm run cf:pages:build && wrangler pages dev pages-out --compatibility-date=2026-10-01 --compatibility-flags=nodejs_compat"
   },
   "dependencies": {
+    "@puckeditor/core": "^0.24.1-canary.d05542f4",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
     "canvas-confetti": "^1.9.4",
+    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.59.0",
+    "lucide-react": "^1.70.0",
     "motion": "^14.3.0",
     "next": "16.4.2",
     "react": "19.3.0",

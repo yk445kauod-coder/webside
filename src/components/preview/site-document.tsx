@@ -1,5 +1,7 @@
 import type { AnyBlock } from "@/lib/types/blocks";
-import { BlockView } from "./block-view";
+import { Render } from "@puckeditor/core/rsc";
+import serverConf from "@/puck/server";
+import { toItems } from "@/puck/legacy";
 
 export interface NavItem {
   title: string;
@@ -37,9 +39,10 @@ export function SiteDocument({
         </nav>
       ) : null}
       <main className="flex flex-1 flex-col">
-        {blocks.map((b) => (
-          <BlockView key={b.id} block={b} />
-        ))}
+        <Render
+          config={serverConf as never}
+          data={{ root: { props: {} }, content: toItems(blocks as unknown[]) } as never}
+        />
       </main>
     </div>
   );

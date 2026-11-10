@@ -1,3 +1,5 @@
+import { isPuckItem } from "@/puck/legacy";
+import { sanitizeItems } from "@/puck/sanitize";
 import { z } from "zod";
 import { LIMITS } from "@/lib/limits";
 import { safeHref, safeImageSrc } from "@/lib/safe-url";
@@ -151,6 +153,12 @@ export const blocksSchema = z.array(blockSchema).max(LIMITS.blocksPerPage);
 export function parseBlocks(
   input: unknown,
 ): { ok: true; blocks: AnyBlock[] } | { ok: false; error: string } {
+  // Pages written by the Puck editor are {type, props} items; they have their own sanitiser.
+  // (Typed as AnyBlock[] at this boundary until the editor types are widened.)
+  if (Array.isArray(input) && input.some(isPuckItem)) {
+    const r = sanitizeItems(input.filter(isPuckItem));
+    return r.ok ? { ok: true, blocks: r.items as unknown as AnyBlock[] } : r;
+  }
   const parsed = blocksSchema.safeParse(input);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
