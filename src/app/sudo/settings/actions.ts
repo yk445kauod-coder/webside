@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser, isSudoUser } from "@/lib/auth";
+import { isPaymentMethod } from "@/lib/payment-methods";
 
 // Every export here is a public endpoint: each action re-checks SUDO, and the settings table's
 // RLS policies (settings_all_sudo) enforce it again in Postgres.
@@ -21,6 +22,21 @@ export async function saveInstapayLink(value: string): Promise<Result> {
   const { error } = await supabase
     .from("settings")
     .upsert({ key: "instapay_link", value: parsed.data, is_public: true, description: "InstaPay payment link/handle shown to customers" });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/sudo/settings");
+  return { ok: true };
+}
+
+export async function savePaymentAccounts(accounts: Record<string, string>): Promise<Result> {
+  if (!(await isSudoUser())) return NOT_ALLOWED;
+  const parsed = z.record(z.string(), z.string().trim().max(300, "Keep each entry under 300 characters.")).safeParse(accounts);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message };
+  const clean: Record<string, string> = {};
+  for (const [k, v] of Object.entries(parsed.data)) if (isPaymentMethod(k) && v) clean[k] = v;
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("settings")
+    .upsert({ key: "payment_accounts", value: clean, is_public: true, description: "Where customers send money, per payment method" });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/sudo/settings");
   return { ok: true };

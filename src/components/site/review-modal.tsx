@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentLabel } from "@/lib/payment-methods";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PreviewCanvas } from "@/components/preview/preview-canvas";
@@ -167,6 +168,16 @@ export function ReviewModal({ item, onClose }: Props) {
                   </li>
                 ))}
               </ul>
+            </div>
+          ) : null}
+
+          {submission.payment_method ? (
+            <div className="rounded-xl border border-line bg-canvas p-3 text-sm">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted">Payment</p>
+              <p className="mt-1 text-ink">
+                {paymentLabel(submission.payment_method)} · {submission.payment_amount_egp ?? "?"} EGP
+                {submission.payment_reference ? <span className="font-mono text-muted"> · {submission.payment_reference}</span> : null}
+              </p>
             </div>
           ) : null}
 
