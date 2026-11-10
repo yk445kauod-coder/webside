@@ -368,7 +368,7 @@ export function SiteWizard() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-      <AgentChat />
+      <AgentChat onApply={(patch) => { set(patch); setTypeChosen(true); setDetailsTouched(true); }} />
     </div>
   );
 }
