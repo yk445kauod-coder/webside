@@ -60,6 +60,9 @@ export interface SubmissionRow {
   note: string | null;
   owner_notes: string | null;
   payment_proof_path: string | null;
+  payment_method: string | null;
+  payment_amount_egp: number | null;
+  payment_reference: string | null;
   reviewed_by: string | null;
   submitted_at: string;
   reviewed_at: string | null;

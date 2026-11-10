@@ -6,10 +6,17 @@ export const metadata: Metadata = { title: "Settings · SUDO" };
 
 export default async function SudoSettingsPage() {
   const supabase = await createClient();
-  const { data } = await supabase.from("settings").select("key, value").in("key", ["sudo_admin_emails", "instapay_link"]);
+  const { data } = await supabase.from("settings").select("key, value").in("key", ["sudo_admin_emails", "instapay_link", "payment_accounts"]);
   const get = (k: string) => data?.find((r) => r.key === k)?.value;
   const admins = Array.isArray(get("sudo_admin_emails")) ? (get("sudo_admin_emails") as string[]) : [];
   const instapay = typeof get("instapay_link") === "string" ? (get("instapay_link") as string) : "";
+
+  const rawAcc = get("payment_accounts");
+  const accounts: Record<string, string> = {};
+  if (rawAcc && typeof rawAcc === "object" && !Array.isArray(rawAcc)) {
+    for (const [k, v] of Object.entries(rawAcc as Record<string, unknown>)) if (typeof v === "string") accounts[k] = v;
+  }
+  if (!accounts.instapay && instapay) accounts.instapay = instapay;
 
   return (
     <div>
@@ -17,7 +24,7 @@ export default async function SudoSettingsPage() {
         <h1 className="ws-h1">Settings</h1>
         <p className="mt-1 text-muted">Payment link shown to customers and who can access SUDO.</p>
       </div>
-      <SettingsForms admins={admins} instapay={instapay} />
+      <SettingsForms admins={admins} accounts={accounts} />
     </div>
   );
 }

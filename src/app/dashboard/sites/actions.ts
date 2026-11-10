@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
-import { LIMITS } from "@/lib/limits";
+import { EDIT_FEE_EGP, LIMITS, PLAN_PRICING_EGP, isSitePlan } from "@/lib/limits";
+import { isPaymentMethod, type PaymentAccounts } from "@/lib/payment-methods";
 import {
   noteSchema,
   pageTitleSchema,
@@ -181,6 +182,7 @@ export async function submitForReview(
   siteId: string,
   note?: string,
   proofPath?: string,
+  payment?: { method: string; reference?: string },
 ): Promise<ActionResult & { revisionNumber?: number; submissionId?: string }> {
   if (!uuidSchema.safeParse(siteId).success) {
     return { ok: false, error: "Unknown site." };
@@ -256,6 +258,19 @@ export async function submitForReview(
     revisionNumber = inserted.revision.number;
   }
 
+  // Payment details: which method, how much, and the sender's reference. The amount is computed here, never trusted from the client.
+  let payMethod: string | null = null;
+  let payAmount: number | null = null;
+  let payRef: string | null = null;
+  if (proofPath || payment) {
+    if (!payment || !isPaymentMethod(payment.method)) {
+      return { ok: false, error: "اختر طريقة الدفع." };
+    }
+    payMethod = payment.method;
+    payRef = (payment.reference ?? "").trim().slice(0, 60) || null;
+    payAmount = (await expectedAmount(supabase, siteId)).amount;
+  }
+
   // 4. Submission (the open-once trigger still guards against races).
   const { data: submission, error } = await supabase
     .from("submissions")
@@ -264,6 +279,9 @@ export async function submitForReview(
       revision_id: revisionId,
       note: parsedNote.data || null,
       payment_proof_path: proofPath || null,
+      payment_method: payMethod,
+      payment_amount_egp: payAmount,
+      payment_reference: payRef,
     })
     .select()
     .single();
@@ -278,18 +296,31 @@ export async function submitForReview(
   return { ok: true, revisionNumber, submissionId: submission.id };
 }
 
-/** What the publish dialog needs: whether a transfer screenshot is required, and where to pay. */
-export async function getPaymentInfo(
-  siteId: string,
-): Promise<{ needsProof: boolean; instapay: string }> {
-  if (!uuidSchema.safeParse(siteId).success) return { needsProof: false, instapay: "" };
+/** What the publish dialog needs: the amount due, where to pay (per method), and whether a screenshot is required. */
+export async function getPaymentInfo(siteId: string): Promise<{
+  needsProof: boolean;
+  instapay: string;
+  accounts: PaymentAccounts;
+  amount: number;
+  kind: "setup" | "edit";
+}> {
+  const empty = { needsProof: false, instapay: "", accounts: {}, amount: 0, kind: "setup" as const };
+  if (!uuidSchema.safeParse(siteId).success) return empty;
   const supabase = await createClient();
-  const [needsProof, { data: setting }] = await Promise.all([
-    needsPaymentProof(supabase, siteId),
-    supabase.from("settings").select("value").eq("key", "instapay_link").eq("is_public", true).maybeSingle(),
+  const [due, { data: rows }] = await Promise.all([
+    expectedAmount(supabase, siteId),
+    supabase.from("settings").select("key, value").in("key", ["instapay_link", "payment_accounts"]).eq("is_public", true),
   ]);
-  const v = setting?.value;
-  return { needsProof, instapay: typeof v === "string" ? v.slice(0, 300) : "" };
+  const raw = rows?.find((r) => r.key === "payment_accounts")?.value;
+  const legacy = rows?.find((r) => r.key === "instapay_link")?.value;
+  const accounts: PaymentAccounts = {};
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+      if (isPaymentMethod(k) && typeof v === "string" && v.trim()) accounts[k] = v.trim().slice(0, 300);
+    }
+  }
+  if (!accounts.instapay && typeof legacy === "string" && legacy.trim()) accounts.instapay = legacy.trim().slice(0, 300);
+  return { needsProof: due.first, instapay: accounts.instapay ?? "", accounts, amount: due.amount, kind: due.first ? "setup" : "edit" };
 }
 
 // ---------------------------------------------------------------------------
@@ -298,6 +329,16 @@ export async function getPaymentInfo(
 
 function isOwnProofPath(path: string, userId: string): boolean {
   return path.startsWith(`${userId}/`) && /^[0-9a-f-]{36}\/[A-Za-z0-9._-]{1,80}$/.test(path);
+}
+
+/** First publish costs the plan's setup fee; every later publish request costs the flat edit fee. */
+async function expectedAmount(supabase: Supabase, siteId: string): Promise<{ first: boolean; amount: number }> {
+  const [first, { data: site }] = await Promise.all([
+    needsPaymentProof(supabase, siteId),
+    supabase.from("sites").select("plan").eq("id", siteId).maybeSingle(),
+  ]);
+  const plan = site && isSitePlan(site.plan) ? site.plan : "menu";
+  return { first, amount: first ? PLAN_PRICING_EGP[plan].setup : EDIT_FEE_EGP };
 }
 
 /** First publication = the site has never been published, so a payment screenshot is required. */

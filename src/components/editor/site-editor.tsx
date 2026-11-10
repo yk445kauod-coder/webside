@@ -30,6 +30,7 @@ import { Field } from "@/components/ui/field";
 import { isOpenStatus } from "@/lib/submission-status";
 import { siteAddress } from "@/lib/wizard";
 import { EDIT_FEE_EGP, LIMITS } from "@/lib/limits";
+import type { PaymentMethodId } from "@/lib/payment-methods";
 import { cn } from "@/lib/utils";
 import type { AnyBlock, BlockKind, PageDraft } from "@/lib/types/blocks";
 import type {
@@ -62,7 +63,9 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
   const [dialog, setDialog] = useState<Dialogs>("none");
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [submitNote, setSubmitNote] = useState("");
-  const [payInfo, setPayInfo] = useState<{ needsProof: boolean; instapay: string } | null>(null);
+  const [payInfo, setPayInfo] = useState<Awaited<ReturnType<typeof getPaymentInfo>> | null>(null);
+  const [payMethod, setPayMethod] = useState<PaymentMethodId | null>(null);
+  const [payRef, setPayRef] = useState("");
   const [proofBlob, setProofBlob] = useState<Blob | null>(null);
   const [busy, setBusy] = useState(false);
   const [dialogError, setDialogError] = useState<string | null>(null);
@@ -261,9 +264,14 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
       return;
     }
     let proofPath: string | undefined;
+    if (payInfo?.needsProof && !payMethod) {
+      setBusy(false);
+      setDialogError("اختر طريقة الدفع الأول.");
+      return;
+    }
     if (payInfo?.needsProof && !proofBlob) {
       setBusy(false);
-      setDialogError("Attach your InstaPay transfer screenshot first.");
+      setDialogError("ارفق صورة إيصال التحويل الأول.");
       return;
     }
     if (proofBlob) {
@@ -285,7 +293,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
       }
       proofPath = path;
     }
-    const res = await submitForReview(site.id, submitNote, proofPath);
+    const res = await submitForReview(site.id, submitNote, proofPath, payMethod ? { method: payMethod, reference: payRef } : undefined);
     setBusy(false);
     if (!res.ok) {
       setDialogError(res.error ?? "Something went wrong.");
@@ -294,6 +302,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
     closeDialog();
     setSubmitNote("");
     setProofBlob(null);
+    setPayRef("");
     showFlash(`Publish request sent (version ${res.revisionNumber}). We review exactly this version.`);
   }
 
@@ -499,7 +508,17 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
             onChange={setSubmitNote}
           />
           {payInfo ? (
-            <PaymentProofField instapay={payInfo.instapay} required={payInfo.needsProof} onBlob={setProofBlob} />
+            <PaymentProofField
+              accounts={payInfo.accounts}
+              amount={payInfo.amount}
+              kind={payInfo.kind}
+              required={payInfo.needsProof}
+              method={payMethod}
+              onMethod={setPayMethod}
+              reference={payRef}
+              onReference={setPayRef}
+              onBlob={setProofBlob}
+            />
           ) : null}
           <DialogError message={dialogError} />
         </Dialog>

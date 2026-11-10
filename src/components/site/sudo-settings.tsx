@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
-import { addSudoAdmin, removeSudoAdmin, saveInstapayLink } from "@/app/sudo/settings/actions";
+import { addSudoAdmin, removeSudoAdmin, savePaymentAccounts } from "@/app/sudo/settings/actions";
+import { PAYMENT_METHODS } from "@/lib/payment-methods";
 
 type Result = { ok: boolean; error?: string };
 
-export function SettingsForms({ admins, instapay }: { admins: string[]; instapay: string }) {
+export function SettingsForms({ admins, accounts }: { admins: string[]; accounts: Record<string, string> }) {
   const router = useRouter();
-  const [link, setLink] = useState(instapay);
+  const [acc, setAcc] = useState<Record<string, string>>(accounts);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -28,17 +29,20 @@ export function SettingsForms({ admins, instapay }: { admins: string[]; instapay
   return (
     <div className="flex max-w-2xl flex-col gap-8">
       <section className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5">
-        <h2 className="ws-h2">InstaPay</h2>
-        <Field
-          label="Payment link or handle"
-          hint="Shown to customers when they publish"
-          placeholder="https://ipn.eg/S/yourname/instapay"
-          value={link}
-          maxLength={300}
-          onChange={setLink}
-        />
+        <h2 className="ws-h2">Payment methods</h2>
+        <p className="text-sm text-muted">Leave a method empty to hide it from customers.</p>
+        {PAYMENT_METHODS.map((m) => (
+          <Field
+            key={m.id}
+            label={m.label}
+            hint={m.hint}
+            value={acc[m.id] ?? ""}
+            maxLength={300}
+            onChange={(v) => setAcc((p) => ({ ...p, [m.id]: v }))}
+          />
+        ))}
         <div>
-          <Button loading={busy === "link"} disabled={busy !== null} onClick={() => run("link", () => saveInstapayLink(link), "Saved.")}>
+          <Button loading={busy === "acc"} disabled={busy !== null} onClick={() => run("acc", () => savePaymentAccounts(acc), "Saved.")}>
             Save
           </Button>
         </div>
