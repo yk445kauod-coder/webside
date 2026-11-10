@@ -55,7 +55,7 @@ export function Hero() {
           className="ws-glass mx-auto mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium text-white/90"
         >
           <Sparkles className="h-4 w-4 text-[#FF9B7F]" aria-hidden="true" />
-          Build a website by answering questions
+          Your Web, Your Side
         </motion.p>
 
         <motion.h1 {...fade(1)} className="ws-display mx-auto max-w-4xl text-balance text-white">
