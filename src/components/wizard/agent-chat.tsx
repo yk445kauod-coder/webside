@@ -3,11 +3,37 @@
 import { useRef, useState } from "react";
 import { Sparkles, Send } from "lucide-react";
 import { askAgent, type AgentMessage } from "@/lib/ai-agent";
+import { SITE_TYPES, type WizardInput } from "@/lib/wizard";
+
+const EXTRACT = 'Return ONLY a JSON object, no prose, with keys: type (one of ' + SITE_TYPES.join("|") + '), name, tagline, about, phone, address, offerings (array of up to 6 {heading,text}). Use "" for anything the owner did not say. Write values in the owner\'s language.';
+
+function parseBrief(raw: string): Partial<WizardInput> | null {
+  const m = raw.match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  try {
+    const j = JSON.parse(m[0]) as Record<string, unknown>;
+    const s = (v: unknown, n: number) => (typeof v === "string" ? v.trim().slice(0, n) : "");
+    const out: Partial<WizardInput> = {};
+    if (typeof j.type === "string" && (SITE_TYPES as readonly string[]).includes(j.type)) out.type = j.type as WizardInput["type"];
+    if (s(j.name, 80)) out.name = s(j.name, 80);
+    if (s(j.tagline, 140)) out.tagline = s(j.tagline, 140);
+    if (s(j.about, 600)) out.about = s(j.about, 600);
+    if (s(j.phone, 30)) out.phone = s(j.phone, 30);
+    if (s(j.address, 160)) out.address = s(j.address, 160);
+    if (Array.isArray(j.offerings)) {
+      const o = j.offerings.slice(0, 6).map((x) => ({ heading: s((x as Record<string, unknown>)?.heading, 80), text: s((x as Record<string, unknown>)?.text, 200) })).filter((x) => x.heading);
+      if (o.length) out.offerings = o;
+    }
+    return Object.keys(out).length ? out : null;
+  } catch {
+    return null;
+  }
+}
 
 const HELLO: AgentMessage = { role: "assistant", content: "أنا مساعد WebSide. احكيلي شغلك في جملتين وأنا أساعدك تختار الشكل والأقسام المناسبة." };
 
 /** Smart onboarding agent: a short chat that helps the owner describe the business. */
-export function AgentChat() {
+export function AgentChat({ onApply }: { onApply?: (patch: Partial<WizardInput>) => void }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<AgentMessage[]>([HELLO]);
   const [text, setText] = useState("");
@@ -28,6 +54,22 @@ export function AgentChat() {
     } finally {
       setBusy(false);
       setTimeout(() => end.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    }
+  }
+
+  async function build() {
+    if (busy) return;
+    setBusy(true); setErr(null);
+    try {
+      const raw = await askAgent([...msgs.filter((m) => m !== HELLO), { role: "user", content: EXTRACT }]);
+      const brief = parseBrief(raw);
+      if (!brief) throw new Error("parse");
+      onApply?.(brief);
+      setMsgs((p) => [...p, { role: "assistant", content: "تمام، ملّيت بيانات موقعك في الخطوات. راجعها وكمّل." }]);
+    } catch {
+      setErr("ما قدرتش أطلّع بيانات كفاية. احكيلي أكتر عن شغلك وجرّب تاني.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -54,6 +96,11 @@ export function AgentChat() {
         {err ? <p className="text-sm text-danger" role="alert">{err}</p> : null}
         <div ref={end} />
       </div>
+      {onApply && msgs.filter((m) => m.role === "user").length >= 2 ? (
+        <button type="button" onClick={() => void build()} disabled={busy} className="mx-3 mb-1 rounded-lg bg-ink px-3 py-2 text-sm font-semibold text-canvas disabled:opacity-50">
+          جهّز موقعي من كلامنا
+        </button>
+      ) : null}
       <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="flex gap-2 border-t border-line p-3">
         <input value={text} onChange={(e) => setText(e.target.value)} maxLength={500} placeholder="اكتب هنا…"
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-base" />
