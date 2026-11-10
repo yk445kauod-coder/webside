@@ -80,7 +80,7 @@ const PRICING: Array<{
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
-      <header className="ws-night fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-[#1d1310]/70 backdrop-blur-xl">
+      <header className="ws-night fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-[#0F1829]/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" aria-label="WebSide home">
             <Wordmark variant="mono-white" className="text-2xl" />
@@ -174,7 +174,7 @@ export default function LandingPage() {
               <Reveal delay={0.08} className="md:col-span-2">
                 <article className="h-full rounded-3xl border border-line bg-canvas p-8">
                   <div aria-hidden="true" className="mb-6 flex gap-2">
-                    {["#b5482a", "#f2603f", "#1f8f63", "#1c7ed6", "#e0378a"].map((c) => (
+                    {["#E4502D", "#f2603f", "#1f8f63", "#1c7ed6", "#e0378a"].map((c) => (
                       <span key={c} className="h-9 w-9 rounded-full shadow-inner" style={{ background: c }} />
                     ))}
                   </div>
@@ -198,7 +198,7 @@ export default function LandingPage() {
               <Reveal delay={0.12} className="md:col-span-4">
                 <article className="relative h-full overflow-hidden rounded-3xl bg-ink p-8 text-white">
                   <div aria-hidden="true" className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-copper/40 blur-3xl" />
-                  <ShieldCheck className="relative mb-5 h-9 w-9 text-[#6fb7ae]" aria-hidden="true" />
+                  <ShieldCheck className="relative mb-5 h-9 w-9 text-[#7FA6D1]" aria-hidden="true" />
                   <h3 className="relative max-w-sm text-2xl font-semibold tracking-tight">Checked before it goes live</h3>
                   <p className="relative mt-2 max-w-md text-white/75">
                     Every version you submit is frozen and reviewed exactly as you made it. What we approve is
@@ -249,7 +249,7 @@ export default function LandingPage() {
                       ...p.features,
                     ].map((f) => (
                       <li key={f} className="flex gap-2">
-                        <Check className={"mt-0.5 h-4 w-4 shrink-0 " + (p.featured ? "text-[#f2a65a]" : "text-success")} aria-hidden="true" />
+                        <Check className={"mt-0.5 h-4 w-4 shrink-0 " + (p.featured ? "text-[#FF9B7F]" : "text-success")} aria-hidden="true" />
                         <span>{f}</span>
                       </li>
                     ))}

@@ -54,12 +54,18 @@ export default async function DashboardPage({
             My <span className="ws-gradient-text">sites</span>
           </h1>
         </div>
-        {sites.length > 0 ? (
-          <LinkButton href="/dashboard/new" size="lg">
-            <Plus className="h-5 w-5" aria-hidden="true" />
-            New site
+        <div className="flex flex-wrap gap-2">
+          <LinkButton href="/dashboard/templates" size="lg" variant="secondary">
+            <LayoutGrid className="h-5 w-5" aria-hidden="true" />
+            Templates
           </LinkButton>
-        ) : null}
+          {sites.length > 0 ? (
+            <LinkButton href="/dashboard/new" size="lg">
+              <Plus className="h-5 w-5" aria-hidden="true" />
+              New site
+            </LinkButton>
+          ) : null}
+        </div>
       </div>
 
       {sites.length > 0 ? (
@@ -188,7 +194,7 @@ function EmptyState() {
     <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface px-6 py-16 text-center shadow-ws-sm sm:py-24">
       <div aria-hidden="true" className="ws-dots-ink absolute inset-0 opacity-50" />
       <div aria-hidden="true" className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-copper/20 blur-3xl" />
-      <div aria-hidden="true" className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#e8772e]/20 blur-3xl" />
+      <div aria-hidden="true" className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#FD6B47]/20 blur-3xl" />
 
       <div className="relative">
         <div className="ws-float mx-auto mb-6 grid h-20 w-20 place-items-center rounded-3xl text-white shadow-lg" style={{ background: "var(--ws-grad)" }}>

@@ -9,6 +9,7 @@ import { buildWizardPages, wizardSchema, type WizardInput } from "@/lib/wizard";
 import type { PageDraft } from "@/lib/types/blocks";
 import { getTemplate, blankPages } from "@/lib/templates";
 import { slugify } from "@/lib/utils";
+import { getStaticTemplate } from "@/puck/templates";
 
 const createSiteSchema = z.object({
   name: z.string().trim().min(1, "Give your site a name.").max(80),
@@ -140,4 +141,39 @@ export async function deleteSite(siteId: string): Promise<{ error?: string }> {
   if (!data?.length) return { error: "Site not found, or you don't own it." };
   revalidatePath("/dashboard");
   return {};
+}
+
+/** Creates a site from one of the ready-made templates. Content is re-validated and sanitised here. */
+export async function createSiteFromTemplate(
+  _prev: CreateSiteState,
+  formData: FormData,
+): Promise<CreateSiteState> {
+  const parsed = createSiteSchema.safeParse({
+    name: formData.get("name"),
+    slug: formData.get("slug") || undefined,
+    template: formData.get("template"),
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  const user = await getSessionUser();
+  if (!user) return { error: "You need to sign in." };
+  const tpl = getStaticTemplate(parsed.data.template);
+  if (!tpl) return { error: "That template does not exist." };
+
+  const pages: PageDraft[] = [];
+  for (const pg of tpl.pages) {
+    // Fresh ids per site so two sites never share block ids.
+    const fresh = JSON.parse(JSON.stringify(pg.items), (k, v) =>
+      k === "id" && typeof v === "string" ? `${v.split("-")[0]}-${Math.random().toString(36).slice(2, 9)}` : v,
+    );
+    const checked = parseBlocks(fresh);
+    if (!checked.ok) return { error: checked.error };
+    pages.push({ key: pg.key, title: pg.title, path: pg.path, blocks: checked.blocks });
+  }
+  return persistSite({
+    ownerId: user.id,
+    name: parsed.data.name,
+    slug: fallbackSlug(parsed.data.name, parsed.data.slug ?? ""),
+    templateKey: tpl.key,
+    pages,
+  });
 }

@@ -294,10 +294,10 @@ export const TYPE_PRESETS: Record<SiteType, TypePreset> = {
 
 export const ACCENT_META: Record<BlockAccent, { label: string; swatch: string }> = {
   // key "indigo" is the legacy name of the default accent; it now means the brand copper
-  indigo: { label: "Copper", swatch: "linear-gradient(135deg,#b5482a,#e8772e)" },
-  oxide: { label: "Oxide blue", swatch: "linear-gradient(135deg,#2e7d87,#6fb7ae)" },
+  indigo: { label: "Copper", swatch: "linear-gradient(135deg,#E4502D,#FD6B47)" },
+  oxide: { label: "Oxide blue", swatch: "linear-gradient(135deg,#2F5D8C,#7FA6D1)" },
   sunset: { label: "Sunset", swatch: "linear-gradient(135deg,#f2603f,#ffb25e)" },
-  forest: { label: "Forest", swatch: "linear-gradient(135deg,#1f8f63,#6fb7ae)" },
+  forest: { label: "Forest", swatch: "linear-gradient(135deg,#1f8f63,#7FA6D1)" },
   ocean: { label: "Ocean", swatch: "linear-gradient(135deg,#1c7ed6,#4cd4e8)" },
   rose: { label: "Rose", swatch: "linear-gradient(135deg,#e0378a,#ff9ec7)" },
   mono: { label: "Mono", swatch: "linear-gradient(135deg,#1a1a1a,#8a8a8a)" },

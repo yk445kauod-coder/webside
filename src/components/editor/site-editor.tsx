@@ -23,7 +23,7 @@ import {
 import { useAutosave } from "@/components/editor/use-autosave";
 import { PaymentProofField } from "@/components/editor/payment-proof-field";
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
-import { PreviewCanvas } from "@/components/preview/preview-canvas";
+import { PuckCanvas } from "@/components/editor/puck-canvas";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
@@ -58,6 +58,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [panel, setPanel] = useState<"pages" | "blocks" | "design">("pages");
   const [railOpen, setRailOpen] = useState(false);
+  const [designTick, setDesignTick] = useState(0);
   const [dialog, setDialog] = useState<Dialogs>("none");
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [submitNote, setSubmitNote] = useState("");
@@ -141,6 +142,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
           }),
         })),
       );
+      setDesignTick((n) => n + 1);
     },
     [],
   );
@@ -419,51 +421,15 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
           </div>
         </aside>
 
-        {/* ---- Canvas ---- */}
-        <div className="flex min-w-0 flex-1 flex-col bg-canvas">
-          <CanvasToolbar
-            blockCount={blocks.length}
-            selectedIndex={selectedIndex}
-            onMove={moveBlock}
-            onDuplicate={duplicateBlock}
-            onDelete={deleteBlock}
+        {/* ---- Builder (Puck): components, canvas and fields. Collapses to a bottom bar on phones. ---- */}
+        <div className="min-w-0 flex-1 bg-canvas">
+          <PuckCanvas
+            pageKey={`${active.key}:${designTick}`}
+            blocks={blocks}
+            onBlocks={(next) => patchBlocks(() => next)}
           />
-          <div className="ws-scroll flex-1 overflow-y-auto p-3 sm:p-6" onClick={() => setSelectedId(null)}>
-            <PreviewCanvas
-              blocks={blocks}
-              title={`${site.name} — ${active.title}`}
-              interactive
-              selectedId={selectedId}
-              onBlockClick={(id) => {
-                setSelectedId(id);
-              }}
-              emptyHint="This page is empty. Open the menu and choose “Blocks” to add your first one."
-              className="mx-auto max-w-4xl rounded-xl border border-line shadow-ws-sm"
-            />
-          </div>
         </div>
-
-        {/* ---- Right rail (desktop inspector) ---- */}
-        <aside className="hidden w-[300px] shrink-0 flex-col border-l border-line bg-surface lg:flex">
-          {inspector ?? (
-            <div className="flex flex-1 items-center justify-center p-6 text-center">
-              <div>
-                <p className="text-sm font-medium text-ink">Nothing selected</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted">
-                  Click a block in the canvas to edit its content.
-                </p>
-              </div>
-            </div>
-          )}
-        </aside>
       </div>
-
-      {/* ---- Inspector as a bottom sheet on small screens ---- */}
-      {inspector ? (
-        <div className="ws-sheet fixed inset-x-0 bottom-0 z-30 flex max-h-[65dvh] flex-col rounded-t-2xl pb-[env(safe-area-inset-bottom)] border-t border-line bg-surface shadow-ws lg:hidden">
-          {inspector}
-        </div>
-      ) : null}
 
       {/* ---- Dialogs ---- */}
       {dialog === "preview" ? (

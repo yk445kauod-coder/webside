@@ -14,6 +14,18 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Vendored from the Puck demo block library (MIT): keep it close to upstream.
+  {
+    files: ["src/puck/blocks/**", "src/puck/components/**", "src/puck/lib/**", "src/puck/*.tsx", "src/puck/*.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "react/display-name": "off",
+      "prefer-const": "off",
+      "@next/next/no-img-element": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

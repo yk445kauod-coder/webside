@@ -8,57 +8,57 @@
 
 :root {
   /* Brand — reddish copper, orange, and the oxide blue of oxidised copper (verdigris) */
-  --ws-ink: #231813;          /* warm espresso: text and hierarchy */
-  --ws-copper: #b5482a;       /* reddish copper: primary action */
-  --ws-orange: #e8772e;       /* orange: warmth and highlights */
-  --ws-oxide: #2e7d87;        /* oxide blue (copper patina): secondary, info, calm contrast */
+  --ws-ink: #152137;          /* warm espresso: text and hierarchy */
+  --ws-copper: #E4502D;       /* reddish copper: primary action */
+  --ws-orange: #FD6B47;       /* orange: warmth and highlights */
+  --ws-oxide: #2F5D8C;        /* oxide blue (copper patina): secondary, info, calm contrast */
   --ws-white: #ffffff;
 
   /* Surfaces — warm paper, never cold grey */
-  --ws-canvas: #faf6f1;
+  --ws-canvas: #FEFCF9;
   --ws-surface: #ffffff;
-  --ws-border: #eadfd3;
-  --ws-muted: #6f6258;
+  --ws-border: #ECE6DC;
+  --ws-muted: #5C6677;
 
   /* Semantic */
   --ws-success: #2f7d5a;
   --ws-warning: #b7791f;
   --ws-danger: #b3322f;
-  --ws-info: #2e7d87;
+  --ws-info: #2F5D8C;
 
   /* Derived tints (tokens, so hex values are never scattered) */
-  --ws-copper-soft: #fbece5;
-  --ws-orange-soft: #fff0e3;
-  --ws-oxide-soft: #e3f1f1;
+  --ws-copper-soft: #FFEEE8;
+  --ws-orange-soft: #FFF1EA;
+  --ws-oxide-soft: #E5EEF8;
   --ws-success-soft: #e6f3ec;
   --ws-warning-soft: #fbf3e3;
   --ws-danger-soft: #fbeceb;
-  --ws-ink-soft: #f3ece4;
+  --ws-ink-soft: #F3EFE8;
 
   /* Interaction shades (hover / active) */
-  --ws-copper-strong: #9c3d22;
-  --ws-copper-stronger: #84321b;
-  --ws-oxide-strong: #25666e;
-  --ws-ink-strong: #170f0b;
-  --ws-ink-stronger: #0e0806;
+  --ws-copper-strong: #C94322;
+  --ws-copper-stronger: #AE3818;
+  --ws-oxide-strong: #264C73;
+  --ws-ink-strong: #0F1829;
+  --ws-ink-stronger: #0A101C;
   --ws-success-strong: #266548;
   --ws-success-stronger: #1e5239;
   --ws-danger-strong: #962a28;
-  --ws-orange-ink: #a8501b;
+  --ws-orange-ink: #B8431F;
 
   /* Warm gradient (copper → orange). Used sparingly, mainly on the primary call to action. */
-  --ws-night: #1d1310;
-  --ws-grad: linear-gradient(120deg, #b5482a 0%, #d2602a 55%, #e8772e 100%);
-  --ws-grad-warm: linear-gradient(120deg, #b5482a 0%, #e8772e 60%, #f2a65a 100%);
-  --ws-glow: 0 10px 36px -10px rgba(181, 72, 42, 0.5);
+  --ws-night: #0F1829;
+  --ws-grad: linear-gradient(120deg, #E4502D 0%, #F25A36 55%, #FD6B47 100%);
+  --ws-grad-warm: linear-gradient(120deg, #E4502D 0%, #FD6B47 60%, #FF9B7F 100%);
+  --ws-glow: 0 10px 36px -10px rgba(228, 80, 45, 0.5);
 
   /* Radii + elevation */
   --ws-radius-sm: 8px;
   --ws-radius: 14px;
   --ws-radius-lg: 24px;
-  --ws-shadow-sm: 0 1px 2px rgba(35, 24, 19, 0.06), 0 2px 8px -4px rgba(181, 72, 42, 0.16);
-  --ws-shadow: 0 18px 50px -22px rgba(120, 50, 20, 0.38);
-  --ws-ring: 0 0 0 3px rgba(181, 72, 42, 0.32);
+  --ws-shadow-sm: 0 1px 2px rgba(21, 33, 55, 0.06), 0 2px 8px -4px rgba(228, 80, 45, 0.16);
+  --ws-shadow: 0 18px 50px -22px rgba(21, 33, 55, 0.38);
+  --ws-ring: 0 0 0 3px rgba(228, 80, 45, 0.32);
 }
 
 @theme inline {
@@ -308,7 +308,7 @@ body {
   height: 46rem;
   left: -12rem;
   top: -16rem;
-  background: radial-gradient(circle at 30% 30%, #b5482a, transparent 65%);
+  background: radial-gradient(circle at 30% 30%, #E4502D, transparent 65%);
   animation: ws-drift-a 18s ease-in-out infinite alternate;
 }
 .ws-aurora::after {
@@ -316,7 +316,7 @@ body {
   height: 40rem;
   right: -10rem;
   top: -6rem;
-  background: radial-gradient(circle at 60% 40%, #e8772e, transparent 65%);
+  background: radial-gradient(circle at 60% 40%, #FD6B47, transparent 65%);
   animation: ws-drift-b 22s ease-in-out infinite alternate;
 }
 .ws-aurora > i {
@@ -324,7 +324,7 @@ body {
   height: 38rem;
   left: 30%;
   bottom: -22rem;
-  background: radial-gradient(circle, #2e7d87, transparent 65%);
+  background: radial-gradient(circle, #2F5D8C, transparent 65%);
   animation: ws-drift-c 26s ease-in-out infinite alternate;
 }
 @keyframes ws-drift-a {
@@ -344,7 +344,7 @@ body {
   mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
 }
 .ws-dots-ink {
-  background-image: radial-gradient(rgba(35, 24, 19, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(21, 33, 55, 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -384,7 +384,7 @@ body {
 .ws-btn-grad:hover {
   background-position: 100% 0;
   transform: translateY(-1px);
-  box-shadow: 0 14px 44px -8px rgba(181, 72, 42, 0.6);
+  box-shadow: 0 14px 44px -8px rgba(228, 80, 45, 0.6);
 }
 .ws-btn-grad:active {
   transform: translateY(0) scale(0.98);
@@ -456,8 +456,8 @@ body {
   animation: ws-pulse-ring 2.4s ease-out infinite;
 }
 @keyframes ws-pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(181, 72, 42, 0.4); }
-  100% { box-shadow: 0 0 0 16px rgba(181, 72, 42, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(228, 80, 45, 0.4); }
+  100% { box-shadow: 0 0 0 16px rgba(228, 80, 45, 0); }
 }
 
 .ws-pop {
@@ -482,9 +482,9 @@ body {
   --ws-copper-soft: #e8f6ef;
 }
 [data-accent="oxide"] {
-  --ws-copper: #2e7d87;
-  --ws-copper-strong: #25666e;
-  --ws-copper-soft: #e3f1f1;
+  --ws-copper: #2F5D8C;
+  --ws-copper-strong: #264C73;
+  --ws-copper-soft: #E5EEF8;
 }
 [data-accent="ocean"] {
   --ws-copper: #1c7ed6;
@@ -511,3 +511,20 @@ body {
 html { -webkit-tap-highlight-color: transparent; }
 button, a, summary, [role="button"], input, select, textarea { touch-action: manipulation; }
 @media (max-width: 640px) { input, select, textarea { font-size: 16px; } } /* no iOS zoom-on-focus */
+
+/* Puck sizes itself to 100dvh; inside the editor it must fill only the space under the top bar,
+   otherwise its mobile bottom toolbar (Blocks / Outline / Fields) is pushed off-screen. */
+.ws-puck .Puck,
+.ws-puck [class*="_Puck_"],
+.ws-puck [class*="_PuckLayout_"],
+.ws-puck [class*="_PuckLayout-inner_"] {
+  height: 100% !important;
+  max-height: 100%;
+}
+
+@media (max-width: 767px) {
+  /* The zoom and device-size bar is useless on a phone and eats the little space there is. */
+  .ws-puck [class*="_ViewportControls_"] {
+    display: none !important;
+  }
+}
