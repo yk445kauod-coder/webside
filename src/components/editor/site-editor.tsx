@@ -29,7 +29,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { isOpenStatus } from "@/lib/submission-status";
 import { siteAddress } from "@/lib/wizard";
-import { LIMITS } from "@/lib/limits";
+import { EDIT_FEE_EGP, LIMITS } from "@/lib/limits";
 import { cn } from "@/lib/utils";
 import type { AnyBlock, BlockKind, PageDraft } from "@/lib/types/blocks";
 import type {
@@ -479,6 +479,9 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
             This freezes the current version and sends it to our team. We review this exact version and
             publish it at {siteAddress(site.slug)}. Later edits don&apos;t change what we see until you
             send a new request.
+          </p>
+          <p className="rounded-lg bg-black/5 px-3 py-2 text-sm text-muted">
+            أول نشر مشمول في الباقة. أي طلب نشر بعد اعتماد موقعك بيتحسب {EDIT_FEE_EGP} جنيه، وبتسدده عن طريق InstaPay وفريقنا بيأكده.
           </p>
           {!hasContent ? (
             <p className="rounded-lg bg-warning-soft px-3 py-2 text-sm text-warning">
