@@ -1,10 +1,7 @@
+// Only InstaPay for now. Wallet methods (Vodafone/Orange/Etisalat Cash, WE Pay) and bank transfer are accepted
+// by the database check, so adding one back is a one-line change here.
 export const PAYMENT_METHODS = [
   { id: "instapay", label: "InstaPay", hint: "رقم أو عنوان InstaPay، أو رابط الدفع" },
-  { id: "vodafone_cash", label: "فودافون كاش", hint: "رقم المحفظة" },
-  { id: "orange_cash", label: "أورنج كاش", hint: "رقم المحفظة" },
-  { id: "etisalat_cash", label: "اتصالات كاش", hint: "رقم المحفظة" },
-  { id: "we_pay", label: "WE Pay", hint: "رقم المحفظة" },
-  { id: "bank_transfer", label: "تحويل بنكي", hint: "اسم البنك ورقم الحساب أو IBAN" },
 ] as const;
 
 export type PaymentMethodId = (typeof PAYMENT_METHODS)[number]["id"];
