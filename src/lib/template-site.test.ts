@@ -37,3 +37,4 @@ describe("template-site", () => {
     if (r.ok) expect(getTemplateBlock(r.items)?.props.texts[0]).toBe("Hi");
   });
 });
+
