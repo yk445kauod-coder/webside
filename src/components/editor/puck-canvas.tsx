@@ -1,11 +1,27 @@
 "use client";
 
-import { useMemo } from "react";
-import { Puck } from "@puckeditor/core";
+import { useMemo, type ReactNode } from "react";
+import { Puck, createUsePuck } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { conf } from "@/puck";
 import { toItems } from "@/puck/legacy";
 import type { AnyBlock } from "@/lib/types/blocks";
+
+const usePuck = createUsePuck();
+
+/** On a phone, dragging a block into the page is close to impossible, so tapping a block adds it to the end of the page. */
+function TapToAdd({ name, children }: { name: string; children: ReactNode }) {
+  const dispatch = usePuck((s) => s.dispatch);
+  const count = usePuck((s) => s.appState.data.content.length);
+  return (
+    <div
+      className="cursor-pointer"
+      onClick={() => dispatch({ type: "insert", componentType: name, destinationIndex: count, destinationZone: "root:default-zone" })}
+    >
+      {children}
+    </div>
+  );
+}
 
 /**
  * Puck (MIT) is the editor, with its own block library. Pages are stored as Puck items
@@ -32,7 +48,11 @@ export function PuckCanvas({
         data={initial as never}
         onChange={(d) => onBlocks(d.content as unknown as AnyBlock[])}
         headerPath=""
-        overrides={{ header: () => <></>, headerActions: () => <></> }}
+        overrides={{
+          header: () => <></>,
+          headerActions: () => <></>,
+          componentItem: ({ name, children }) => <TapToAdd name={name}>{children}</TapToAdd>,
+        }}
       />
     </div>
   );

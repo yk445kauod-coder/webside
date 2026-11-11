@@ -110,7 +110,7 @@ export function renderSite(
     // A page made from a ready-made template is published as that template's own HTML.
     const tpl = getTemplateBlock(page.blocks);
     if (tpl) {
-      const out = renderTemplate(tpl.props.templateKey, tpl.props);
+      const out = renderTemplate(tpl.props.templateKey, { ...tpl.props, siteName });
       if (!out) return { error: "Unknown template." };
       total += Buffer.byteLength(out);
       files.push({ path: `sites/${slug}/${page.segs.length ? page.segs.join("/") + "/" : ""}index.html`, content: out });

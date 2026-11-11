@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TEMPLATE_CATALOG, getTemplateBlock, isTemplateKey, listSlots, makeTemplateBlock, renderTemplate } from "./template-site";
+import { TEMPLATE_CATALOG, getTemplateBlock, isTemplateKey, listSlots, makeTemplateBlock, prepareTemplate, renderTemplate } from "./template-site";
 import { TEMPLATE_HTML } from "./template-html";
 import { sanitizeItems } from "@/puck/sanitize";
 
@@ -10,10 +10,12 @@ describe("template-site", () => {
   });
 
   for (const t of TEMPLATE_CATALOG) {
-    it(`${t.key}: unchanged render is byte-identical, edits apply and are escaped`, () => {
+    it(`${t.key}: unchanged render is identical apart from the promo bar, edits apply and are escaped`, () => {
       const slots = listSlots(t.key);
       expect(slots.texts.length).toBeGreaterThan(8);
-      expect(renderTemplate(t.key)).toBe(TEMPLATE_HTML[t.key]);
+      expect(renderTemplate(t.key)).toBe(prepareTemplate(TEMPLATE_HTML[t.key]));
+      expect(renderTemplate(t.key)).not.toContain("template-bar");
+      expect(renderTemplate(t.key, { siteName: "My Shop" })).not.toContain('"Free HTML Templates"');
       const out = renderTemplate(t.key, { texts: { 0: "<b>X</b>" } });
       expect(out).toContain("&lt;b&gt;X&lt;/b&gt;");
       expect(out).not.toContain("<b>X</b>");
