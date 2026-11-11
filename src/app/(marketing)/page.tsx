@@ -276,20 +276,22 @@ export default function LandingPage() {
           </ul>
         </section>
 
-        <section className="ws-night relative isolate overflow-hidden">
-          <div className="ws-aurora" aria-hidden="true">
-            <i />
-          </div>
+        <section className="relative isolate overflow-hidden bg-[#152137]">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10"
+            style={{ background: "radial-gradient(40rem 20rem at 80% 0%, rgba(253,107,71,0.28), transparent 60%)" }}
+          />
           <Reveal className="relative z-10 mx-auto max-w-3xl px-4 py-28 text-center sm:px-6">
             <h2 className="ws-display text-balance text-white">
-              Your site is <span className="ws-gradient-text">two minutes away.</span>
+              Your Web, <span className="text-[#FD6B47]">Your Side.</span>
             </h2>
             <p className="mx-auto mt-5 max-w-md text-lg text-white/70">
               Free to start. No credit card. Just a few questions.
             </p>
             <Link
               href="/signup"
-              className="ws-btn-grad mt-9 inline-flex h-14 items-center gap-2 rounded-2xl px-9 text-base font-semibold"
+              className="mt-9 inline-flex h-14 items-center gap-2 rounded-2xl bg-[#FD6B47] px-9 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(253,107,71,0.7)] transition hover:bg-[#f25a35]"
             >
               Build my site free
               <ArrowRight className="h-5 w-5" aria-hidden="true" />
