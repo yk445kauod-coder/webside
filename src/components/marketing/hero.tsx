@@ -1,162 +1,112 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "motion/react";
-import { ArrowRight, Eye, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { ArrowRight, Check } from "lucide-react";
 
-const fade = (i: number) => ({
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, delay: 0.12 * i, ease: [0.22, 1, 0.36, 1] as const },
-});
-
-const PHONES = [
-  { src: "/showcase/menu-ar.webp", alt: "Arabic right-to-left menu in the café template", cls: "hidden sm:block -rotate-3 translate-y-6" },
-  { src: "/showcase/menu.webp", alt: "Café template: menu cards with prices", cls: "z-10 scale-105" },
-  { src: "/showcase/ai.webp", alt: "Café template: AI barista chat", cls: "hidden sm:block rotate-3 translate-y-6" },
+const TEMPLATES = [
+  { key: "restaurant", label: "Restaurant", cls: "sm:-rotate-3 sm:translate-y-8" },
+  { key: "jewellery", label: "Jewellery", cls: "sm:z-10 sm:scale-110" },
+  { key: "gym", label: "Gym", cls: "sm:rotate-3 sm:translate-y-8" },
 ];
+
+const POINTS = ["Free to start", "No credit card", "Live in about 2 minutes"];
 
 export function Hero() {
   const reduce = useReducedMotion();
-  const stage = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [9, -9]), { stiffness: 120, damping: 16 });
-  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), { stiffness: 120, damping: 16 });
-
-  function onMove(e: React.PointerEvent) {
-    if (reduce || !stage.current) return;
-    const r = stage.current.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  }
-  function onLeave() {
-    mx.set(0);
-    my.set(0);
-  }
+  const rise = (i: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { opacity: 0, y: 22 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.6, delay: 0.1 * i, ease: [0.22, 1, 0.36, 1] as const },
+        };
 
   return (
-    <section className="ws-night relative isolate overflow-hidden">
-      <div className="ws-aurora" aria-hidden="true">
-        <i />
-      </div>
-      <div aria-hidden="true" className="ws-dots absolute inset-0 z-0" />
-
-      <div className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 text-center sm:px-6 sm:pt-28">
+    <section className="relative isolate overflow-hidden bg-[#FEFCF9]">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            "radial-gradient(60rem 28rem at 85% -10%, rgba(253,107,71,0.14), transparent 60%), radial-gradient(48rem 24rem at 5% 0%, rgba(21,33,55,0.08), transparent 60%)",
+        }}
+      />
+      <div className="mx-auto max-w-6xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-24">
         <motion.p
-          {...fade(0)}
-          className="ws-glass mx-auto mb-7 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium text-white/90"
+          {...rise(0)}
+          className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-[#152137]/10 bg-white px-4 py-1.5 text-[13px] font-semibold text-[#152137] shadow-sm"
         >
-          <Sparkles className="h-4 w-4 text-[#FF9B7F]" aria-hidden="true" />
+          <span className="h-2 w-2 rounded-full bg-[#FD6B47]" aria-hidden="true" />
           Your Web, Your Side
         </motion.p>
 
-        <motion.h1 {...fade(1)} className="ws-display mx-auto max-w-4xl text-balance text-white">
-          Your website,
-          <br />
-          <span className="ws-gradient-text">built as you chat.</span>
+        <motion.h1
+          {...rise(1)}
+          className="mx-auto max-w-3xl text-balance text-[2.5rem] font-extrabold leading-[1.05] tracking-tight text-[#152137] sm:text-6xl"
+        >
+          A real website for your business, <span className="text-[#FD6B47]">built as you chat.</span>
         </motion.h1>
 
-        <motion.p {...fade(2)} className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/70">
-          Tell us what you do. Pick a colour you love. Watch a real website appear in front of you,
-          step by step. No design skills. No code. No stress.
+        <motion.p {...rise(2)} className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-[#152137]/70">
+          Tell us what you do and pick a look. Your site appears in minutes, in Arabic or English, ready for your phone.
         </motion.p>
 
-        <motion.div {...fade(3)} className="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <motion.div {...rise(3)} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/signup"
-            className="ws-btn-grad inline-flex h-14 items-center gap-2 rounded-2xl px-8 text-base font-semibold"
+            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#FD6B47] px-8 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(253,107,71,0.7)] transition hover:bg-[#f25a35] sm:w-auto"
           >
             Build my site free
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
           </Link>
           <Link
             href="/login"
-            className="ws-glass inline-flex h-14 items-center rounded-2xl px-7 text-base font-semibold text-white transition hover:bg-white/15"
+            className="inline-flex h-14 w-full items-center justify-center rounded-2xl border border-[#152137]/15 bg-white px-7 text-base font-semibold text-[#152137] transition hover:border-[#152137]/40 sm:w-auto"
           >
             I have an account
           </Link>
         </motion.div>
 
         <motion.ul
-          {...fade(4)}
-          className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/60"
+          {...rise(4)}
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-sm text-[#152137]/60"
         >
-          <li>Free to start</li>
-          <li aria-hidden="true">·</li>
-          <li>No credit card</li>
-          <li aria-hidden="true">·</li>
-          <li>Ready in about 2 minutes</li>
+          {POINTS.map((p) => (
+            <li key={p} className="inline-flex items-center gap-1.5">
+              <Check className="h-4 w-4 text-[#FD6B47]" aria-hidden="true" />
+              {p}
+            </li>
+          ))}
         </motion.ul>
 
-        {/* 3D product stage */}
-        <motion.div
-          {...fade(5)}
-          ref={stage}
-          onPointerMove={onMove}
-          onPointerLeave={onLeave}
-          className="relative mx-auto mt-16 max-w-4xl [perspective:1400px]"
-        >
-          <motion.div
-            style={reduce ? undefined : { rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-            className="relative"
-          >
-            <div
-              aria-hidden="true"
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-[#E4502D]/35 to-[#FD6B47]/35 blur-3xl"
-            />
-            <div className="relative flex items-end justify-center gap-4 sm:gap-6">
-              {PHONES.map((p) => (
-                <div key={p.src} className={`w-[min(68vw,15rem)] shrink-0 overflow-hidden rounded-[2rem] border-[6px] border-ink bg-ink shadow-[0_40px_120px_-30px_rgba(181,72,42,0.55)] ${p.cls}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.src} alt={p.alt} width={300} height={510} loading="eager" className="block h-auto w-full" />
-                </div>
-              ))}
-            </div>
-
-            <FloatingChip className="-left-3 top-24 sm:-left-12" delay={0} icon={<Wand2 className="h-4 w-4" aria-hidden="true" />} tone="from-[#E4502D] to-[#2F5D8C]">
-              Guided builder
-            </FloatingChip>
-            <FloatingChip className="-right-3 top-44 sm:-right-12" delay={1.2} icon={<Eye className="h-4 w-4" aria-hidden="true" />} tone="from-[#FD6B47] to-[#FF9B7F]">
-              Live preview
-            </FloatingChip>
-            <FloatingChip className="-left-2 bottom-24 sm:-left-8" delay={2.2} icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} tone="from-[#1f8f63] to-[#7FA6D1]">
-              Reviewed before it goes live
-            </FloatingChip>
-          </motion.div>
+        <motion.div {...rise(5)} className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
+          {TEMPLATES.map((t) => (
+            <figure
+              key={t.key}
+              className={
+                "overflow-hidden rounded-2xl border border-[#152137]/10 bg-white text-start shadow-[0_24px_60px_-24px_rgba(21,33,55,0.35)] " +
+                t.cls
+              }
+            >
+              <div className="flex items-center gap-1.5 border-b border-[#152137]/10 bg-[#F4F1EC] px-3 py-2" aria-hidden="true">
+                <i className="h-2 w-2 rounded-full bg-[#FD6B47]/70" />
+                <i className="h-2 w-2 rounded-full bg-[#152137]/20" />
+                <i className="h-2 w-2 rounded-full bg-[#152137]/20" />
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/templates/premium/${t.key}/thumb.png`}
+                alt={`${t.label} website template`}
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover object-top"
+              />
+              <figcaption className="px-4 py-3 text-sm font-semibold text-[#152137]">{t.label}</figcaption>
+            </figure>
+          ))}
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function FloatingChip({
-  children,
-  icon,
-  tone,
-  className,
-  delay,
-}: {
-  children: React.ReactNode;
-  icon: React.ReactNode;
-  tone: string;
-  className: string;
-  delay: number;
-}) {
-  return (
-    <div
-      className={`ws-float absolute z-10 hidden items-center gap-2 rounded-2xl bg-white px-3 py-2 text-[13px] font-semibold text-ink shadow-xl sm:flex ${className}`}
-      style={{ animationDelay: `${delay}s`, transform: "translateZ(60px)" }}
-    >
-      <span className={`grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br text-white ${tone}`}>{icon}</span>
-      {children}
-    </div>
   );
 }

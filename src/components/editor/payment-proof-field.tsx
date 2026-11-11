@@ -95,6 +95,7 @@ export function PaymentProofField({ accounts, amount, kind, required, method, on
               ) : (
                 <span dir="ltr" className="select-all break-all text-end font-mono text-ink">{account}</span>
               )}
+              <span className="text-xs text-muted">تقدر تحوّل من أي محفظة أو إنستاباي لأي محفظة أو حساب. حسب بنكك أو محفظتك ممكن تتخصم رسوم بسيطة (غالباً حوالي 1%).</span>
               <button type="button" onClick={() => void copy()} className="self-start text-xs font-medium text-copper underline">
                 {copied ? "تم النسخ" : "نسخ"}
               </button>
