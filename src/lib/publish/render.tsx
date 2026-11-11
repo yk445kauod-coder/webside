@@ -3,6 +3,7 @@ import { SiteDocument, type NavItem } from "@/components/preview/site-document";
 import type { SiteSnapshot } from "@/lib/types/blocks";
 import { pathSegments } from "./slug";
 import { toItems } from "@/puck/legacy";
+import { getTemplateBlock, renderTemplate } from "@/lib/template-site";
 
 export interface RenderedFile {
   /** Path inside the repo, e.g. sites/my-shop/about/index.html */
@@ -106,6 +107,15 @@ export function renderSite(
   const files: RenderedFile[] = [];
   let total = 0;
   for (const page of resolved) {
+    // A page made from a ready-made template is published as that template's own HTML.
+    const tpl = getTemplateBlock(page.blocks);
+    if (tpl) {
+      const out = renderTemplate(tpl.props.templateKey, tpl.props);
+      if (!out) return { error: "Unknown template." };
+      total += Buffer.byteLength(out);
+      files.push({ path: `sites/${slug}/${page.segs.length ? page.segs.join("/") + "/" : ""}index.html`, content: out });
+      continue;
+    }
     const nav: NavItem[] = resolved.map((r) => ({
       title: r.title,
       href: href(r.segs),

@@ -1,5 +1,6 @@
 "use client";
 
+import { getTemplateBlock, renderTemplate } from "@/lib/template-site";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Eye, History, Layers, Send } from "lucide-react";
@@ -460,6 +461,7 @@ export function FullPreviewModal({
 }) {
   const [pageKey, setPageKey] = useState(tabs[0]?.key ?? "");
   const page = tabs.find((t) => t.key === pageKey) ?? tabs[0];
+  const tpl = getTemplateBlock(page?.blocks);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -499,11 +501,20 @@ export function FullPreviewModal({
       </div>
       <div className="ws-scroll flex-1 overflow-y-auto bg-canvas p-3 sm:p-6">
         <div className="mx-auto max-w-4xl">
-          <PreviewCanvas
-            blocks={page?.blocks ?? []}
-            title={`${site.name} — ${page?.title ?? ""}`}
-            framed
-          />
+          {tpl ? (
+            <iframe
+              title={`${site.name} preview`}
+              srcDoc={renderTemplate(tpl.props.templateKey, tpl.props)}
+              sandbox="allow-scripts"
+              className="h-[78vh] w-full rounded-xl border border-line bg-white"
+            />
+          ) : (
+            <PreviewCanvas
+              blocks={page?.blocks ?? []}
+              title={`${site.name} — ${page?.title ?? ""}`}
+              framed
+            />
+          )}
         </div>
       </div>
     </div>

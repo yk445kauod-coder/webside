@@ -10,6 +10,7 @@ import type { PageDraft } from "@/lib/types/blocks";
 import { getTemplate, blankPages } from "@/lib/templates";
 import { slugify } from "@/lib/utils";
 import { getStaticTemplate } from "@/puck/templates";
+import { isTemplateKey, makeTemplateBlock } from "@/lib/template-site";
 
 const createSiteSchema = z.object({
   name: z.string().trim().min(1, "Give your site a name.").max(80),
@@ -175,5 +176,34 @@ export async function createSiteFromTemplate(
     slug: fallbackSlug(parsed.data.name, parsed.data.slug ?? ""),
     templateKey: tpl.key,
     pages,
+  });
+}
+
+const templateSiteSchema = z.object({
+  templateKey: z.string().refine(isTemplateKey, "That template does not exist."),
+  name: z.string().trim().min(1, "Give your site a name.").max(80),
+  slug: z.string().trim().max(80).optional(),
+  texts: z
+    .record(z.string().regex(/^\d{1,4}$/), z.string().max(2000))
+    .refine((o) => Object.keys(o).length <= 1500, "Too many edits."),
+  images: z.record(z.string().regex(/^\d{1,4}$/), z.string().max(2048)).default({}),
+  dir: z.enum(["ltr", "rtl"]).default("ltr"),
+});
+
+/** Creates a site whose home page is a whole ready-made template, with the customer's own words already in it. */
+export async function createTemplateSite(input: z.input<typeof templateSiteSchema>): Promise<CreateSiteState> {
+  const parsed = templateSiteSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  const user = await getSessionUser();
+  if (!user) return { error: "You need to sign in." };
+  const d = parsed.data;
+  const checked = parseBlocks([makeTemplateBlock(d.templateKey, d.texts, d.images, d.dir)]);
+  if (!checked.ok) return { error: checked.error };
+  return persistSite({
+    ownerId: user.id,
+    name: d.name,
+    slug: fallbackSlug(d.name, d.slug ?? ""),
+    templateKey: `html-${d.templateKey}`,
+    pages: [{ key: "home", title: "Home", path: "/", blocks: checked.blocks }],
   });
 }

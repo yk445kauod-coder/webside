@@ -10,7 +10,7 @@ export interface PageItem {
 export const ALLOWED_TYPES = [
   "Hero", "Heading", "Text", "Button", "Card", "CTA", "FAQ", "Stats", "Logos", "Steps",
   "FeatureGrid", "FeatureSplit", "Bento", "Grid", "Flex", "Space", 
-  "Menu", "Contact", "Image", "Theme",
+  "Menu", "Contact", "Image", "Theme", "TemplateSite",
 ] as const;
 const ALLOWED = new Set<string>(ALLOWED_TYPES);
 
