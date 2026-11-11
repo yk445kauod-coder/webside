@@ -431,7 +431,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
         </aside>
 
         {/* ---- Builder (Puck): components, canvas and fields. Collapses to a bottom bar on phones. ---- */}
-        <div className="min-w-0 flex-1 bg-canvas">
+        <div className="relative min-w-0 flex-1 bg-canvas">
           <PuckCanvas
             pageKey={`${active.key}:${designTick}`}
             blocks={blocks}
