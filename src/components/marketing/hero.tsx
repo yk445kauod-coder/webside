@@ -3,23 +3,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
-
-/** A live, scaled-down page. Vector-sharp at any resolution, unlike a screenshot. */
-function Frame({ src, title, w, h, scale }: { src: string; title: string; w: number; h: number; scale: number }) {
-  return (
-    <div className="relative overflow-hidden bg-white" style={{ width: w * scale, height: h * scale }}>
-      <iframe
-        src={src}
-        title={title}
-        loading="lazy"
-        tabIndex={-1}
-        scrolling="no"
-        sandbox="allow-scripts"
-        style={{ width: w, height: h, border: 0, transform: `scale(${scale})`, transformOrigin: "top left", pointerEvents: "none" }}
-      />
-    </div>
-  );
-}
+import { TemplateCarousel } from "./template-carousel";
 
 const POINTS = ["Free to start", "No credit card", "Live in about 2 minutes"];
 
@@ -92,20 +76,9 @@ export function Hero() {
           ))}
         </motion.ul>
 
-        <motion.div {...rise(5)} className="relative mx-auto mt-14 flex max-w-5xl items-end justify-center px-2">
-          <div className="hidden overflow-hidden rounded-t-2xl border-[10px] border-b-0 border-[#152137] bg-[#152137] shadow-[0_40px_80px_-30px_rgba(21,33,55,0.55)] sm:block">
-            <Frame src="/templates/premium/restaurant/index.html" title="Restaurant template" w={1280} h={800} scale={0.5} />
-          </div>
-          <div className="overflow-hidden rounded-[2rem] border-[8px] border-[#152137] bg-[#152137] shadow-[0_30px_70px_-25px_rgba(21,33,55,0.6)] sm:-ms-10">
-            <div className="sm:hidden">
-              <Frame src="/templates/premium/jewellery/index.html" title="Jewellery template" w={390} h={780} scale={0.7} />
-            </div>
-            <div className="hidden sm:block">
-              <Frame src="/templates/premium/jewellery/index.html" title="Jewellery template" w={390} h={780} scale={0.5} />
-            </div>
-          </div>
+        <motion.div {...rise(5)}>
+          <TemplateCarousel />
         </motion.div>
-        <p className="mt-6 text-sm text-[#152137]/55">Real templates, running live. Pick one and make it yours.</p>
       </div>
     </section>
   );
