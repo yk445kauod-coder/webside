@@ -24,6 +24,8 @@ import { useAutosave } from "@/components/editor/use-autosave";
 import { PaymentProofField } from "@/components/editor/payment-proof-field";
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
 import { PuckCanvas } from "@/components/editor/puck-canvas";
+import { TemplateCanvas } from "@/components/editor/template-canvas";
+import { getTemplateBlock } from "@/lib/template-site";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
@@ -76,6 +78,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
 
   const active = tabs.find((t) => t.key === activeKey) ?? tabs[0];
   const blocks = active?.blocks ?? [];
+  const tplBlock = getTemplateBlock(blocks);
   const selectedIndex = selectedId ? blocks.findIndex((b) => b.id === selectedId) : -1;
   const selectedBlock = selectedIndex >= 0 ? blocks[selectedIndex] : undefined;
 
@@ -432,11 +435,19 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
 
         {/* ---- Builder (Puck): components, canvas and fields. Collapses to a bottom bar on phones. ---- */}
         <div className="relative min-w-0 flex-1 bg-canvas">
-          <PuckCanvas
+          {tplBlock ? (
+            <TemplateCanvas
+              key={active.key}
+              props={tplBlock.props}
+              onChange={(p) => patchBlocks(() => [{ type: "TemplateSite", props: p }] as never)}
+            />
+          ) : (
+            <PuckCanvas
             pageKey={`${active.key}:${designTick}`}
             blocks={blocks}
             onBlocks={(next) => patchBlocks(() => next)}
           />
+          )}
         </div>
       </div>
 

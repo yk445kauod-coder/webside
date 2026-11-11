@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { STATIC_TEMPLATES } from "@/puck/templates";
 import { TemplateThumb } from "@/components/templates/template-thumb";
 import { TemplateUse } from "@/components/templates/template-card";
@@ -23,7 +24,10 @@ function PremiumGallery() {
             <img src={`/templates/premium/${key}/thumb.png`} alt={label} loading="lazy" className="aspect-[4/3] w-full object-cover object-top" />
             <div className="flex items-center justify-between gap-2 p-3">
               <span className="font-semibold">{label}</span>
-              <a href={`/templates/premium/${key}/index.html`} target="_blank" rel="noreferrer" className="text-sm font-medium text-[#FD6B47] underline">معاينة</a>
+              <span className="flex items-center gap-3">
+                <a href={`/templates/premium/${key}/index.html`} target="_blank" rel="noreferrer" className="text-sm font-medium text-muted underline">معاينة</a>
+                <Link href={`/dashboard/templates/${key}`} className="rounded-lg bg-[#FD6B47] px-3 py-1.5 text-sm font-semibold text-white">استخدم</Link>
+              </span>
             </div>
           </li>
         ))}
