@@ -25,7 +25,7 @@ export function PuckCanvas({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const initial = useMemo(() => ({ root: { props: {} }, content: toItems(blocks as unknown[]) }), [pageKey]);
   return (
-    <div className="ws-puck h-full min-h-0 w-full">
+    <div className="ws-puck absolute inset-0">
       <Puck
         key={pageKey}
         config={conf as never}

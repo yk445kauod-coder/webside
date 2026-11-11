@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { History, Send } from "lucide-react";
+import { Eye, History, Layers, Send } from "lucide-react";
 import { PreviewCanvas } from "@/components/preview/preview-canvas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,17 +41,16 @@ export function EditorTopBar({
   isOpenSubmission: boolean;
 }) {
   return (
-    <header className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-line bg-surface px-3 py-1.5 sm:px-4">
+    <header className="flex h-14 shrink-0 flex-nowrap items-center justify-between gap-2 border-b border-line bg-surface px-2 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <button
           type="button"
           onClick={onToggleRail}
-          aria-label="Pages and blocks"
-          className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-ink-soft hover:text-ink lg:hidden"
+          aria-label="Pages, blocks and design"
+          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-line bg-canvas px-2.5 text-sm font-semibold text-ink lg:hidden"
         >
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Layers className="h-4 w-4" aria-hidden="true" />
+          Design
         </button>
         <Link
           href="/dashboard"
@@ -62,16 +61,17 @@ export function EditorTopBar({
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </Link>
-        <div className="min-w-0">
+        <div className="hidden min-w-0 sm:block">
           <p className="truncate text-sm font-semibold text-ink">{site.name}</p>
           <p className="truncate font-mono text-[11px] text-muted">/{site.slug}</p>
         </div>
       </div>
 
-      <div className="flex w-full shrink-0 items-center justify-end gap-1.5 sm:w-auto sm:gap-2">
-        <SaveIndicator state={saveState} error={saveError} onRetry={onRetrySave} />
-        <Button size="sm" variant="outline" onClick={onPreview}>
-          Preview
+      <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
+        <span className="max-[379px]:hidden"><SaveIndicator state={saveState} error={saveError} onRetry={onRetrySave} /></span>
+        <Button size="sm" variant="outline" onClick={onPreview} aria-label="Preview">
+          <Eye className="h-4 w-4 sm:hidden" aria-hidden="true" />
+          <span className="hidden sm:inline">Preview</span>
         </Button>
         <Button size="sm" variant="outline" onClick={onRevision}>
           <History className="h-4 w-4 sm:hidden" aria-hidden="true" />

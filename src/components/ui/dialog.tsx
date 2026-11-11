@@ -95,7 +95,7 @@ export function Dialog({
         tabIndex={-1}
         className={cn(
           "ws-sheet w-full overflow-hidden border border-line bg-surface shadow-ws focus:outline-none",
-          "max-h-[100dvh] rounded-t-2xl sm:rounded-2xl",
+          "max-h-[92dvh] rounded-t-2xl sm:rounded-2xl",
           bare ? "" : "max-w-md overflow-y-auto p-6",
           className,
         )}
@@ -117,7 +117,7 @@ export function Dialog({
             </div>
             <div className="flex flex-col gap-4">{children}</div>
             {footer ? (
-              <div className="mt-6 flex flex-wrap justify-end gap-2">{footer}</div>
+              <div className="sticky bottom-0 -mx-6 -mb-6 mt-6 flex flex-wrap justify-end gap-2 border-t border-line bg-surface px-6 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">{footer}</div>
             ) : null}
           </>
         )}
