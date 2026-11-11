@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { compressProof } from "@/lib/payment-proof";
 import { PAYMENT_METHODS, type PaymentAccounts, type PaymentMethodId } from "@/lib/payment-methods";
 
@@ -24,6 +24,10 @@ export function PaymentProofField({ accounts, amount, kind, required, method, on
   const [copied, setCopied] = useState(false);
 
   const available = PAYMENT_METHODS.filter((m) => accounts[m.id]);
+  const only = available.length === 1 ? available[0].id : null;
+  useEffect(() => {
+    if (only && !method) onMethod(only);
+  }, [only, method, onMethod]);
   const account = method ? accounts[method] : undefined;
   const link = account && /^https?:\/\//i.test(account) ? account : null;
 
@@ -67,7 +71,7 @@ export function PaymentProofField({ accounts, amount, kind, required, method, on
 
       {available.length ? (
         <>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="طريقة الدفع">
+          <div className={only ? "hidden" : "flex flex-wrap gap-2"} role="radiogroup" aria-label="طريقة الدفع">
             {available.map((m) => (
               <button
                 key={m.id}
@@ -95,7 +99,7 @@ export function PaymentProofField({ accounts, amount, kind, required, method, on
               ) : (
                 <span dir="ltr" className="select-all break-all text-end font-mono text-ink">{account}</span>
               )}
-              <span className="text-xs text-muted">تقدر تحوّل من أي محفظة أو إنستاباي لأي محفظة أو حساب. حسب بنكك أو محفظتك ممكن تتخصم رسوم بسيطة (غالباً حوالي 1%).</span>
+              <span className="text-xs text-muted">حوّل المبلغ على إنستاباي وارفع صورة الإيصال.</span>
               <button type="button" onClick={() => void copy()} className="self-start text-xs font-medium text-copper underline">
                 {copied ? "تم النسخ" : "نسخ"}
               </button>
