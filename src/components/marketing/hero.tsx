@@ -4,11 +4,22 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 
-const TEMPLATES = [
-  { key: "restaurant", label: "Restaurant", cls: "sm:-rotate-3 sm:translate-y-8" },
-  { key: "jewellery", label: "Jewellery", cls: "sm:z-10 sm:scale-110" },
-  { key: "gym", label: "Gym", cls: "sm:rotate-3 sm:translate-y-8" },
-];
+/** A live, scaled-down page. Vector-sharp at any resolution, unlike a screenshot. */
+function Frame({ src, title, w, h, scale }: { src: string; title: string; w: number; h: number; scale: number }) {
+  return (
+    <div className="relative overflow-hidden bg-white" style={{ width: w * scale, height: h * scale }}>
+      <iframe
+        src={src}
+        title={title}
+        loading="lazy"
+        tabIndex={-1}
+        scrolling="no"
+        sandbox="allow-scripts"
+        style={{ width: w, height: h, border: 0, transform: `scale(${scale})`, transformOrigin: "top left", pointerEvents: "none" }}
+      />
+    </div>
+  );
+}
 
 const POINTS = ["Free to start", "No credit card", "Live in about 2 minutes"];
 
@@ -81,31 +92,20 @@ export function Hero() {
           ))}
         </motion.ul>
 
-        <motion.div {...rise(5)} className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-          {TEMPLATES.map((t) => (
-            <figure
-              key={t.key}
-              className={
-                "overflow-hidden rounded-2xl border border-[#152137]/10 bg-white text-start shadow-[0_24px_60px_-24px_rgba(21,33,55,0.35)] " +
-                t.cls
-              }
-            >
-              <div className="flex items-center gap-1.5 border-b border-[#152137]/10 bg-[#F4F1EC] px-3 py-2" aria-hidden="true">
-                <i className="h-2 w-2 rounded-full bg-[#FD6B47]/70" />
-                <i className="h-2 w-2 rounded-full bg-[#152137]/20" />
-                <i className="h-2 w-2 rounded-full bg-[#152137]/20" />
-              </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`/templates/premium/${t.key}/thumb.png`}
-                alt={`${t.label} website template`}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover object-top"
-              />
-              <figcaption className="px-4 py-3 text-sm font-semibold text-[#152137]">{t.label}</figcaption>
-            </figure>
-          ))}
+        <motion.div {...rise(5)} className="relative mx-auto mt-14 flex max-w-5xl items-end justify-center px-2">
+          <div className="hidden overflow-hidden rounded-t-2xl border-[10px] border-b-0 border-[#152137] bg-[#152137] shadow-[0_40px_80px_-30px_rgba(21,33,55,0.55)] sm:block">
+            <Frame src="/templates/premium/restaurant/index.html" title="Restaurant template" w={1280} h={800} scale={0.5} />
+          </div>
+          <div className="overflow-hidden rounded-[2rem] border-[8px] border-[#152137] bg-[#152137] shadow-[0_30px_70px_-25px_rgba(21,33,55,0.6)] sm:-ms-10">
+            <div className="sm:hidden">
+              <Frame src="/templates/premium/jewellery/index.html" title="Jewellery template" w={390} h={780} scale={0.7} />
+            </div>
+            <div className="hidden sm:block">
+              <Frame src="/templates/premium/jewellery/index.html" title="Jewellery template" w={390} h={780} scale={0.5} />
+            </div>
+          </div>
         </motion.div>
+        <p className="mt-6 text-sm text-[#152137]/55">Real templates, running live. Pick one and make it yours.</p>
       </div>
     </section>
   );
