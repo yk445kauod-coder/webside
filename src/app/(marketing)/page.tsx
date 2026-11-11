@@ -218,7 +218,7 @@ export default function LandingPage() {
             <h2 id="pricing-title" className="ws-h1 text-balance">
               Build free. Pay when you go live.
             </h2>
-            <p className="mt-4 text-muted">One setup fee, then 50 EGP a month. Custom domain +250, moving an existing site +600.</p>
+            <p className="mt-4 text-muted">One setup fee, then from 49 EGP a month. Custom domain +250, moving an existing site +600.</p>
           </Reveal>
           <ul className="grid gap-5 md:grid-cols-3">
             {PRICING.map((p, i) => (
@@ -241,6 +241,12 @@ export default function LandingPage() {
                   </p>
                   <p className={"mt-1 text-sm " + (p.featured ? "text-white/70" : "text-muted")}>
                     then {p.monthly} EGP / month
+                  </p>
+                  <p className={"mt-1 text-sm font-medium " + (p.featured ? "text-[#FF9B7F]" : "text-[#C8472C]")}>
+                    That is about {Math.round((Number(p.monthly) / 30) * 10) / 10} EGP a day
+                  </p>
+                  <p className={"mt-1 text-xs " + (p.featured ? "text-white/60" : "text-muted")}>
+                    Pay for a year upfront and get 2 months free.
                   </p>
                   <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm">
                     {[
