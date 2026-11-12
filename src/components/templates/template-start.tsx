@@ -33,8 +33,8 @@ export function TemplateStart({ templateKey }: { templateKey: string }) {
 
   const dir = lang === "ar" ? "rtl" : "ltr";
   const doc = useMemo(
-    () => (step === "preview" ? renderTemplate(templateKey, { texts, dir }) : ""),
-    [step, templateKey, texts, dir],
+    () => (step === "preview" ? renderTemplate(templateKey, { texts, dir, siteName: name }) : ""),
+    [step, templateKey, texts, dir, name],
   );
 
   async function generate() {

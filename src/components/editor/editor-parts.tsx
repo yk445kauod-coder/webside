@@ -504,7 +504,7 @@ export function FullPreviewModal({
           {tpl ? (
             <iframe
               title={`${site.name} preview`}
-              srcDoc={renderTemplate(tpl.props.templateKey, tpl.props)}
+              srcDoc={renderTemplate(tpl.props.templateKey, { ...tpl.props, siteName: site.name })}
               sandbox="allow-scripts"
               className="h-[78vh] w-full rounded-xl border border-line bg-white"
             />

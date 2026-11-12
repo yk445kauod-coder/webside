@@ -90,11 +90,16 @@ function walk(source: string, o: Opts) {
   return { out, texts, images };
 }
 
+/** Strips the template author's promo bar so a customer's site carries only their own content. Runs before slotting, so slot numbers stay stable. */
+export function prepareTemplate(src: string): string {
+  return src.replace(/<div id="template-bar"[^>]*>[\s\S]*?<\/div>\s*/i, "");
+}
+
 /** The template's own text snippets and image URLs, in slot order. */
 export function listSlots(key: string): { texts: string[]; images: string[] } {
   const src = TEMPLATE_HTML[key];
   if (!src) return { texts: [], images: [] };
-  const { texts, images } = walk(src, {});
+  const { texts, images } = walk(prepareTemplate(src), {});
   return { texts, images };
 }
 
@@ -123,12 +128,17 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
  */
 export function renderTemplate(
   key: string,
-  p: { texts?: Record<string, string>; images?: Record<string, string>; dir?: "ltr" | "rtl" } = {},
+  p: { texts?: Record<string, string>; images?: Record<string, string>; dir?: "ltr" | "rtl"; siteName?: string } = {},
   edit = false,
 ): string {
   const src = TEMPLATE_HTML[key];
   if (!src) return "";
-  let { out } = walk(src, { texts: p.texts, images: p.images, edit });
+  let { out } = walk(prepareTemplate(src), { texts: p.texts, images: p.images, edit });
+  if (p.siteName) {
+    // Search/social metadata names the site after the customer, not the template collection.
+    const nm = esc(p.siteName).replace(/["\\]/g, "");
+    out = out.replace(/Free HTML Templates(?=")/g, nm);
+  }
   if (p.dir === "rtl") out = out.replace(/<html\b[^>]*>/i, '<html lang="ar" dir="rtl">');
   if (edit) {
     const tag = `<script>${EDIT_SCRIPT}</script>`;
