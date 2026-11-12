@@ -102,7 +102,7 @@ export function AiOnboarding() {
   const textStep = step && ["name", "story", "phone", "address"].includes(step.id);
 
   return (
-    <div dir="rtl" className="fixed inset-0 flex flex-col bg-canvas text-ink">
+    <div dir="rtl" className="fixed inset-0 z-40 flex flex-col bg-canvas text-ink">
       <header className="flex items-center gap-2 border-b border-line px-4 py-3">
         <Sparkles className="size-5 text-orange" aria-hidden />
         <h1 className="text-base font-bold">ابني موقعك مع WebSide</h1>

@@ -351,7 +351,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-canvas">
+    <div className="fixed inset-0 z-40 flex flex-col bg-canvas">
       <EditorTopBar
         site={site}
         saveState={saveState}
