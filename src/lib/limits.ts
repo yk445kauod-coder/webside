@@ -71,3 +71,9 @@ export const LIMITS = {
   blocksPerPage: 200,
   pagesPerSite: 20,
 } as const;
+
+/**
+ * Test phase: publishing is free, so no payment details or receipt are asked for.
+ * Set to false to bring the setup fee and edit fee back (all the payment code is still in place).
+ */
+export const FREE_PUBLISHING = true;

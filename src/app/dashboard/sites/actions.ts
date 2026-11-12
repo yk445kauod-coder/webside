@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
-import { EDIT_FEE_EGP, LIMITS, PLAN_PRICING_EGP, isSitePlan } from "@/lib/limits";
+import { EDIT_FEE_EGP, FREE_PUBLISHING, LIMITS, PLAN_PRICING_EGP, isSitePlan } from "@/lib/limits";
 import { isPaymentMethod, type PaymentAccounts } from "@/lib/payment-methods";
 import {
   noteSchema,
@@ -200,7 +200,7 @@ export async function submitForReview(
   if (proofPath !== undefined && !isOwnProofPath(proofPath, user.id)) {
     return { ok: false, error: "Invalid payment proof." };
   }
-  if (!proofPath && (await needsPaymentProof(supabase, siteId))) {
+  if (!FREE_PUBLISHING && !proofPath && (await needsPaymentProof(supabase, siteId))) {
     return { ok: false, error: "Attach your InstaPay transfer screenshot to publish for the first time." };
   }
 
@@ -305,7 +305,7 @@ export async function getPaymentInfo(siteId: string): Promise<{
   kind: "setup" | "edit";
 }> {
   const empty = { needsProof: false, instapay: "", accounts: {}, amount: 0, kind: "setup" as const };
-  if (!uuidSchema.safeParse(siteId).success) return empty;
+  if (FREE_PUBLISHING || !uuidSchema.safeParse(siteId).success) return empty;
   const supabase = await createClient();
   const [due, { data: rows }] = await Promise.all([
     expectedAmount(supabase, siteId),

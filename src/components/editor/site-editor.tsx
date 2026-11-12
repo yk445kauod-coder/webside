@@ -518,7 +518,7 @@ export function SiteEditor({ site, pages, submissions, revisions, publications }
             maxLength={LIMITS.note}
             onChange={setSubmitNote}
           />
-          {payInfo ? (
+          {payInfo && payInfo.amount > 0 ? (
             <PaymentProofField
               accounts={payInfo.accounts}
               amount={payInfo.amount}
