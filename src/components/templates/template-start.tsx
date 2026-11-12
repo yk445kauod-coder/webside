@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { askAgent } from "@/lib/ai-agent";
 import { createTemplateSite } from "@/app/dashboard/actions";
-import { TEMPLATE_CATALOG, listSlots, renderTemplate } from "@/lib/template-site";
+import { TEMPLATE_CATALOG, renderTemplate } from "@/lib/template-site";
+import { fillTemplate } from "@/lib/template-fill";
 
 type Step = "brief" | "working" | "preview";
 
@@ -42,41 +42,7 @@ export function TemplateStart({ templateKey }: { templateKey: string }) {
     setNote(null);
     setStep("working");
     setProgress(0);
-    const slots = listSlots(templateKey)
-      .texts.map((t, i) => ({ i, t: t.replace(/\s+/g, " ") }))
-      .filter((s) => s.t.length >= 2 && s.t.length <= 220)
-      .slice(0, 150);
-    const batches: (typeof slots)[] = [];
-    for (let k = 0; k < slots.length; k += 30) batches.push(slots.slice(k, k + 30));
-    const language = lang === "ar" ? "Arabic" : "English";
-    const out: Record<string, string> = {};
-    for (let b = 0; b < batches.length; b++) {
-      const prompt =
-        `You are rewriting the text of a ready-made website template so it fits a real business.\n` +
-        `Business name: ${name}\nWhat they do and sell: ${about || "(not given)"}\n` +
-        `Phone: ${phone || "(not given)"}\nAddress: ${address || "(not given)"}\n` +
-        `Write every new text in ${language}.\n` +
-        `Below are text snippets from the page, one per line as "id|text". Reply with ONLY a JSON object that maps id to the replacement text. ` +
-        `Replace anything about the template's example business: its name, slogans, descriptions, products, services, menu items, prices, people, testimonials, address, phone, email and opening hours. ` +
-        `Use the real business name wherever a brand name appears. Never invent a phone number or address: use the ones given, or leave that id out. ` +
-        `${lang === "ar" ? "Translate navigation labels and buttons too. " : "Leave short navigation labels and buttons out unless they are wrong for this business. "}` +
-        `Keep each replacement about as long as the original.\n\n` +
-        batches[b].map((s) => `${s.i}|${s.t}`).join("\n");
-      try {
-        const raw = await askAgent([{ role: "user", content: prompt }]);
-        const m = raw.match(/\{[\s\S]*\}/);
-        if (m) {
-          const j = JSON.parse(m[0]) as Record<string, unknown>;
-          for (const s of batches[b]) {
-            const v = j[String(s.i)];
-            if (typeof v === "string" && v.trim()) out[String(s.i)] = v.trim().slice(0, 400);
-          }
-        }
-      } catch {
-        /* a failed batch keeps the template's own text for those snippets */
-      }
-      setProgress(b + 1);
-    }
+    const out = await fillTemplate({ templateKey, name, about, phone, address, lang }, (d) => setProgress(d));
     if (Object.keys(out).length < 3) {
       setNote("الذكاء الاصطناعي مش متاح دلوقتي. كمّل وعدّل النصوص بنفسك من المحرر.");
     }

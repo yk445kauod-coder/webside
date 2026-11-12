@@ -3,42 +3,46 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, Send, Loader2 } from "lucide-react";
-import { createSiteFromWizard } from "@/app/dashboard/actions";
-import { askAgent } from "@/lib/ai-agent";
-import { EXTRACT, parseBrief } from "@/components/wizard/agent-chat";
-import { ACCENTS, ACCENT_META, SITE_TYPES, TYPE_PRESETS, defaultInput, type SiteType, type WizardInput } from "@/lib/wizard";
-import type { BlockAccent } from "@/lib/types/blocks";
+import { createTemplateSite } from "@/app/dashboard/actions";
+import { fillTemplate } from "@/lib/template-fill";
+import { TEMPLATE_CATALOG } from "@/lib/template-site";
 
-const TYPE_AR: Record<SiteType, string> = {
-  business: "شركة / خدمات", portfolio: "معرض أعمال", shop: "متجر", restaurant: "مطعم / كافيه",
-  event: "مناسبة / فعالية", personal: "موقع شخصي", agency: "وكالة", nonprofit: "مبادرة / جمعية",
-};
-const ACCENT_AR: Record<string, string> = { indigo: "نحاسي", oxide: "أزرق", sunset: "غروب", forest: "أخضر", ocean: "سماوي", rose: "وردي", mono: "رمادي" };
-const LOOK_AR = [
-  { id: "spotlight", label: "داكن ودراماتيكي" },
-  { id: "airy", label: "فاتح وهادي" },
-  { id: "bold", label: "ملوّن وجريء" },
+const TYPES = [
+  { id: "restaurant", label: "مطعم / كافيه", tpl: ["restaurant", "cafe", "bakery"] },
+  { id: "shop", label: "متجر", tpl: ["shop", "jewellery"] },
+  { id: "salon", label: "صالون / عناية", tpl: ["salon"] },
+  { id: "clinic", label: "عيادة / طب", tpl: ["clinic"] },
+  { id: "gym", label: "جيم / رياضة", tpl: ["gym"] },
+  { id: "business", label: "شركة / خدمات", tpl: ["agency", "clinic", "portfolio"] },
+  { id: "portfolio", label: "معرض أعمال / شخصي", tpl: ["portfolio", "agency"] },
 ] as const;
 
-type StepId = "type" | "name" | "story" | "phone" | "address" | "look" | "accent";
+type StepId = "type" | "template" | "name" | "story" | "phone" | "address" | "lang";
 const STEPS: { id: StepId; q: string; optional?: boolean }[] = [
-  { id: "type", q: "أهلاً! أنا هبني موقعك معاك. أول حاجة: نشاطك أقرب لإيه؟" },
+  { id: "type", q: "أهلاً! هبني موقعك معاك على قالب جاهز بتصميم احترافي. نشاطك أقرب لإيه؟" },
+  { id: "template", q: "اختار القالب اللي عجبك. التصميم والألوان والحركة هتفضل زي ما هي، وأنا هكتب المحتوى بتاعك جواه." },
   { id: "name", q: "حلو. اسم نشاطك إيه؟" },
-  { id: "story", q: "احكيلي عن شغلك في جملتين: بتقدّم إيه ولمين؟" },
+  { id: "story", q: "احكيلي عن شغلك في جملتين: بتقدّم إيه ولمين؟ (الأسعار والمميزات تنفع)" },
   { id: "phone", q: "رقم الواتساب اللي العملاء يكلموك عليه؟", optional: true },
   { id: "address", q: "فين مكانك؟ (المدينة أو العنوان)", optional: true },
-  { id: "look", q: "تحب الموقع يبان إزاي؟" },
-  { id: "accent", q: "آخر سؤال: لون الموقع الأساسي؟" },
+  { id: "lang", q: "آخر سؤال: الموقع بأنهي لغة؟" },
 ];
 
-interface Bubble { from: "bot" | "me"; text: string }
+function Chip({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick}
+      className="inline-flex min-h-11 items-center rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-ink active:scale-95">{label}</button>
+  );
+}
 
-/** Chat-style onboarding: one question at a time, then the AI writes the copy and the site is built. */
+interface Bubble { from: "bot" | "me"; text: string }
+interface Answers { type: string; template: string; name: string; about: string; phone: string; address: string; lang: "ar" | "en" }
+
+/** Chat-style onboarding: pick a ready-made template, answer a few questions, the AI fills the template for your business. */
 export function AiOnboarding() {
   const router = useRouter();
   const [i, setI] = useState(0);
-  const [input, setInput] = useState<WizardInput>(() => defaultInput("business"));
-  const [story, setStory] = useState("");
+  const [a, setA] = useState<Answers>({ type: "", template: "", name: "", about: "", phone: "", address: "", lang: "ar" });
   const [bubbles, setBubbles] = useState<Bubble[]>([{ from: "bot", text: STEPS[0].q }]);
   const [text, setText] = useState("");
   const [building, setBuilding] = useState<string | null>(null);
@@ -49,64 +53,55 @@ export function AiOnboarding() {
 
   const step = i < STEPS.length ? STEPS[i] : null;
 
-  function advance(patch: Partial<WizardInput>, shown: string, extra?: { story?: string }) {
-    const next = { ...input, ...patch };
-    setInput(next);
-    if (extra?.story !== undefined) setStory(extra.story);
+  function advance(patch: Partial<Answers>, shown: string) {
+    const next = { ...a, ...patch };
+    setA(next);
     const n = i + 1;
     const add: Bubble[] = [{ from: "me", text: shown }];
     if (n < STEPS.length) add.push({ from: "bot", text: STEPS[n].q });
     setBubbles((b) => [...b, ...add]);
     setText("");
     setI(n);
-    if (n >= STEPS.length) void build(next, extra?.story ?? story);
+    if (n >= STEPS.length) void build(next);
   }
 
-  async function build(base: WizardInput, storyText: string) {
+  async function build(d: Answers) {
     setError(null);
-    setBuilding("بكتب محتوى موقعك…");
-    let data = base;
-    try {
-      const brief = parseBrief(await askAgent([
-        { role: "user", content: `النشاط: ${TYPE_AR[base.type]}. الاسم: ${base.name}. ${storyText}\n\n${EXTRACT} Set name to "${base.name}".` },
-      ]));
-      if (brief) data = { ...base, ...brief, name: base.name, type: base.type, phone: base.phone || brief.phone || "", address: base.address || brief.address || "" };
-    } catch { /* the preset copy is a fine starting point; the owner edits it next */ }
-    setBuilding("بركّب الأقسام والألوان…");
-    const res = await createSiteFromWizard({ ...data, slug: "" });
-    if (res.error || !res.slug) {
+    setBuilding("بكتب محتوى موقعك جوه القالب…");
+    const texts = await fillTemplate(
+      { templateKey: d.template, name: d.name, about: d.about, phone: d.phone, address: d.address, lang: d.lang },
+      (done, total) => setBuilding(`بكتب محتوى موقعك جوه القالب… ${done}/${total}`),
+    );
+    setBuilding("بجهّز موقعك…");
+    const res = await createTemplateSite({ templateKey: d.template, name: d.name, texts, images: {}, dir: d.lang === "ar" ? "rtl" : "ltr" });
+    if (!res.slug) {
       setError(res.error ?? "معرفتش أكمّل البناء. جرّب تاني.");
       setBuilding(null);
       setI(STEPS.length - 1);
       return;
     }
-    setBuilding("جاهز! بفتحلك المحرر…");
+    setBuilding("جاهز! بفتحلك الموقع…");
     router.push(`/dashboard/sites/${res.slug}`);
   }
-
-  const Chip = ({ label, onClick, swatch }: { label: string; onClick: () => void; swatch?: string }) => (
-    <button type="button" onClick={onClick}
-      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-ink active:scale-95">
-      {swatch ? <span className="size-4 rounded-full" style={{ background: swatch }} aria-hidden /> : null}{label}
-    </button>
-  );
 
   const submitText = () => {
     const t = text.trim();
     if (!step || !t) return;
     if (step.id === "name") advance({ name: t.slice(0, 80) }, t);
-    else if (step.id === "story") advance({ about: t.slice(0, 600) }, t, { story: t });
+    else if (step.id === "story") advance({ about: t.slice(0, 600) }, t);
     else if (step.id === "phone") advance({ phone: t.slice(0, 30) }, t);
     else if (step.id === "address") advance({ address: t.slice(0, 160) }, t);
   };
   const textStep = step && ["name", "story", "phone", "address"].includes(step.id);
+  const recommended = TYPES.find((t) => t.id === a.type)?.tpl ?? [];
+  const templates = [...TEMPLATE_CATALOG].sort((x, y) => Number(recommended.includes(y.key as never)) - Number(recommended.includes(x.key as never)));
 
   return (
     <div dir="rtl" className="fixed inset-0 z-40 flex flex-col bg-canvas text-ink">
       <header className="flex items-center gap-2 border-b border-line px-4 py-3">
         <Sparkles className="size-5 text-orange" aria-hidden />
         <h1 className="text-base font-bold">ابني موقعك مع WebSide</h1>
-        <span className="ms-auto text-xs text-muted">{Math.min(i + 1, STEPS.length)} / {STEPS.length}</span>
+        <span dir="ltr" className="ms-auto text-xs text-muted">{Math.min(i + 1, STEPS.length)} / {STEPS.length}</span>
       </header>
       <div className="h-1 bg-line"><div className="h-full bg-orange transition-all" style={{ width: `${(Math.min(i, STEPS.length) / STEPS.length) * 100}%` }} /></div>
 
@@ -122,21 +117,30 @@ export function AiOnboarding() {
       </div>
 
       {!building && step ? (
-        <div className="border-t border-line bg-surface p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="max-h-[62dvh] overflow-y-auto border-t border-line bg-surface p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {step.id === "type" ? (
-            <div className="flex flex-wrap gap-2">
-              {SITE_TYPES.map((t) => <Chip key={t} label={TYPE_AR[t]} onClick={() => {
-                const d = defaultInput(t);
-                advance({ type: t, tagline: d.tagline, about: TYPE_PRESETS[t].about, offerings: d.offerings }, TYPE_AR[t]);
-              }} />)}
+            <div className="flex flex-wrap gap-2">{TYPES.map((t) => <Chip key={t.id} label={t.label} onClick={() => advance({ type: t.id }, t.label)} />)}</div>
+          ) : null}
+          {step.id === "template" ? (
+            <div className="grid grid-cols-2 gap-3">
+              {templates.map((t) => (
+                <button key={t.key} type="button" onClick={() => advance({ template: t.key }, `قالب ${t.nameAr}`)}
+                  className="overflow-hidden rounded-xl border border-line bg-white text-start active:scale-[.98]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/templates/premium/${t.key}/thumb.png`} alt="" loading="lazy" className="aspect-[16/10] w-full object-cover object-top" />
+                  <span className="flex items-center justify-between px-3 py-2 text-sm font-semibold">
+                    {t.nameAr}
+                    {recommended.includes(t.key as never) ? <span className="rounded-full bg-orange/15 px-2 text-[11px] text-orange">مناسب ليك</span> : null}
+                  </span>
+                </button>
+              ))}
             </div>
           ) : null}
-          {step.id === "look" ? (
-            <div className="flex flex-wrap gap-2">{LOOK_AR.map((l) => <Chip key={l.id} label={l.label} onClick={() => advance({ look: l.id }, l.label)} />)}</div>
-          ) : null}
-          {step.id === "accent" ? (
-            <div className="flex flex-wrap gap-2">{ACCENTS.map((a) => <Chip key={a} label={ACCENT_AR[a] ?? ACCENT_META[a].label} swatch={ACCENT_META[a].swatch}
-              onClick={() => advance({ accent: a as BlockAccent }, ACCENT_AR[a] ?? ACCENT_META[a].label)} />)}</div>
+          {step.id === "lang" ? (
+            <div className="flex flex-wrap gap-2">
+              <Chip label="عربي" onClick={() => advance({ lang: "ar" }, "عربي")} />
+              <Chip label="English" onClick={() => advance({ lang: "en" }, "English")} />
+            </div>
           ) : null}
           {textStep ? (
             <form onSubmit={(e) => { e.preventDefault(); submitText(); }} className="flex items-end gap-2">
