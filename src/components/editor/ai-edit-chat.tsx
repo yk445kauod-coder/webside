@@ -27,7 +27,7 @@ export function AiEditChat({ items, onItems }: { items: Item[]; onItems: (next: 
     try {
       const history = msgs.slice(1).map(({ role, content }) => ({ role, content }));
       // The page description goes in the same message so the agent always sees the current page.
-      const raw = await askAgent([...history, { role: "user", content: `${systemPrompt(latest.current)}\n\nOwner request: ${t}` }]);
+      const raw = await askAgent([...history, { role: "user", content: `${systemPrompt(latest.current)}\n\nOwner request: ${t}` }], undefined, "editor");
       const { reply, ops } = parseReply(raw);
       const res = applyOps(latest.current, ops);
       if (res.applied) onItems(res.items);
