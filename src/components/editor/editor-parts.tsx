@@ -51,20 +51,20 @@ export function EditorTopBar({
           className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-line bg-canvas px-2.5 text-sm font-semibold text-ink lg:hidden"
         >
           <Layers className="h-4 w-4" aria-hidden="true" />
-          Design
+          <span className="hidden min-[400px]:inline">Pages</span>
         </button>
         <Link
           href="/dashboard"
           aria-label="Back to dashboard"
-          className="text-muted hover:text-ink"
+          className="grid size-9 shrink-0 place-items-center text-muted hover:text-ink"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </Link>
-        <div className="hidden min-w-0 sm:block">
+        <div className="hidden min-w-0 min-[420px]:block">
           <p className="truncate text-sm font-semibold text-ink">{site.name}</p>
-          <p className="truncate font-mono text-[11px] text-muted">/{site.slug}</p>
+          <p className="hidden truncate font-mono text-[11px] text-muted sm:block">/{site.slug}</p>
         </div>
       </div>
 
@@ -197,7 +197,7 @@ export function RailTabs({
   return (
     <div className="border-b border-line px-3 pb-2 pt-3">
       <div role="tablist" aria-label="Editor panels" className="flex gap-1 rounded-lg bg-ink-soft p-0.5">
-        {(["pages", "blocks", "design"] as const).map((tab) => (
+        {(["pages", "design"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -205,7 +205,7 @@ export function RailTabs({
             aria-selected={value === tab}
             onClick={() => onChange(tab)}
             className={cn(
-              "flex-1 rounded-md px-2 py-1 text-sm font-medium capitalize transition-colors",
+              "flex-1 rounded-md px-2 py-2 text-sm font-medium capitalize transition-colors",
               value === tab ? "bg-surface text-ink shadow-ws-sm" : "text-muted hover:text-ink",
             )}
           >
