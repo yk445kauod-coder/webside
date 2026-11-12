@@ -536,3 +536,9 @@ button, a, summary, [role="button"], input, select, textarea { touch-action: man
   main > *:nth-child(4) { animation-delay: 0.18s; }
   main > *:nth-child(n + 5) { animation-delay: 0.24s; }
 }
+
+/* Phone tool sheet: finger-sized rows in the layers list and block list. */
+.ws-phone-tool [class*="_Layer-inner_"] { min-height: 48px; }
+.ws-phone-tool [class*="_Layer-content_"], .ws-phone-tool [class*="_Layer-caret_"] { min-height: 44px; }
+.ws-phone-tool [class*="_DrawerItem-draggableWrapper_"] { min-height: 52px; }
+.ws-phone-tool [class*="_Layer-name_"], .ws-phone-tool [class*="_DrawerItem-name_"] { font-size: 15px; font-weight: 600; }

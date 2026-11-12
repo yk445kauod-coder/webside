@@ -5,9 +5,9 @@ import { Sparkles, Send } from "lucide-react";
 import { askAgent, type AgentMessage } from "@/lib/ai-agent";
 import { SITE_TYPES, type WizardInput } from "@/lib/wizard";
 
-const EXTRACT = 'Return ONLY a JSON object, no prose, with keys: type (one of ' + SITE_TYPES.join("|") + '), name, tagline, about, phone, address, offerings (array of up to 6 {heading,text}). Use "" for anything the owner did not say. Write values in the owner\'s language.';
+export const EXTRACT = 'Return ONLY a JSON object, no prose, with keys: type (one of ' + SITE_TYPES.join("|") + '), name, tagline, about, phone, address, offerings (array of up to 6 {heading,text}). Use "" for anything the owner did not say. Write values in the owner\'s language.';
 
-function parseBrief(raw: string): Partial<WizardInput> | null {
+export function parseBrief(raw: string): Partial<WizardInput> | null {
   const m = raw.match(/\{[\s\S]*\}/);
   if (!m) return null;
   try {
