@@ -1,5 +1,6 @@
 import { TEMPLATE_HTML } from "./template-html";
 import { safeImageSrc } from "./safe-url";
+import { menuHtml, normalizeFonts, normalizeMenu, sanitizeCss, styleTags, type TemplateFonts, type TemplateMenu } from "./template-extras";
 
 /** Page-block type that holds a whole ready-made template. */
 export const TEMPLATE_SITE = "TemplateSite";
@@ -28,6 +29,12 @@ export interface TemplateProps {
   /** Replacement URL per image-slot index. */
   images: Record<string, string>;
   dir: "ltr" | "rtl";
+  /** Google fonts chosen by the owner (curated list only). */
+  fonts?: TemplateFonts;
+  /** Extra owner/AI CSS, sanitised. */
+  css?: string;
+  /** Data-driven menu/catalogue section added to the page. */
+  menu?: TemplateMenu;
 }
 
 // Tokens: comments, whole <script>/<style> elements, tags, and text. Text and image URLs are the
@@ -128,7 +135,7 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
  */
 export function renderTemplate(
   key: string,
-  p: { texts?: Record<string, string>; images?: Record<string, string>; dir?: "ltr" | "rtl"; siteName?: string } = {},
+  p: { texts?: Record<string, string>; images?: Record<string, string>; dir?: "ltr" | "rtl"; siteName?: string; fonts?: TemplateFonts; css?: string; menu?: TemplateMenu } = {},
   edit = false,
 ): string {
   const src = TEMPLATE_HTML[key];
@@ -140,6 +147,13 @@ export function renderTemplate(
     out = out.replace(/Free HTML Templates(?=")/g, nm);
   }
   if (p.dir === "rtl") out = out.replace(/<html\b[^>]*>/i, '<html lang="ar" dir="rtl">');
+  const head = styleTags(normalizeFonts(p.fonts), sanitizeCss(p.css));
+  if (head) out = /<\/head>/i.test(out) ? out.replace(/<\/head>/i, () => head + "</head>") : head + out;
+  const menu = normalizeMenu(p.menu);
+  if (menu) {
+    const sec = menuHtml(menu, p.dir === "rtl" ? "rtl" : "ltr");
+    if (sec) out = /<footer\b/i.test(out) ? out.replace(/<footer\b/i, (m) => sec + m) : /<\/body>/i.test(out) ? out.replace(/<\/body>/i, () => sec + "</body>") : out + sec;
+  }
   if (edit) {
     const tag = `<script>${EDIT_SCRIPT}</script>`;
     out = /<\/body>/i.test(out) ? out.replace(/<\/body>/i, () => tag + "</body>") : out + tag;
@@ -173,6 +187,9 @@ export function getTemplateBlock(blocks: unknown): { props: TemplateProps } | nu
         texts: record(p.texts),
         images: record(p.images),
         dir: p.dir === "rtl" ? "rtl" : "ltr",
+        fonts: normalizeFonts(p.fonts),
+        css: sanitizeCss(p.css),
+        menu: normalizeMenu(p.menu),
       },
     };
   }
@@ -184,6 +201,7 @@ export function makeTemplateBlock(
   texts: Record<string, string>,
   images: Record<string, string>,
   dir: "ltr" | "rtl",
+  extra: { fonts?: TemplateFonts; css?: string; menu?: TemplateMenu } = {},
 ) {
-  return { type: TEMPLATE_SITE, props: { id: `tpl-${Math.random().toString(36).slice(2, 9)}`, templateKey, texts, images, dir } };
+  return { type: TEMPLATE_SITE, props: { id: `tpl-${Math.random().toString(36).slice(2, 9)}`, templateKey, texts, images, dir, ...extra } };
 }
