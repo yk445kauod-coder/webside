@@ -61,24 +61,30 @@ async function persistSite(args: {
   pages: PageDraft[];
 }): Promise<CreateSiteState> {
   const supabase = await createClient();
-  const { data: site, error: siteError } = await supabase
-    .from("sites")
-    .insert({
-      owner_id: args.ownerId,
-      name: args.name,
-      slug: args.slug,
-      template_key: args.templateKey,
-      description: null,
-    })
-    .select()
-    .single();
-
-  if (siteError) {
-    if (siteError.code === "23505") {
-      return { error: "That address is already taken — try a different one." };
+  let site: { id: string; slug: string } | null = null;
+  let siteError: { code?: string; message: string } | null = null;
+  for (let i = 0; i < 6 && !site; i++) {
+    const slug = i === 0 ? args.slug : `${args.slug}-${Math.random().toString(36).slice(2, 6)}`;
+    const res = await supabase
+      .from("sites")
+      .insert({
+        owner_id: args.ownerId,
+        name: args.name,
+        slug,
+        template_key: args.templateKey,
+        description: null,
+      })
+      .select()
+      .single();
+    if (!res.error) {
+      site = res.data;
+      siteError = null;
+    } else {
+      siteError = res.error;
+      if (res.error.code !== "23505") break;
     }
-    return { error: siteError.message };
   }
+  if (!site) return { error: siteError?.message ?? "Couldn't create the site." };
 
   const { error: pagesError } = await supabase.from("pages").insert(
     args.pages.map((p) => ({
