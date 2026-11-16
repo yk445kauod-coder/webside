@@ -72,7 +72,7 @@ export function applyTplOps(p: TemplateProps, ops: TplOp[], slotCount: number, i
       const cn = typeof o.category === "string" ? o.category.trim().slice(0, 80) : "";
       let cat = menu.categories.find((c) => c.name === cn);
       if (!cat) { cat = { name: cn, items: [] }; menu.categories.push(cat); }
-      cat.items.push({ name: o.name.slice(0, 120), price: String(o.price ?? "").slice(0, 20), desc: String(o.desc ?? "").slice(0, 300), img: "" });
+      cat.items.push({ name: o.name.slice(0, 120), price: String(o.price ?? "").slice(0, 20), desc: String(o.desc ?? "").slice(0, 300), img: "", rec: false, off: false, ing: "" });
       const n = normalizeMenu(menu);
       if (n) { cur = { ...cur, menu: n }; adds++; applied++; }
     } else if (o.op === "menu_remove" && cur.menu && typeof o.name === "string") {
