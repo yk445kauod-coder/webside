@@ -337,7 +337,7 @@ async function expectedAmount(supabase: Supabase, siteId: string): Promise<{ fir
     needsPaymentProof(supabase, siteId),
     supabase.from("sites").select("plan").eq("id", siteId).maybeSingle(),
   ]);
-  const plan = site && isSitePlan(site.plan) ? site.plan : "menu";
+  const plan: keyof typeof PLAN_PRICING_EGP = site && isSitePlan(site.plan) ? (site.plan as keyof typeof PLAN_PRICING_EGP) : "menu";
   return { first, amount: first ? PLAN_PRICING_EGP[plan].setup : EDIT_FEE_EGP };
 }
 

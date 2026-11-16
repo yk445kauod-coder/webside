@@ -81,6 +81,12 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
   const menu = props.menu ?? EMPTY_MENU;
   const setMenu = (m: TemplateMenu) => apply({ ...latest.current, menu: m.categories.some((c) => c.items.length) ? m : undefined });
 
+  function patchItem(ci: number, ii: number, patch: Partial<TemplateMenu["categories"][number]["items"][number]>) {
+    const m = latest.current.menu;
+    if (!m) return;
+    setMenu({ ...m, categories: m.categories.map((c, x) => (x === ci ? { ...c, items: c.items.map((it, k) => (k === ii ? { ...it, ...patch } : it)) } : c)) });
+  }
+
   function setImage(i: number, url: string) {
     const cur = latest.current;
     const next = { ...cur, images: { ...cur.images, [i]: url.trim() } };
@@ -215,6 +221,8 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
                         <li key={ii} className="flex items-center gap-2 px-3 py-2 text-sm">
                           <span className="min-w-0 flex-1 truncate">{it.name}</span>
                           <span className="shrink-0 text-muted">{it.price}</span>
+                          <button type="button" aria-label="الأفضل" aria-pressed={it.rec} onClick={() => patchItem(ci, ii, { rec: !it.rec })} className={"grid size-9 place-items-center rounded-lg " + (it.rec ? "bg-orange/20" : "opacity-40")}>⭐</button>
+                          <button type="button" aria-label="نفد" aria-pressed={it.off} onClick={() => patchItem(ci, ii, { off: !it.off })} className={"h-9 shrink-0 rounded-lg px-2 text-xs font-semibold " + (it.off ? "bg-danger/15 text-danger" : "text-muted")}>{it.off ? "نفد" : "متاح"}</button>
                           <button type="button" aria-label="حذف" onClick={() => setMenu({ ...menu, categories: menu.categories.map((x, xi) => (xi === ci ? { ...x, items: x.items.filter((_, k) => k !== ii) } : x)) })} className="grid size-9 place-items-center rounded-lg text-danger">✕</button>
                         </li>
                       ))}

@@ -1,28 +1,20 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+// Historical path: this is now the D1-backed data client (see src/lib/db). Same call shape as before.
+import { currentUser, clientFor } from "@/lib/db/runtime";
+import { auth } from "@/lib/db/auth";
 
-/** Server-side Supabase client bound to the request's session cookies (RLS enforced). */
+/** Data client scoped to the signed-in user (row access rules enforced in code). */
 export async function createClient() {
-  const cookieStore = await cookies();
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            );
-          } catch {
-            // Server Components cannot set cookies; middleware handles refreshes.
-          }
-        },
-      },
-    },
-  );
+  const user = await currentUser();
+  const c = await clientFor(user);
+  return Object.assign(c, { auth, storage: unsupportedStorage });
 }
+
+export const unsupportedStorage = {
+  from(_bucket: string) {
+    void _bucket;
+    const err = { message: "File uploads are not enabled." };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fail = async (..._a: unknown[]): Promise<{ data: any; error: { message: string } }> => ({ data: null, error: err });
+    return { createSignedUrl: fail, remove: fail, upload: fail };
+  },
+};
