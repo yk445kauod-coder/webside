@@ -4,6 +4,9 @@
 import { PLAN_LIMITS } from "@/lib/limits";
 
 export type Row = Record<string, unknown>;
+// Loosely typed on purpose: mirrors the untyped Supabase client the call sites were written against.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Loose = any;
 export interface Db {
   all(sql: string, params?: unknown[]): Promise<Row[]>;
   run(sql: string, params?: unknown[]): Promise<{ changes: number }>;
@@ -94,7 +97,7 @@ export interface Result<T = any> {
   count: number | null;
 }
 
-class Query<M extends "many" | "one" = "many"> implements PromiseLike<Result<M extends "many" ? any[] : any>> { // eslint-disable-line @typescript-eslint/no-explicit-any
+class Query<M extends "many" | "one" = "many"> implements PromiseLike<Result<M extends "many" ? Loose[] : Loose>> { // eslint-disable-line @typescript-eslint/no-explicit-any
   private op: "select" | "insert" | "update" | "delete" | "upsert" = "select";
   private cols = "*";
   private filters: Filter[] = [];
@@ -131,8 +134,8 @@ class Query<M extends "many" | "one" = "many"> implements PromiseLike<Result<M e
   single() { this.mode = "single"; return this as unknown as Query<"one">; }
   maybeSingle() { this.mode = "maybe"; return this as unknown as Query<"one">; }
 
-  then<A = Result<M extends "many" ? any[] : any>, B = never>(ok?: ((v: Result<M extends "many" ? any[] : any>) => A | PromiseLike<A>) | null, no?: ((e: unknown) => B | PromiseLike<B>) | null): PromiseLike<A | B> {
-    return (this.exec() as Promise<Result<M extends "many" ? any[] : any>>).then(ok, no);
+  then<A = Result<M extends "many" ? Loose[] : Loose>, B = never>(ok?: ((v: Result<M extends "many" ? Loose[] : Loose>) => A | PromiseLike<A>) | null, no?: ((e: unknown) => B | PromiseLike<B>) | null): PromiseLike<A | B> {
+    return (this.exec() as Promise<Result<M extends "many" ? Loose[] : Loose>>).then(ok, no);
   }
 
   private colOk(c: string) {

@@ -17,7 +17,6 @@ permissions:
 env:
   NEXT_TELEMETRY_DISABLED: "1"
   PAGES_PROJECT: web-side
-  D1_NAME: webside-db
 
 jobs:
   changes:
@@ -72,35 +71,22 @@ jobs:
         run: |
           npx opennextjs-cloudflare build
           node scripts/build-pages.mjs
-      - name: Ensure D1 database and schema
-        id: d1
+      - name: Apply database schema (Turso)
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TURSO_URL: ${{ secrets.TURSO_URL }}
+          TURSO_TOKEN: ${{ secrets.TURSO_TOKEN }}
           SUDO_ADMIN_EMAILS: ${{ secrets.SUDO_ADMIN_EMAILS }}
-        run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
-          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          id=$(curl -sS "$api?name=$D1_NAME" -H "$auth" | jq -r '.result[]? | select(.name=="'$D1_NAME'") | .uuid' | head -1)
-          if [ -z "$id" ]; then
-            id=$(curl -sS -X POST "$api" -H "$auth" -H "Content-Type: application/json" -d "{\"name\":\"$D1_NAME\"}" | tee /tmp/d1.json | jq -r '.result.uuid // empty')
-          fi
-          if [ -z "$id" ]; then echo "Could not find or create the D1 database (does the API token have D1 edit permission?)"; cat /tmp/d1.json; exit 1; fi
-          echo "id=$id" >> "$GITHUB_OUTPUT"
-          printf '{"name":"x","compatibility_date":"2026-10-01","d1_databases":[{"binding":"DB","database_name":"%s","database_id":"%s"}]}' "$D1_NAME" "$id" > /tmp/wd1.jsonc
-          npx wrangler d1 execute DB --remote --config /tmp/wd1.jsonc --file db/schema.sql
-          if [ -n "$SUDO_ADMIN_EMAILS" ]; then
-            list=$(printf '%s' "$SUDO_ADMIN_EMAILS" | jq -R -c 'split(",") | map(gsub("^\\s+|\\s+$";"") | ascii_downcase) | map(select(length>0))')
-            npx wrangler d1 execute DB --remote --config /tmp/wd1.jsonc --command "UPDATE settings SET value='$(printf '%s' "$list" | sed "s/'/''/g")' WHERE key='sudo_admin_emails'"
-          fi
+        run: node scripts/apply-schema.mjs
       - name: Ensure Pages project and runtime flags
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          D1_ID: ${{ steps.d1.outputs.id }}
+          TURSO_URL: ${{ secrets.TURSO_URL }}
+          TURSO_TOKEN: ${{ secrets.TURSO_TOKEN }}
+          SUDO_ADMIN_EMAILS: ${{ secrets.SUDO_ADMIN_EMAILS }}
         run: |
           api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
-          cfg='{"compatibility_date":"2026-10-01","compatibility_flags":["nodejs_compat","global_fetch_strictly_public"],"d1_databases":{"DB":{"id":"'$D1_ID'"}}}'
+          cfg='{"compatibility_date":"2026-10-01","compatibility_flags":["nodejs_compat","global_fetch_strictly_public"],"env_vars":{"TURSO_URL":{"type":"plain_text","value":"'"$TURSO_URL"'"},"TURSO_TOKEN":{"type":"secret_text","value":"'"$TURSO_TOKEN"'"},"SUDO_ADMIN_EMAILS":{"type":"plain_text","value":"'"$SUDO_ADMIN_EMAILS"'"}}}'
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           # Create (ignored if it already exists), then always enforce the runtime flags.
           curl -sS -X POST "$api" -H "$auth" -H "Content-Type: application/json" \
