@@ -2,17 +2,41 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { DbClient, isSudoEmail, type Db, type DbUser, type Row } from "./query";
 
-interface D1Stmt { bind(...v: unknown[]): D1Stmt; all(): Promise<{ results?: Row[] }>; run(): Promise<{ meta?: { changes?: number } }> }
-interface D1 { prepare(sql: string): D1Stmt }
+type TursoVal = { type: string; value?: string };
 
-function fromD1(d: D1): Db {
+function toArg(v: unknown): TursoVal {
+  if (v === null || v === undefined) return { type: "null" };
+  if (typeof v === "boolean") return { type: "integer", value: v ? "1" : "0" };
+  if (typeof v === "number") return Number.isInteger(v) ? { type: "integer", value: String(v) } : { type: "float", value: String(v) };
+  return { type: "text", value: String(v) };
+}
+function fromVal(v: TursoVal): unknown {
+  if (v.type === "null") return null;
+  if (v.type === "integer" || v.type === "float") return Number(v.value);
+  return v.value ?? null;
+}
+
+/** Turso (libSQL) over its HTTP API: free SQLite, works from Workers with plain fetch. */
+function fromTurso(url: string, token: string): Db {
+  const base = url.replace(/^libsql:\/\//, "https://").replace(/\/$/, "");
+  async function exec(sql: string, params: unknown[]) {
+    const res = await fetch(`${base}/v2/pipeline`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ requests: [{ type: "execute", stmt: { sql, args: params.map(toArg) } }, { type: "close" }] }),
+    });
+    const j = (await res.json()) as { results?: { type: string; response?: { result?: { cols: { name: string }[]; rows: TursoVal[][]; affected_row_count: number } }; error?: { message: string } }[]; error?: string };
+    const r = j.results?.[0];
+    if (!res.ok || !r || r.type === "error") throw new Error(r?.error?.message ?? j.error ?? `Database error ${res.status}`);
+    return r.response!.result!;
+  }
   return {
     async all(sql, params = []) {
-      return (await d.prepare(sql).bind(...params).all()).results ?? [];
+      const r = await exec(sql, params);
+      return r.rows.map((row) => Object.fromEntries(r.cols.map((c, i) => [c.name, fromVal(row[i])])) as Row);
     },
     async run(sql, params = []) {
-      const r = await d.prepare(sql).bind(...params).run();
-      return { changes: r.meta?.changes ?? 0 };
+      return { changes: (await exec(sql, params)).affected_row_count ?? 0 };
     },
   };
 }
@@ -40,10 +64,10 @@ async function sqliteDev(path: string): Promise<Db> {
 
 export async function getDb(): Promise<Db> {
   if (process.env.WS_SQLITE_PATH) return sqliteDev(process.env.WS_SQLITE_PATH);
-  const { getCloudflareContext } = await import("@opennextjs/cloudflare");
-  const env = (await getCloudflareContext({ async: true })).env as { DB?: D1 };
-  if (!env.DB) throw new Error("Database is not configured: the D1 binding `DB` is missing.");
-  return fromD1(env.DB);
+  const url = process.env.TURSO_URL;
+  const token = process.env.TURSO_TOKEN;
+  if (!url || !token) throw new Error("Database is not configured: set TURSO_URL and TURSO_TOKEN.");
+  return fromTurso(url, token);
 }
 
 export const SESSION_COOKIE = "ws_session";
