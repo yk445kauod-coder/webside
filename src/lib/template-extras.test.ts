@@ -7,9 +7,12 @@ import { parseBlocks } from "./schemas";
 
 const base = { id: "t", templateKey: "cafe", texts: {}, images: {}, dir: "rtl" as const };
 
+// Every page carries one small responsive-safety stylesheet; everything else must stay byte-for-byte.
+const noBase = (h: string) => h.replace(/<style id="ws-base">[\s\S]*?<\/style>/, "");
+
 describe("template extras", () => {
   it("no extras leaves the template byte-identical", () => {
-    expect(renderTemplate("cafe")).toBe(prepareTemplate(TEMPLATE_HTML.cafe));
+    expect(noBase(renderTemplate("cafe"))).toBe(prepareTemplate(TEMPLATE_HTML.cafe));
   });
   it("applies fonts and strips dangerous css", () => {
     const out = renderTemplate("cafe", { fonts: { heading: "Cairo", body: "Tajawal" }, css: "h1{color:red} @import url(x); </style><script>x</script>" });

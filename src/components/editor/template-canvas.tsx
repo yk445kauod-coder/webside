@@ -5,10 +5,13 @@ import { Loader2, Send } from "lucide-react";
 import { listSlots, renderTemplate, type TemplateProps } from "@/lib/template-site";
 import { FONTS, fontsLink, menuCount, parseBulk, sanitizeCss, type TemplateMenu } from "@/lib/template-extras";
 import { applyTplOps, parseTplReply, templatePrompt } from "@/lib/template-agent";
+import { changeSection, listSections, themeVars } from "@/lib/template-sections";
+import { prepareTemplate } from "@/lib/template-site";
+import { TEMPLATE_HTML } from "@/lib/template-html";
 import { askAgent, type AgentMessage } from "@/lib/ai-agent";
 
-type Tab = "images" | "fonts" | "menu" | "ai";
-const TABS: [Tab, string][] = [["ai", "المساعد"], ["fonts", "الخطوط"], ["menu", "المنيو"], ["images", "الصور"]];
+type Tab = "images" | "fonts" | "menu" | "ai" | "design";
+const TABS: [Tab, string][] = [["ai", "المساعد"], ["design", "التصميم"], ["fonts", "الخطوط"], ["menu", "المنيو"], ["images", "الصور"]];
 const EMPTY_MENU: TemplateMenu = { title: "", currency: "", categories: [] };
 
 /**
@@ -78,6 +81,12 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
     }
   }
 
+  const secs = listSections(prepareTemplate(TEMPLATE_HTML[props.templateKey] ?? ""));
+  const vars = themeVars(props.templateKey);
+  const hex6 = (c: string) => (/^#[0-9a-f]{6}$/i.test(c) ? c : /^#[0-9a-f]{3}$/i.test(c) ? "#" + c.slice(1).split("").map((x) => x + x).join("") : null);
+  const moveSection = (i: number, a: string) => apply({ ...latest.current, sections: changeSection(latest.current.sections, secs, i, a) });
+  const orderedSecs = (props.sections?.order.length === secs.length ? props.sections.order : secs.map((x) => x.i)).map((i) => secs[i]);
+
   const menu = props.menu ?? EMPTY_MENU;
   const setMenu = (m: TemplateMenu) => apply({ ...latest.current, menu: m.categories.some((c) => c.items.length) ? m : undefined });
 
@@ -134,15 +143,15 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
           <aside className="absolute inset-y-0 start-0 z-10 flex w-full max-w-sm flex-col border-e border-line bg-surface shadow-ws">
             <link rel="stylesheet" href={fontsLink(FONTS.map((f) => f.name))} />
             <div className="flex items-center justify-between gap-1 border-b border-line px-2 py-2">
-              <div className="flex gap-1" role="tablist">
+              <div className="flex min-w-0 gap-1 overflow-x-auto" role="tablist">
                 {TABS.map(([k, label]) => (
                   <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
-                    className={"min-h-10 rounded-lg px-3 text-sm font-semibold " + (tab === k ? "bg-ink text-white" : "text-muted")}>
+                    className={"min-h-10 shrink-0 rounded-lg px-3 text-sm font-semibold " + (tab === k ? "bg-ink text-white" : "text-muted")}>
                     {label}
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={() => setPanel(false)} className="min-h-10 px-2 text-sm text-muted hover:text-ink">إغلاق</button>
+              <button type="button" onClick={() => setPanel(false)} className="min-h-10 shrink-0 px-2 text-sm text-muted hover:text-ink">إغلاق</button>
             </div>
 
             {tab === "ai" ? (
@@ -156,7 +165,7 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
                   ))}
                   {chat.length === 1 ? (
                     <div className="flex flex-wrap gap-2">
-                      {["غيّر الخط لـ Cairo", "خلّي الخلفية داكنة", "ضيف 5 أصناف قهوة للمنيو", "اكتب عنوان أحسن"].map((h) => (
+                      {["غيّر الخط لـ Cairo", "خلّي التصميم داكن", "اخفي قسم التقييمات", "ضيف 5 أصناف للمنيو", "اكتب عنوان أحسن"].map((h) => (
                         <button key={h} type="button" onClick={() => void send(h)} className="min-h-10 rounded-full border border-line bg-white px-3 text-xs font-semibold">{h}</button>
                       ))}
                     </div>
@@ -170,6 +179,46 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
                     <Send className="size-5 rtl:-scale-x-100" aria-hidden />
                   </button>
                 </form>
+              </div>
+            ) : null}
+
+            {tab === "design" ? (
+              <div className="ws-scroll min-h-0 flex-1 space-y-5 overflow-y-auto p-3">
+                <div>
+                  <h3 className="mb-2 text-sm font-semibold text-ink">أقسام الصفحة</h3>
+                  <ul className="space-y-1.5">
+                    {orderedSecs.map((s) => {
+                      const off = props.sections?.hidden.includes(s.i);
+                      return (
+                        <li key={s.i} className="flex items-center gap-1.5 rounded-xl border border-line bg-white p-1.5">
+                          <span dir="auto" className={"min-w-0 flex-1 truncate px-1 text-start text-sm " + (off ? "text-muted line-through" : "")}>{s.label.replace(/&amp;/g, "&")}</span>
+                          <button type="button" aria-label="لأعلى" onClick={() => moveSection(s.i, "up")} className="grid size-10 place-items-center rounded-lg border border-line">↑</button>
+                          <button type="button" aria-label="لأسفل" onClick={() => moveSection(s.i, "down")} className="grid size-10 place-items-center rounded-lg border border-line">↓</button>
+                          <button type="button" aria-pressed={!off} onClick={() => moveSection(s.i, off ? "show" : "hide")}
+                            className={"min-h-10 rounded-lg px-3 text-xs font-semibold " + (off ? "bg-ink text-white" : "border border-line")}>{off ? "إظهار" : "إخفاء"}</button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-ink">الألوان</h3>
+                    {props.theme ? <button type="button" onClick={() => apply({ ...latest.current, theme: undefined })} className="text-xs text-muted underline">رجّع الأصلي</button> : null}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {vars.map((v) => {
+                      const cur = props.theme?.[v.name] ?? v.value;
+                      const h = hex6(cur);
+                      return h ? (
+                        <label key={v.name} className="flex min-h-12 items-center gap-2 rounded-xl border border-line bg-white px-2 text-xs">
+                          <input type="color" value={h} onChange={(e) => apply({ ...latest.current, theme: { ...(latest.current.theme ?? {}), [v.name]: e.target.value } })} className="size-8 shrink-0 cursor-pointer rounded border-0 bg-transparent p-0" />
+                          <span dir="ltr" className="truncate text-muted">{v.name}</span>
+                        </label>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
               </div>
             ) : null}
 

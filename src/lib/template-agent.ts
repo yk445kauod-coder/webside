@@ -1,5 +1,8 @@
 import { FONTS, fontOk, menuCount, normalizeMenu, sanitizeCss, type TemplateMenu } from "./template-extras";
 import { safeImageSrc } from "./safe-url";
+import { changeSection, listSections, normalizeTheme, themeVars } from "./template-sections";
+import { prepareTemplate } from "./template-site";
+import { TEMPLATE_HTML } from "./template-html";
 import type { TemplateProps } from "./template-site";
 
 export type TplOp =
@@ -8,25 +11,39 @@ export type TplOp =
   | { op: "css"; css: string }
   | { op: "image"; i: number; url: string }
   | { op: "menu_add"; category?: string; name: string; price?: string; desc?: string }
-  | { op: "menu_remove"; name: string };
+  | { op: "menu_remove"; name: string }
+  | { op: "theme"; vars: Record<string, string> }
+  | { op: "section"; i: number; action: "hide" | "show" | "up" | "down" };
 
-const MAX_SNIPPETS = 160;
+const MAX_SNIPPETS = 260;
 
 /** Prompt for the template agent: what it can do, the current text slots, fonts and menu. */
+const sectionsOf = (key: string) => listSections(prepareTemplate(TEMPLATE_HTML[key] ?? ""));
+
+/** Prompt for the template agent: the page map (sections, colours, fonts, menu) and every op it may use. */
 export function templatePrompt(texts: string[], p: TemplateProps): string {
   const slots = texts
     .slice(0, MAX_SNIPPETS)
-    .map((t, i) => `${i}|${(p.texts[i] ?? t).replace(/\s+/g, " ").slice(0, 70)}`)
+    .map((t, i) => `${i}|${(p.texts[i] ?? t).replace(/\s+/g, " ").slice(0, 80)}`)
     .join("\n");
-  return `You edit a ready-made website for its owner. Reply ONLY with JSON: {"reply":"short Arabic reply","ops":[...]}.
+  const hidden = new Set(p.sections?.hidden ?? []);
+  const secs = sectionsOf(p.templateKey).map((s) => `${s.i}|${hidden.has(s.i) ? "[HIDDEN] " : ""}${s.label}`).join("\n");
+  const cols = themeVars(p.templateKey).map((v) => `${v.name}=${p.theme?.[v.name] ?? v.value}`).join(", ");
+  return `You are the site manager of a ready-made website and you act for its owner. Be decisive: do what was asked with ops, never ask permission, never refuse a reasonable design/content change.
+Reply ONLY with JSON: {"reply":"one or two short sentences in the owner's language saying what you changed","ops":[...]}.
 Allowed ops:
-{"op":"text","i":<slot number>,"v":"new text"}  replace one text slot
+{"op":"text","i":<slot>,"v":"new text"}  replace one text slot (use many ops to rewrite a whole section)
+{"op":"theme","vars":{"--name":"#hex"}}  change the site's colours. Only these variables exist: ${cols || "none"}. To make a dark/light/other mood, change several together and keep text readable (strong contrast between text and background variables).
+{"op":"section","i":<section>,"action":"hide|show|up|down"}  hide/show/move a page section
 {"op":"font","heading":"<font>","body":"<font>"}  fonts from: ${FONTS.map((f) => f.name).join(", ")}
-{"op":"css","css":"<css rules>"}  extra CSS (colors, spacing, sizes). Replaces the previous custom CSS. No @import, no scripts.
+{"op":"css","css":"<css rules>"}  extra CSS for anything else (spacing, sizes, radius, shadows). Replaces the previous custom CSS, so repeat the rules you want to keep. No @import, no scripts.
 {"op":"image","i":<slot>,"url":"https://…"}
 {"op":"menu_add","category":"…","name":"…","price":"…","desc":"…"}  adds a menu item (max 40 per reply)
 {"op":"menu_remove","name":"…"}
-Rules: never invent slot numbers; keep text in the owner's language; do not break the page. Current fonts: ${p.fonts?.heading ?? "template default"} / ${p.fonts?.body ?? "template default"}. Menu items: ${menuCount(p.menu)}. Current custom CSS: ${(p.css ?? "").slice(0, 400) || "none"}.
+Rules: only use slot/section numbers listed below; keep the owner's language; never break the page. The site has its own menu section (items: ${menuCount(p.menu)}); when the owner has menu items and the template also shows a sample menu/products section, hide the template's sample one so the menu is not shown twice.
+Current fonts: ${p.fonts?.heading ?? "template default"} / ${p.fonts?.body ?? "template default"}. Current custom CSS: ${(p.css ?? "").slice(0, 400) || "none"}.
+Sections (number|name):
+${secs}
 Text slots (number|current text):
 ${slots}`;
 }
@@ -75,6 +92,12 @@ export function applyTplOps(p: TemplateProps, ops: TplOp[], slotCount: number, i
       cat.items.push({ name: o.name.slice(0, 120), price: String(o.price ?? "").slice(0, 20), desc: String(o.desc ?? "").slice(0, 300), img: "", rec: false, off: false, ing: "" });
       const n = normalizeMenu(menu);
       if (n) { cur = { ...cur, menu: n }; adds++; applied++; }
+    } else if (o.op === "theme" && o.vars && typeof o.vars === "object") {
+      const t = normalizeTheme(o.vars, cur.templateKey);
+      if (t) { cur = { ...cur, theme: { ...(cur.theme ?? {}), ...t } }; applied++; }
+    } else if (o.op === "section" && typeof o.action === "string") {
+      const next = changeSection(cur.sections, sectionsOf(cur.templateKey), o.i, o.action);
+      if (JSON.stringify(next) !== JSON.stringify(cur.sections)) { cur = { ...cur, sections: next }; applied++; }
     } else if (o.op === "menu_remove" && cur.menu && typeof o.name === "string") {
       const nm = o.name.trim();
       const menu = structuredClone(cur.menu);

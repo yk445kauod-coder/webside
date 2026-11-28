@@ -1,5 +1,6 @@
 import { TEMPLATE_HTML } from "./template-html";
 import { safeImageSrc } from "./safe-url";
+import { applySections, listSections, normalizeSections, normalizeTheme, themeStyle, type TemplateSections, type TemplateTheme } from "./template-sections";
 import { menuHtml, normalizeFonts, normalizeMenu, sanitizeCss, styleTags, type TemplateFonts, type TemplateMenu } from "./template-extras";
 
 /** Page-block type that holds a whole ready-made template. */
@@ -35,6 +36,10 @@ export interface TemplateProps {
   css?: string;
   /** Data-driven menu/catalogue section added to the page. */
   menu?: TemplateMenu;
+  /** Hidden/reordered page sections. */
+  sections?: TemplateSections;
+  /** Colour overrides for the template's own colour variables. */
+  theme?: TemplateTheme;
 }
 
 // Tokens: comments, whole <script>/<style> elements, tags, and text. Text and image URLs are the
@@ -110,6 +115,9 @@ export function listSlots(key: string): { texts: string[]; images: string[] } {
   return { texts, images };
 }
 
+/** Every page, on every device: no sideways scroll (RTL skip-links and off-canvas drawers used to widen it to ~1360px), media never wider than the screen. */
+const BASE_CSS = `<style id="ws-base">html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}body{overflow-x:clip;max-width:100vw}img,video,iframe,canvas,svg{max-width:100%}img,video{height:auto}table{max-width:100%}.skip:not(:focus){left:0!important;right:auto!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)}pre,code{overflow-wrap:anywhere}</style>`;
+
 const EDIT_SCRIPT = `(function(){
 var P=function(m){m.ws=1;parent.postMessage(m,'*')};
 document.addEventListener('click',function(e){
@@ -135,7 +143,7 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
  */
 export function renderTemplate(
   key: string,
-  p: { texts?: Record<string, string>; images?: Record<string, string>; dir?: "ltr" | "rtl"; siteName?: string; fonts?: TemplateFonts; css?: string; menu?: TemplateMenu } = {},
+  p: { texts?: Record<string, string>; images?: Record<string, string>; dir?: "ltr" | "rtl"; siteName?: string; fonts?: TemplateFonts; css?: string; menu?: TemplateMenu; sections?: TemplateSections; theme?: TemplateTheme } = {},
   edit = false,
 ): string {
   const src = TEMPLATE_HTML[key];
@@ -146,8 +154,9 @@ export function renderTemplate(
     const nm = esc(p.siteName).replace(/["\\]/g, "");
     out = out.replace(/Free HTML Templates(?=")/g, nm);
   }
+  out = applySections(out, p.sections);
   if (p.dir === "rtl") out = out.replace(/<html\b[^>]*>/i, '<html lang="ar" dir="rtl">');
-  const head = styleTags(normalizeFonts(p.fonts), sanitizeCss(p.css));
+  const head = BASE_CSS + themeStyle(normalizeTheme(p.theme, key)) + styleTags(normalizeFonts(p.fonts), sanitizeCss(p.css));
   if (head) out = /<\/head>/i.test(out) ? out.replace(/<\/head>/i, () => head + "</head>") : head + out;
   const menu = normalizeMenu(p.menu);
   if (menu) {
@@ -190,6 +199,8 @@ export function getTemplateBlock(blocks: unknown): { props: TemplateProps } | nu
         fonts: normalizeFonts(p.fonts),
         css: sanitizeCss(p.css),
         menu: normalizeMenu(p.menu),
+        sections: normalizeSections(p.sections, listSections(prepareTemplate(TEMPLATE_HTML[p.templateKey])).length),
+        theme: normalizeTheme(p.theme, p.templateKey),
       },
     };
   }
@@ -201,7 +212,7 @@ export function makeTemplateBlock(
   texts: Record<string, string>,
   images: Record<string, string>,
   dir: "ltr" | "rtl",
-  extra: { fonts?: TemplateFonts; css?: string; menu?: TemplateMenu } = {},
+  extra: { fonts?: TemplateFonts; css?: string; menu?: TemplateMenu; sections?: TemplateSections; theme?: TemplateTheme } = {},
 ) {
   return { type: TEMPLATE_SITE, props: { id: `tpl-${Math.random().toString(36).slice(2, 9)}`, templateKey, texts, images, dir, ...extra } };
 }
