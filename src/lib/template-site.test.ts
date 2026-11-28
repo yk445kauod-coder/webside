@@ -3,6 +3,9 @@ import { TEMPLATE_CATALOG, getTemplateBlock, isTemplateKey, listSlots, makeTempl
 import { TEMPLATE_HTML } from "./template-html";
 import { sanitizeItems } from "@/puck/sanitize";
 
+// Every page carries one small responsive-safety stylesheet; everything else must stay byte-for-byte.
+const noBase = (h: string) => h.replace(/<style id="ws-base">[\s\S]*?<\/style>/, "");
+
 describe("template-site", () => {
   it("catalog matches the bundled templates", () => {
     expect(Object.keys(TEMPLATE_HTML).sort()).toEqual(TEMPLATE_CATALOG.map((t) => t.key).sort());
@@ -13,7 +16,7 @@ describe("template-site", () => {
     it(`${t.key}: unchanged render is identical apart from the promo bar, edits apply and are escaped`, () => {
       const slots = listSlots(t.key);
       expect(slots.texts.length).toBeGreaterThan(8);
-      expect(renderTemplate(t.key)).toBe(prepareTemplate(TEMPLATE_HTML[t.key]));
+      expect(noBase(renderTemplate(t.key))).toBe(prepareTemplate(TEMPLATE_HTML[t.key]));
       expect(renderTemplate(t.key)).not.toContain("template-bar");
       expect(renderTemplate(t.key, { siteName: "My Shop" })).not.toContain('"Free HTML Templates"');
       const out = renderTemplate(t.key, { texts: { 0: "<b>X</b>" } });
