@@ -98,9 +98,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_ID: ${{ steps.d1.outputs.id }}
+          PUBLISH_GH_TOKEN: ${{ secrets.PUBLISH_GH_TOKEN }}
         run: |
           api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
-          cfg='{"compatibility_date":"2026-10-01","compatibility_flags":["nodejs_compat","global_fetch_strictly_public"],"d1_databases":{"DB":{"id":"'$D1_ID'"}}}'
+          cfg=$(jq -nc --arg id "$D1_ID" --arg tok "$PUBLISH_GH_TOKEN" '{compatibility_date:"2026-10-01",compatibility_flags:["nodejs_compat","global_fetch_strictly_public"],d1_databases:{DB:{id:$id}}} + (if $tok != "" then {env_vars:{GITHUB_PUBLISH_TOKEN:{type:"secret_text",value:$tok}}} else {} end)')
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           # Create (ignored if it already exists), then always enforce the runtime flags.
           curl -sS -X POST "$api" -H "$auth" -H "Content-Type: application/json" \

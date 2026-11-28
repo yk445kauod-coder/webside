@@ -1,6 +1,6 @@
 import { FONTS, fontOk, menuCount, normalizeMenu, sanitizeCss, type TemplateMenu } from "./template-extras";
 import { safeImageSrc } from "./safe-url";
-import { changeSection, listSections, normalizeTheme, themeVars } from "./template-sections";
+import { changeSection, listSections, normalizeTheme, sampleMenuSection, themeVars } from "./template-sections";
 import { prepareTemplate } from "./template-site";
 import { TEMPLATE_HTML } from "./template-html";
 import type { TemplateProps } from "./template-site";
@@ -91,7 +91,17 @@ export function applyTplOps(p: TemplateProps, ops: TplOp[], slotCount: number, i
       if (!cat) { cat = { name: cn, items: [] }; menu.categories.push(cat); }
       cat.items.push({ name: o.name.slice(0, 120), price: String(o.price ?? "").slice(0, 20), desc: String(o.desc ?? "").slice(0, 300), img: "", rec: false, off: false, ing: "" });
       const n = normalizeMenu(menu);
-      if (n) { cur = { ...cur, menu: n }; adds++; applied++; }
+      if (n) {
+        const first = !cur.menu;
+        cur = { ...cur, menu: n };
+        if (first) {
+          const info = sectionsOf(cur.templateKey);
+          const sample = sampleMenuSection(cur.templateKey, info);
+          if (sample !== null) cur = { ...cur, sections: changeSection(cur.sections, info, sample, "hide") };
+        }
+        adds++;
+        applied++;
+      }
     } else if (o.op === "theme" && o.vars && typeof o.vars === "object") {
       const t = normalizeTheme(o.vars, cur.templateKey);
       if (t) { cur = { ...cur, theme: { ...(cur.theme ?? {}), ...t } }; applied++; }
