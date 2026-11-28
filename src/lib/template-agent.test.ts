@@ -35,3 +35,14 @@ describe("template agent", () => {
     expect(shown.sections).toBeUndefined();
   });
 });
+
+describe("first menu item hides the template's own sample menu", () => {
+  it("cafe: menu-sec hidden once, not re-hidden after the owner shows it again", () => {
+    const add = { op: "menu_add", category: "Hot", name: "Latte", price: "40" } as TplOp;
+    const a = applyTplOps(base(), [add], n.texts.length, n.images.length).props;
+    expect(a.sections?.hidden).toEqual([3]);
+    const shown = applyTplOps(a, [{ op: "section", i: 3, action: "show" } as TplOp], n.texts.length, n.images.length).props;
+    const b = applyTplOps(shown, [{ ...add, name: "Mocha" } as TplOp], n.texts.length, n.images.length).props;
+    expect(b.sections).toBeUndefined();
+  });
+});

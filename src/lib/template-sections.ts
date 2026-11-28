@@ -166,3 +166,13 @@ export function changeSection(cur: TemplateSections | undefined, info: SectionIn
   } else return cur;
   return normalizeSections({ hidden: [...hidden], order }, n);
 }
+
+/** Id of the section holding each template's own sample menu/price list, so it can be hidden once the owner adds a real menu. */
+const SAMPLE_MENU_ID: Record<string, string> = { restaurant: "menu-sec", cafe: "menu-sec", bakery: "today", salon: "treatments", shop: "shop", jewellery: "shop" };
+
+export function sampleMenuSection(key: string, info: SectionInfo[]): number | null {
+  const id = SAMPLE_MENU_ID[key];
+  if (!id) return null;
+  const hit = info.find((x) => new RegExp(`^[a-z]+#${id}:`).test(x.label));
+  return hit ? hit.i : null;
+}

@@ -5,7 +5,7 @@ import { Loader2, Send } from "lucide-react";
 import { listSlots, renderTemplate, type TemplateProps } from "@/lib/template-site";
 import { FONTS, fontsLink, menuCount, parseBulk, sanitizeCss, type TemplateMenu } from "@/lib/template-extras";
 import { applyTplOps, parseTplReply, templatePrompt } from "@/lib/template-agent";
-import { changeSection, listSections, themeVars } from "@/lib/template-sections";
+import { changeSection, listSections, sampleMenuSection, themeVars } from "@/lib/template-sections";
 import { prepareTemplate } from "@/lib/template-site";
 import { TEMPLATE_HTML } from "@/lib/template-html";
 import { askAgent, type AgentMessage } from "@/lib/ai-agent";
@@ -88,7 +88,17 @@ export function TemplateCanvas({ props, onChange }: { props: TemplateProps; onCh
   const orderedSecs = (props.sections?.order.length === secs.length ? props.sections.order : secs.map((x) => x.i)).map((i) => secs[i]);
 
   const menu = props.menu ?? EMPTY_MENU;
-  const setMenu = (m: TemplateMenu) => apply({ ...latest.current, menu: m.categories.some((c) => c.items.length) ? m : undefined });
+  const setMenu = (m: TemplateMenu) => {
+    const has = m.categories.some((c) => c.items.length);
+    let next: TemplateProps = { ...latest.current, menu: has ? m : undefined };
+    if (has && !latest.current.menu) {
+      // First real menu: hide the template's own sample menu so items are not shown twice (the owner can bring it back in the Design tab).
+      const info = listSections(prepareTemplate(TEMPLATE_HTML[latest.current.templateKey] ?? ""));
+      const sample = sampleMenuSection(latest.current.templateKey, info);
+      if (sample !== null) next = { ...next, sections: changeSection(next.sections, info, sample, "hide") };
+    }
+    apply(next);
+  };
 
   function patchItem(ci: number, ii: number, patch: Partial<TemplateMenu["categories"][number]["items"][number]>) {
     const m = latest.current.menu;

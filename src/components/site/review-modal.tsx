@@ -4,6 +4,7 @@ import { paymentLabel } from "@/lib/payment-methods";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PreviewCanvas } from "@/components/preview/preview-canvas";
+import { getTemplateBlock, renderTemplate } from "@/lib/template-site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CloseButton, Dialog } from "@/components/ui/dialog";
@@ -32,6 +33,7 @@ export function ReviewModal({ item, onClose }: Props) {
   const [plan, setPlan] = useState(site.plan ?? "menu");
 
   const page = revision.pages[pageKey];
+  const tpl = getTemplateBlock(page?.blocks);
   const meta = submissionStatus(submission.status);
   const open = isOpenStatus(submission.status);
 
@@ -141,11 +143,20 @@ export function ReviewModal({ item, onClose }: Props) {
             <span className="ml-auto shrink-0 pl-3 text-[11px] text-muted">Exact revision — immutable</span>
           </div>
           <div className="ws-scroll flex-1 overflow-y-auto bg-canvas p-4">
-            <PreviewCanvas
-              blocks={page?.blocks ?? []}
-              title={`${site.name} — ${page?.title ?? ""}`}
-              framed
-            />
+            {tpl ? (
+              <iframe
+                title={`${site.name} preview`}
+                srcDoc={renderTemplate(tpl.props.templateKey, { ...tpl.props, siteName: site.name })}
+                sandbox="allow-scripts"
+                className="h-[72vh] w-full rounded-xl border border-line bg-white"
+              />
+            ) : (
+              <PreviewCanvas
+                blocks={page?.blocks ?? []}
+                title={`${site.name} — ${page?.title ?? ""}`}
+                framed
+              />
+            )}
           </div>
         </div>
 
